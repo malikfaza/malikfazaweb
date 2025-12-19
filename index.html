@@ -96,13 +96,7 @@
         
         .drop-active { border-color: #06b6d4 !important; background-color: rgba(6, 182, 212, 0.1) !important; }
         .custom-checkbox:checked { background-color: #ef4444; border-color: #ef4444; }
-        
-        /* Highlight kartu yang dipilih */
-        .card-selected { 
-            border: 2px solid #ef4444 !important; 
-            transform: scale(0.98);
-            transition: all 0.2s ease;
-        }
+        .card-selected { border-color: #ef4444 !important; transform: scale(0.95); transition: all 0.2s; }
     </style>
 </head>
 <body class="bg-cream text-slate-800 dark:bg-midnight dark:text-slate-200 transition-colors duration-300 font-sans selection:bg-accent-cyan selection:text-white overflow-x-hidden">
@@ -201,7 +195,6 @@
             
             <!-- Action Buttons Grid -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                <!-- Add Product Button (New) -->
                 <button id="btnAdd" onclick="window.openAddModal()" class="col-span-2 md:col-span-1 px-3 py-2 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-1 shadow-lg shadow-green-900/20">
                     <i class="ri-add-circle-line text-sm"></i> Tambah Produk
                 </button>
@@ -232,7 +225,8 @@
             </div>
             <!-- Grid 2 Baris Horizontal (Mobile) -->
             <div class="relative group">
-                <div id="productContainer" class="grid grid-rows-2 grid-flow-col auto-cols-[10rem] md:auto-cols-[14rem] h-[340px] md:h-auto gap-4 overflow-x-auto snap-x md:grid-rows-none md:grid-flow-row md:grid-cols-3 lg:grid-cols-4 md:gap-6 pb-6 no-scrollbar">
+                <!-- Height fix: h-[390px] to accommodate 2 rows including text -->
+                <div id="productContainer" class="grid grid-rows-2 grid-flow-col auto-cols-[10rem] md:auto-cols-[14rem] h-[390px] md:h-auto gap-4 overflow-x-auto snap-x md:grid-rows-none md:grid-flow-row md:grid-cols-3 lg:grid-cols-4 md:gap-6 pb-6 no-scrollbar">
                     <!-- JS Generated -->
                 </div>
             </div>
@@ -483,6 +477,7 @@
                                 products.sort((a,b) => a.id.localeCompare(b.id)); 
                                 renderProducts();
                             } else {
+                                // If DB is explicitly empty (after full delete), products = []
                                 products = [];
                                 renderProducts();
                             }
@@ -491,7 +486,7 @@
                 });
             }
             
-            // Manually Attach Button Listeners
+            // Manually Attach Button Listeners inside Module to ensure they work
             document.getElementById('btnDelete').addEventListener('click', deleteSelected);
             document.getElementById('btnReset').addEventListener('click', uploadDefaultData);
             document.getElementById('btnAdd').addEventListener('click', openAddModal);
@@ -533,12 +528,15 @@
 
             try {
                 const batch = writeBatch(db);
+                
+                // Overwrite with defaults
                 for (const p of defaultProducts) {
                     const ref = doc(db, "products", p.id);
                     batch.set(ref, p);
                 }
+                
                 await batch.commit();
-                alert(`✅ Reset Berhasil!`);
+                alert(`✅ Database berhasil di-reset ke Data Asli (${defaultProducts.length} item).`);
             } catch (e) {
                 console.error(e);
                 alert("Gagal reset: " + e.message);
@@ -586,6 +584,7 @@
                     btn.disabled = false;
                 }
             } else {
+                // Offline fallback logic
                 products = products.filter(p => !selectedIds.has(p.id));
                 selectedIds.clear();
                 renderProducts();
@@ -665,10 +664,12 @@
 
                 return `
                 <div id="card-${p.id}" class="w-full glass rounded-xl overflow-hidden group relative border border-gray-200 dark:border-gray-700 transition-all duration-200">
-                    <div class="h-32 md:h-48 overflow-hidden relative bg-gray-200 dark:bg-gray-800">
+                    <div class="h-28 md:h-48 overflow-hidden relative bg-gray-200 dark:bg-gray-800">
                         <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-black/30"></div>
+                        
                         <span class="absolute top-2 left-2 bg-black/60 backdrop-blur text-[9px] font-bold px-1.5 py-0.5 rounded text-white border border-white/20 uppercase">${p.category}</span>
+                        
                         ${isAdmin ? `
                         <div class="absolute top-2 right-2 z-40 flex flex-col gap-1 items-end" onclick="event.stopPropagation()">
                             <input type="checkbox" onchange="window.toggleSelect('${p.id}')" class="custom-checkbox w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer bg-white">
@@ -677,11 +678,17 @@
                             </button>
                         </div>
                         ` : ''}
+
                         <div class="absolute bottom-2 right-2 flex gap-1.5 z-30">
-                             <button onclick="window.openProductModal('${p.id}')" class="w-7 h-7 rounded-full bg-white text-slate-900 flex items-center justify-center shadow-lg hover:bg-accent-cyan hover:text-white transition-all text-xs" title="Lihat Detail"><i class="ri-eye-line"></i></button>
-                            <a href="${waLink}" target="_blank" class="w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center shadow-lg hover:bg-green-600 transition-all text-xs" title="Beli via WA"><i class="ri-whatsapp-line"></i></a>
+                             <button onclick="window.openProductModal('${p.id}')" class="w-7 h-7 rounded-full bg-white text-slate-900 flex items-center justify-center shadow-lg hover:bg-accent-cyan hover:text-white transition-all text-xs" title="Lihat Detail">
+                                <i class="ri-eye-line"></i>
+                            </button>
+                            <a href="${waLink}" target="_blank" class="w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center shadow-lg hover:bg-green-600 transition-all text-xs" title="Beli via WA">
+                                <i class="ri-whatsapp-line"></i>
+                            </a>
                         </div>
                     </div>
+                    
                     <div class="p-3 bg-white/50 dark:bg-transparent">
                         <h3 id="title-${p.id}" class="card-title font-bold text-xs md:text-sm mb-0.5 truncate">${p.title}</h3>
                         <p id="price-${p.id}" class="text-accent-cyan font-bold text-xs">${p.price}</p>
