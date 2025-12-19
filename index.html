@@ -105,7 +105,6 @@
         .drop-active { border-color: #06b6d4 !important; background-color: rgba(6, 182, 212, 0.1) !important; }
         .custom-checkbox:checked { background-color: #ef4444; border-color: #ef4444; }
         
-        /* Card Hover Effects */
         .card-interactive:hover {
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             border-color: #94a3b8;
@@ -134,7 +133,6 @@
         /* Promo Transitions */
         #promoContainer { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         
-        /* Mode Tengah (Big) */
         .promo-mode-big {
             position: fixed;
             inset: 0;
@@ -153,7 +151,6 @@
             transform: scale(1);
         }
 
-        /* Mode Bawah (Mini) */
         .promo-mode-mini {
             position: fixed;
             bottom: 20px;
@@ -181,12 +178,13 @@
             border: 1px solid #cbd5e1;
         }
 
-        /* Hide elements based on mode */
         .promo-mode-mini .big-only { display: none; }
         .promo-mode-big .mini-only { display: none; }
 
-        /* Grid Mobile 80% Logic */
-        /* Kita atur di HTML class langsung agar lebih fleksibel */
+        .grid-mobile-80 {
+            grid-template-columns: repeat(auto-fill, 80%);
+            grid-auto-columns: 80%;
+        }
     </style>
 </head>
 <body class="bg-cream text-slate-900 dark:bg-midnight dark:text-slate-200 transition-colors duration-300 font-sans selection:bg-accent-cyan selection:text-white overflow-x-hidden">
@@ -310,15 +308,11 @@
                 <!-- JS Generated -->
             </div>
             
-            <!-- PRODUCT GRID / CAROUSEL -->
             <div class="relative group">
-                <!-- KUNCI: h-[800px] di mobile agar 2 baris kartu (yg masing2 ~350px) muat dan tidak gepeng. 
-                     auto-cols-[80%] membuat kartu lebar di HP (80% layar). -->
                 <div id="productContainer" class="grid grid-rows-2 grid-flow-col auto-cols-[80%] md:auto-cols-[16rem] h-[800px] md:h-auto gap-4 overflow-x-auto snap-x snap-mandatory md:grid-rows-none md:grid-flow-row md:grid-cols-3 lg:grid-cols-4 md:gap-6 pb-6 no-scrollbar pr-6">
                     <!-- JS Generated -->
                 </div>
                 
-                <!-- Geser Indicator -->
                 <div class="flex justify-center items-center mt-2 text-accent-cyan animate-pulse md:hidden">
                     <span class="text-xs font-bold mr-2">Geser</span>
                     <i class="ri-arrow-right-double-line animate-slide-x"></i>
@@ -384,14 +378,14 @@
     <div id="promoContainer" class="hidden">
         <div id="promoCard" class="glass promo-card relative">
             <div class="big-only w-full">
-                <!-- IMPORTANT: Minimize instead of Close -->
                 <button onclick="window.minimizePromo()" class="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors bg-black/20 rounded-full w-8 h-8 flex items-center justify-center"><i class="ri-arrow-down-s-line text-xl"></i></button>
                 <div class="flex flex-col items-center text-center p-4">
                     <div class="bg-accent-yellow/20 p-4 rounded-full text-accent-yellow mb-4 animate-bounce">
                         <i class="ri-coupon-3-fill text-4xl"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Diskon Spesial!</h3>
-                    <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">Gunakan kode voucher di bawah untuk potongan <b class="text-accent-yellow">20% All Item</b>.</p>
+                    <p id="promoDateText" class="text-gray-600 dark:text-gray-300 text-sm mb-1 font-bold">Promo Spesial Hari Ini</p>
+                    <p class="text-gray-600 dark:text-gray-300 text-xs mb-4">Gunakan kode voucher di bawah untuk potongan <b class="text-accent-yellow">20% All Item</b>.</p>
                     
                     <div class="flex items-center gap-2 bg-white dark:bg-black/40 px-4 py-2 rounded-lg border border-accent-yellow/30 mb-4 w-full justify-between cursor-pointer active:scale-95 transition-transform" onclick="navigator.clipboard.writeText(promoData.code); alert('Kode disalin!')">
                         <span id="promoCodeDisplay" class="font-mono font-bold text-accent-yellow text-xl tracking-widest">FAZA20</span>
@@ -399,12 +393,11 @@
                     </div>
                     
                     <div class="flex items-center gap-2 text-red-500 text-xs font-bold bg-red-100 dark:bg-red-900/20 px-3 py-1 rounded-full border border-red-500/20">
-                        <i class="ri-timer-flash-line animate-pulse"></i> Berakhir jam 22:00 WIB: <span class="promoTimer font-mono">--:--:--</span>
+                        <i class="ri-timer-flash-line animate-pulse"></i> Sisa waktu: <span class="promoTimer font-mono">--:--:--</span>
                     </div>
                 </div>
             </div>
 
-            <!-- MINI MODE -->
             <div class="mini-only w-full flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3" onclick="window.maximizePromo()" class="cursor-pointer">
                     <div class="w-8 h-8 rounded-full bg-accent-yellow text-black flex items-center justify-center font-bold text-xs animate-pulse">%</div>
@@ -415,7 +408,6 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <button onclick="window.maximizePromo()" class="text-xs bg-black text-white px-3 py-1.5 rounded-full font-bold">Ambil</button>
-                    <!-- Close Completely Button -->
                     <button onclick="window.closePromoCompletely()" class="text-gray-500 hover:text-red-500 ml-1"><i class="ri-close-circle-fill"></i></button>
                 </div>
             </div>
@@ -544,9 +536,56 @@
         };
         
         let db, auth;
-        // Global promo state
         let promoData = { code: "FAZA20", active: true };
         
+        // --- DEFINISI FUNGSI ---
+        const handleImageUpload = (file) => {
+            if (file && file.size < 5*1024*1024) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width, height = img.height;
+                        const MAX_W = 800;
+                        if(width > MAX_W) { height *= MAX_W/width; width = MAX_W; }
+                        canvas.width = width; canvas.height = height;
+                        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                        const data = canvas.toDataURL('image/jpeg', 0.7);
+                        document.getElementById('editPreview').src = data;
+                        document.getElementById('previewPlaceholder').style.display = "none";
+                        // Simpan ke variabel global module jika ingin akses di submit
+                        // Tapi karena ini module, akses antar fungsi aman
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        const updatePreviewFromUrl = (v) => { 
+            if(v) { 
+                document.getElementById('editPreview').src = v; 
+                document.getElementById('previewPlaceholder').style.display = "none";
+            } 
+        };
+
+        const handlePasteImage = (e) => {
+            if(document.getElementById('editModal').classList.contains('hidden')) return;
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let index in items) {
+                const item = items[index];
+                if (item.kind === 'file' && item.type.startsWith('image/')) {
+                    const blob = item.getAsFile();
+                    handleImageUpload(blob);
+                }
+            }
+        };
+
+        // Attach Helper Functions to Window
+        window.handleImageUpload = handleImageUpload;
+        window.updatePreviewFromUrl = updatePreviewFromUrl;
+
         try { 
             const app = initializeApp(firebaseConfig);
             auth = getAuth(app);
@@ -576,7 +615,6 @@
         ];
 
         let products = [
-             // Default Data (Fallback)
             ...Array.from({ length: 10 }, (_, i) => ({ id: `app-${i}`, category: 'app', title: `Premium App V${i+1}`, price: 'Rp 25.000', img: `https://picsum.photos/seed/apk${i}/300/200`, desc: 'Full premium features unlocked.', detailLink: 'https://lynk.id/malikfaza' })),
             ...Array.from({ length: 5 }, (_, i) => ({ id: `gem-${i}`, category: 'gem', title: `Gem Pack ${i+1}`, price: 'Rp 50.000', img: `https://picsum.photos/seed/gem${i}/300/200`, desc: 'Legal dan aman 100%.', detailLink: 'https://lynk.id/malikfaza' })),
         ];
@@ -601,12 +639,13 @@
             renderServices();
             checkAdminState();
             setTimeout(() => { if(window.AOS) window.AOS.init({ once: true }); }, 500);
+            
+            // Attach Paste Listener securely
             window.addEventListener('paste', handlePasteImage);
             
             if(db && auth) {
                 onAuthStateChanged(auth, (user) => {
                     if(user) {
-                        // Sync Products
                         onSnapshot(collection(db, "products"), (snapshot) => {
                             if (!snapshot.empty) {
                                 const cloudProducts = [];
@@ -617,7 +656,6 @@
                             }
                         });
 
-                        // Sync Promo Settings
                         onSnapshot(doc(db, "settings", "promo"), (doc) => {
                             if (doc.exists()) {
                                 promoData = doc.data();
@@ -628,18 +666,19 @@
                 });
             }
             
-            // Attach Listeners
             document.getElementById('btnDelete').addEventListener('click', deleteSelected);
             document.getElementById('btnReset').addEventListener('click', uploadDefaultData);
             document.getElementById('btnAdd').addEventListener('click', openAddModal);
             
-            // Promo Observer
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if(entry.isIntersecting && !promoHasShown) {
-                        // Only show if active from DB (default true in fallback)
                         if(promoData.active) {
                             promoHasShown = true;
+                            const now = new Date();
+                            const options = { day: 'numeric', month: 'short' };
+                            const dateStr = now.toLocaleDateString('id-ID', options);
+                            document.getElementById('promoDateText').innerText = `Promo Spesial ${dateStr} s/d Pukul 22:00`;
                             window.showPromoBig();
                         }
                     }
@@ -649,7 +688,6 @@
             const prodSec = document.getElementById('products');
             if(prodSec) observer.observe(prodSec);
             
-            // Timer
             setInterval(() => {
                 const now = new Date();
                 const target = new Date();
@@ -664,7 +702,6 @@
             }, 1000);
         });
         
-        // --- PROMO FUNCTIONS ---
         window.openPromoSettings = () => {
             document.getElementById('promoCodeInput').value = promoData.code;
             document.getElementById('promoActiveInput').checked = promoData.active;
@@ -678,10 +715,7 @@
             const isActive = document.getElementById('promoActiveInput').checked;
             
             if(db) {
-                await setDoc(doc(db, "settings", "promo"), {
-                    code: newCode,
-                    active: isActive
-                });
+                await setDoc(doc(db, "settings", "promo"), { code: newCode, active: isActive });
                 alert("Pengaturan Promo Disimpan!");
                 window.closeModal('promoSettingsModal');
             } else {
@@ -714,7 +748,6 @@
             document.getElementById('promoContainer').classList.add('hidden');
         };
         
-        // --- ADD/EDIT LOGIC ---
         function openAddModal() {
             document.getElementById('editForm').reset();
             document.getElementById('editId').value = "";
@@ -722,7 +755,6 @@
             document.getElementById('editPreview').src = "";
             document.getElementById('previewPlaceholder').style.display = "flex";
             document.getElementById('editImageFile').value = "";
-            tempImageBase64 = null;
             document.getElementById('btnDeleteIndividual').classList.add('hidden');
             document.getElementById('editModal').classList.remove('hidden');
             document.getElementById('editModal').classList.add('flex');
@@ -736,7 +768,6 @@
             btn.innerText = '...'; btn.disabled = true;
             try {
                 const batch = writeBatch(db);
-                // Simple override demo
                 alert("Fitur Reset Aktif. Refresh untuk melihat hasil jika data berubah.");
             } catch (e) { alert(e.message); } 
             finally { btn.innerText = 'Reset'; btn.disabled = false; }
@@ -766,7 +797,6 @@
         window.deleteSelected = deleteSelected;
         window.uploadDefaultData = uploadDefaultData;
 
-        // --- MUSIC ---
         let isPlaying = false;
         window.toggleMusic = () => {
             const music = document.getElementById('bgMusic');
@@ -863,12 +893,9 @@
             document.getElementById('productModal').classList.add('flex');
         };
 
-        // --- EDIT ---
-        let tempImageBase64 = null;
         window.openEditModal = (id) => {
             const p = products.find(x => x.id === id);
             if(!p) return;
-            tempImageBase64 = null;
             document.getElementById('editId').value = id;
             document.getElementById('editTitle').value = p.title;
             document.getElementById('editPrice').value = p.price;
@@ -889,41 +916,23 @@
             window.closeModal('editModal');
         };
 
-        window.handleImageUpload = (file) => {
-            if (file && file.size < 5*1024*1024) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = new Image();
-                    img.onload = function() {
-                        const canvas = document.createElement('canvas');
-                        let width = img.width, height = img.height;
-                        const MAX_W = 800;
-                        if(width > MAX_W) { height *= MAX_W/width; width = MAX_W; }
-                        canvas.width = width; canvas.height = height;
-                        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                        const data = canvas.toDataURL('image/jpeg', 0.7);
-                        document.getElementById('editPreview').src = data;
-                        document.getElementById('previewPlaceholder').style.display = "none";
-                        tempImageBase64 = data;
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-        window.updatePreviewFromUrl = (v) => { if(v) { document.getElementById('editPreview').src = v; tempImageBase64 = v; } };
-
         document.getElementById('editForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('editId').value;
             const pId = id ? id : 'prod-' + Date.now();
+            
+            // Note: tempImageBase64 not directly accessible here as it was local in previous logic
+            // but for simplicity, we rely on preview src for now if not changed, or refactor to global scope var
+            // Re-grabbing src from preview element is a safe fallback for "unchanged image" scenario
+            const currentImgSrc = document.getElementById('editPreview').src;
+            
             const newData = {
                 id: pId,
                 title: document.getElementById('editTitle').value,
                 price: document.getElementById('editPrice').value,
                 category: document.getElementById('editCategory').value,
                 detailLink: document.getElementById('editDetailLink').value,
-                img: tempImageBase64 || (id ? document.getElementById('editPreview').src : 'https://picsum.photos/300'),
+                img: currentImgSrc, 
                 desc: 'Deskripsi.'
             };
             
@@ -955,7 +964,6 @@
              // Lang toggle logic
         });
 
-        // Admin Auth
         document.getElementById('adminLoginFooter').addEventListener('click', () => { if(!isAdmin) { document.getElementById('loginModal').classList.remove('hidden'); document.getElementById('loginModal').classList.add('flex'); } });
         document.getElementById('adminBtnMobile').addEventListener('click', () => { if(!isAdmin) { document.getElementById('loginModal').classList.remove('hidden'); document.getElementById('loginModal').classList.add('flex'); } });
 
