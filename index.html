@@ -85,7 +85,6 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
         
-        /* Light Mode: Soft Cream Card Style */
         .light .glass {
             background: #fffefb; 
             border: 1px solid rgba(231, 229, 228, 0.6); 
@@ -108,22 +107,29 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Drop Zone Active State */
         .drop-active {
             border-color: #06b6d4 !important;
             background-color: rgba(6, 182, 212, 0.1) !important;
+        }
+        
+        .custom-checkbox:checked {
+            background-color: #ef4444;
+            border-color: #ef4444;
+        }
+
+        /* Selected Card Effect */
+        .card-selected {
+            border-color: #ef4444 !important;
+            transform: scale(0.98);
         }
     </style>
 </head>
 <body class="bg-cream text-slate-800 dark:bg-midnight dark:text-slate-200 transition-colors duration-300 font-sans selection:bg-accent-cyan selection:text-white overflow-x-hidden">
 
-    <!-- Background Audio -->
     <audio id="bgMusic" loop>
         <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
     </audio>
 
-    <!-- Background Decor -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <div class="absolute top-0 left-1/4 w-48 h-48 md:w-96 md:h-96 bg-accent-cyan/10 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
         <div class="absolute top-0 right-1/4 w-48 h-48 md:w-96 md:h-96 bg-accent-orange/10 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
@@ -144,11 +150,9 @@
             </div>
 
             <div class="flex items-center gap-2 md:gap-3">
-                <!-- Music Toggle -->
                 <button onclick="toggleMusic()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-accent-red border border-transparent">
                     <i id="musicIcon" class="ri-music-2-line"></i>
                 </button>
-
                 <button id="langToggle" class="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-bold text-[10px] border border-current w-7 h-7 flex items-center justify-center">ID</button>
                 <button id="themeToggle" class="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-accent-yellow w-7 h-7 flex items-center justify-center">
                     <i class="ri-sun-line text-lg dark:hidden"></i>
@@ -160,7 +164,6 @@
             </div>
         </div>
         
-        <!-- Mobile Menu -->
         <div id="mobileMenu" class="hidden md:hidden glass border-t border-gray-200 dark:border-gray-800 p-4 absolute w-full top-[60px] left-0 z-40 shadow-xl">
             <div class="flex flex-col gap-3 font-medium dark:text-gray-200 text-slate-700 text-sm">
                 <a href="#home" class="block hover:text-accent-cyan hover:pl-2 transition-all">Home</a>
@@ -201,22 +204,32 @@
         </div>
     </header>
 
-    <!-- Admin Control Panel (Updated with Sync Button & Status) -->
+    <!-- Admin Control Panel (Advanced) -->
     <div id="adminPanel" class="hidden container mx-auto px-6 mb-6">
-        <div class="p-4 rounded-xl border border-accent-red bg-red-50 dark:bg-red-900/10 shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-                <h2 class="text-sm font-bold text-accent-red flex items-center gap-2">
-                    <i class="ri-admin-line"></i> OWNER MODE
-                </h2>
-                <div class="text-[10px] text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-2">
-                    Status Database: <span id="dbStatus" class="font-bold text-red-500 flex items-center gap-1"><i class="ri-wifi-off-line"></i> Terputus (Mode Lokal)</span>
+        <div class="p-4 rounded-xl border border-accent-red bg-red-50 dark:bg-red-900/10 shadow-lg">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
+                <div>
+                    <h2 class="text-sm font-bold text-accent-red flex items-center gap-2">
+                        <i class="ri-admin-line"></i> OWNER MODE
+                    </h2>
+                    <div class="text-[10px] text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-2">
+                        Status Database: <span id="dbStatus" class="font-bold text-red-500 flex items-center gap-1"><i class="ri-wifi-off-line"></i> Offline</span>
+                    </div>
                 </div>
-            </div>
-            <div class="flex gap-3">
-                <button id="btnUpload" onclick="window.uploadToCloud()" class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
-                    <i class="ri-cloud-upload-line"></i> Upload Data ke Server
-                </button>
                 <button onclick="window.logoutAdmin()" class="text-xs underline text-red-600 dark:text-red-400 font-bold">Logout</button>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <button id="btnDelete" onclick="window.deleteSelected()" class="px-3 py-2 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-1">
+                    <i class="ri-delete-bin-line"></i> Hapus Terpilih
+                </button>
+                <button id="btnReset" onclick="window.uploadDefaultData()" class="px-3 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1">
+                    <i class="ri-database-2-line"></i> Reset Data Asli
+                </button>
+                <div class="col-span-2 md:col-span-2 text-[10px] text-gray-500 flex items-center italic">
+                    *Centang kotak di kartu untuk memilih.
+                </div>
             </div>
         </div>
     </div>
@@ -236,16 +249,10 @@
                 <!-- JS Generated -->
             </div>
 
-            <!-- Product Container: Carousel (Flex) -->
+            <!-- Product Container: Grid 2 Baris Horizontal (Mobile) & Grid 4 Kolom (Desktop) -->
             <div class="relative group">
-                <button id="prevBtn" class="hidden md:block absolute -left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white text-slate-900 shadow-xl hover:scale-110 transition-transform">
-                    <i class="ri-arrow-left-s-line text-xl"></i>
-                </button>
-                <button id="nextBtn" class="hidden md:block absolute -right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white text-slate-900 shadow-xl hover:scale-110 transition-transform">
-                    <i class="ri-arrow-right-s-line text-xl"></i>
-                </button>
-
-                <div id="productContainer" class="flex overflow-x-auto gap-4 md:gap-6 pb-8 snap-x snap-mandatory no-scrollbar scroll-smooth px-2">
+                <!-- Grid CSS Modified for 2-Row Horizontal Scroll on Mobile -->
+                <div id="productContainer" class="grid grid-rows-2 grid-flow-col auto-cols-[10rem] md:auto-cols-[14rem] gap-4 overflow-x-auto snap-x md:grid-rows-none md:grid-flow-row md:grid-cols-3 lg:grid-cols-4 md:gap-6 pb-6 no-scrollbar">
                     <!-- JS Generated -->
                 </div>
             </div>
@@ -265,7 +272,6 @@
                 </a>
             </div>
 
-            <!-- Services: 2 Kolom di HP (grid-cols-2), 3 Kolom di Desktop -->
             <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8" id="serviceContainer">
                 <!-- JS Generated -->
             </div>
@@ -389,7 +395,7 @@
                 <p id="modalDesc" class="text-gray-500 dark:text-gray-400 mb-6 text-xs leading-relaxed">Description.</p>
                 <a href="#" id="modalDetailLink" class="block w-full text-center py-3 bg-gray-200 dark:bg-gray-700 dark:text-white text-gray-700 rounded-xl font-bold text-sm mb-2">Detail (Coming Soon)</a>
                 <a id="modalWaLink" href="#" target="_blank" class="block w-full text-center py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-green-900/20 flex items-center justify-center gap-2 text-sm">
-                    <i class="ri-whatsapp-line text-lg"></i> Order via aWhatsApp
+                    <i class="ri-whatsapp-line text-lg"></i> Order via WhatsApp
                 </a>
             </div>
         </div>
@@ -399,48 +405,40 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getFirestore, collection, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, deleteDoc, writeBatch, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
         
-        // --- ⬇️ PASTE CONFIG FIREBASE BARU DI SINI ⬇️ ---
-       const firebaseConfig = {
-  apiKey: "AIzaSyCqKtipFHufA_VxMdnb5tOCYuiZqCRpR4w",
-  authDomain: "malikfazaweb.firebaseapp.com",
-  projectId: "malikfazaweb",
-  storageBucket: "malikfazaweb.firebasestorage.app",
-  messagingSenderId: "979422666312",
-  appId: "1:979422666312:web:5213b3d745a2d82c4cc27d",
-  measurementId: "G-HXGQGRWLMN"
-};
-        // --- ⬆️ PASTE CONFIG DI ATAS ⬆️ ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqKtipFHufA_VxMdnb5tOCYuiZqCRpR4w",
+            authDomain: "malikfazaweb.firebaseapp.com",
+            projectId: "malikfazaweb",
+            storageBucket: "malikfazaweb.firebasestorage.app",
+            messagingSenderId: "979422666312",
+            appId: "1:979422666312:web:5213b3d745a2d82c4cc27d",
+            measurementId: "G-HXGQGRWLMN"
+        };
         
-        // Init Firebase safely
+        // Init Firebase
         let db;
         let auth;
+        
         try { 
-            // Cek apakah user sudah mengisi config atau belum
-            if (Object.keys(firebaseConfig).length === 0) {
-                console.warn("Firebase Config belum diisi!");
-            } else {
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-                console.log("Firebase Initialized");
-                
-                // Indikator Visual di Admin Panel
-                const statusEl = document.getElementById('dbStatus');
-                if(statusEl) {
-                    statusEl.innerHTML = '<i class="ri-wifi-line"></i> Terhubung (Online)';
-                    statusEl.classList.remove('text-red-500');
-                    statusEl.classList.add('text-green-500');
-                }
-
-                // Auto Login Anonymously for Sync
-                signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            console.log("Firebase Initialized");
+            
+            const statusEl = document.getElementById('dbStatus');
+            if(statusEl) {
+                statusEl.innerHTML = '<i class="ri-wifi-line"></i> Terhubung (Online)';
+                statusEl.classList.remove('text-red-500');
+                statusEl.classList.add('text-green-500');
             }
 
+            signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
+
         } catch (e) {
-            console.warn("Firebase Init Error (Config mungkin salah/kosong):", e);
+            console.warn("Firebase Init Error:", e);
         }
 
         const categories = [
@@ -452,18 +450,20 @@
             { id: 'invite', label: 'Undangan' }
         ];
 
-        // --- DEFAULT DATA (Fallback) ---
-        let products = [
-            ...Array.from({ length: 10 }, (_, i) => ({ id: `app-${i}`, category: 'app', title: `Premium App V${i+1}`, price: 'Rp 25.000', img: `https://picsum.photos/seed/apk${i}/300/200`, desc: 'Full premium.' })),
-            ...Array.from({ length: 5 }, (_, i) => ({ id: `gem-${i}`, category: 'gem', title: `Gem Pack ${i+1}`, price: 'Rp 50.000', img: `https://picsum.photos/seed/gem${i}/300/200`, desc: 'Legal.' })),
-            ...Array.from({ length: 5 }, (_, i) => ({ id: `class-${i}`, category: 'class', title: `Kelas Design #${i+1}`, price: 'Rp 150.000', img: `https://picsum.photos/seed/class${i}/300/200`, desc: 'Tutorial.' })),
+        // --- HARDCODED DEFAULT DATA ---
+        const defaultProducts = [
+            ...Array.from({ length: 10 }, (_, i) => ({ id: `app-${i}`, category: 'app', title: `Premium App V${i+1}`, price: 'Rp 25.000', img: `https://picsum.photos/seed/apk${i}/300/200`, desc: 'Full premium features unlocked.' })),
+            ...Array.from({ length: 5 }, (_, i) => ({ id: `gem-${i}`, category: 'gem', title: `Gem Pack ${i+1}`, price: 'Rp 50.000', img: `https://picsum.photos/seed/gem${i}/300/200`, desc: 'Legal dan aman 100%.' })),
+            ...Array.from({ length: 5 }, (_, i) => ({ id: `class-${i}`, category: 'class', title: `Kelas Design #${i+1}`, price: 'Rp 150.000', img: `https://picsum.photos/seed/class${i}/300/200`, desc: 'Video tutorial lengkap HD.' })),
             { id: 'act-1', category: 'activation', title: 'Canva Pro', price: 'Rp 20.000', img: 'https://picsum.photos/seed/canva/300/200', desc: 'Garansi resmi.' },
             { id: 'act-2', category: 'activation', title: 'Netflix 4K', price: 'Rp 35.000', img: 'https://picsum.photos/seed/netflix/300/200', desc: 'Private profile.' },
             { id: 'act-3', category: 'activation', title: 'YouTube Prem', price: 'Rp 15.000', img: 'https://picsum.photos/seed/yt/300/200', desc: 'No ads.' },
             { id: 'act-4', category: 'activation', title: 'ChatGPT Plus', price: 'Rp 50.000', img: 'https://picsum.photos/seed/gpt/300/200', desc: 'Shared account.' },
-            ...Array.from({ length: 5 }, (_, i) => ({ id: `inv-${i}`, category: 'invite', title: `Tema Wedding ${i+1}`, price: 'Rp 49.000', img: `https://picsum.photos/seed/wedding${i}/300/200`, desc: 'Modern.' })),
+            ...Array.from({ length: 5 }, (_, i) => ({ id: `inv-${i}`, category: 'invite', title: `Tema Wedding ${i+1}`, price: 'Rp 49.000', img: `https://picsum.photos/seed/wedding${i}/300/200`, desc: 'Undangan digital modern.' })),
             { id: 'inv-link', category: 'invite', type: 'link', title: 'Lihat Semua', price: 'Katalog', img: 'https://images.unsplash.com/photo-1516961642265-531546e84af2?q=80&w=300', url: 'https://malikfazakatalog.pages.dev' }
         ];
+
+        let products = [...defaultProducts]; // Start with default
 
         const services = [
             { id: 'srv-1', icon: 'ri-video-add-line', title: 'Video Editing', desc: 'Cinematic', color: 'text-accent-red', border: 'border-accent-red' },
@@ -476,6 +476,7 @@
 
         let activeCategory = 'all';
         let isAdmin = localStorage.getItem('malikAdmin') === 'true';
+        let selectedIds = new Set();
 
         window.addEventListener('DOMContentLoaded', () => {
             renderCategories();
@@ -485,22 +486,23 @@
             setTimeout(() => { if(window.AOS) window.AOS.init({ once: true }); }, 500);
             window.addEventListener('paste', handlePasteImage);
             
-            // --- REALTIME SYNC LISTENER (Only works if Auth or Rules allow) ---
+            // --- SYNC ---
             if(db && auth) {
                 onAuthStateChanged(auth, (user) => {
                     if(user) {
-                        console.log("Sync Active for User:", user.uid);
-                        const unsubscribe = onSnapshot(collection(db, "products"), (snapshot) => {
+                        onSnapshot(collection(db, "products"), (snapshot) => {
                             if (!snapshot.empty) {
                                 const cloudProducts = [];
                                 snapshot.forEach((doc) => {
                                     cloudProducts.push(doc.data());
                                 });
-                                if(cloudProducts.length > 0) {
-                                    products = cloudProducts;
-                                    products.sort((a,b) => a.id.localeCompare(b.id)); 
-                                    renderProducts();
-                                }
+                                products = cloudProducts;
+                                products.sort((a,b) => a.id.localeCompare(b.id)); 
+                                renderProducts();
+                            } else {
+                                // If DB is explicitly empty (after full delete), products = []
+                                products = [];
+                                renderProducts();
                             }
                         });
                     }
@@ -508,36 +510,91 @@
             }
         });
         
-        // --- DATA UPLOAD FUNCTION (Manual Reset) ---
-        window.uploadToCloud = async () => {
-            const btn = document.getElementById('btnUpload');
+        // --- ATTACH TO WINDOW EXPLICITLY ---
+        
+        // --- UPLOAD DEFAULT DATA (RESET) ---
+        window.uploadDefaultData = async () => {
+            console.log("Reset clicked");
+            if(!db) return alert("Firebase belum terkoneksi atau error! Pastikan koneksi internet lancar.");
+            if(!confirm("⚠️ PERINGATAN: Ini akan MENGHAPUS semua data saat ini dan menggantinya dengan DATA ASLI (Default). Yakin?")) return;
             
-            if(!db) return alert("Firebase belum terkoneksi! Pastikan sudah mengisi Config.");
-            if(!confirm("Anda yakin ingin meng-upload SEMUA data saat ini ke Server? Ini akan menimpa data lama.")) return;
-            
-            // Visual Feedback
+            const btn = document.getElementById('btnReset');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Sedang Mengupload...';
+            btn.innerHTML = 'Resetting...';
             btn.disabled = true;
-            btn.classList.add('opacity-50', 'cursor-not-allowed');
 
             try {
-                let count = 0;
-                for (const p of products) {
-                    await setDoc(doc(db, "products", p.id), p);
-                    count++;
+                const batch = writeBatch(db);
+                
+                // Overwrite with defaults
+                for (const p of defaultProducts) {
+                    const ref = doc(db, "products", p.id);
+                    batch.set(ref, p);
                 }
-                alert(`✅ SUKSES! ${count} produk berhasil diupload ke server. Data sekarang live di semua perangkat.`);
+                
+                await batch.commit();
+                alert(`✅ Database berhasil di-reset ke Data Asli (${defaultProducts.length} item).`);
             } catch (e) {
-                alert("❌ Gagal upload: " + e.message + "\nPastikan Firestore Rules 'allow read, write: if true;'");
+                console.error(e);
+                alert("Gagal reset: " + e.message);
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
-                btn.classList.remove('opacity-50', 'cursor-not-allowed');
             }
         };
 
-        // --- MUSIC LOGIC ---
+        // --- TOGGLE SELECT ---
+        window.toggleSelect = (id) => {
+            const card = document.getElementById(`card-${id}`);
+            if (selectedIds.has(id)) {
+                selectedIds.delete(id);
+                if(card) card.classList.remove('card-selected');
+            } else {
+                selectedIds.add(id);
+                if(card) card.classList.add('card-selected');
+            }
+        };
+
+        // --- DELETE SELECTED ---
+        window.deleteSelected = async () => {
+            console.log("Delete clicked", selectedIds);
+            if (selectedIds.size === 0) return alert("Pilih minimal satu produk untuk dihapus (centang kotak).");
+            if(!confirm(`Yakin ingin menghapus ${selectedIds.size} produk ini selamanya?`)) return;
+
+            const btn = document.getElementById('btnDelete');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Deleting...';
+            btn.disabled = true;
+
+            if(db) {
+                try {
+                    const batch = writeBatch(db);
+                    selectedIds.forEach(id => {
+                        const ref = doc(db, "products", id);
+                        batch.delete(ref);
+                    });
+                    await batch.commit();
+                    selectedIds.clear();
+                    alert("Produk berhasil dihapus!");
+                } catch (e) {
+                    console.error(e);
+                    alert("Gagal hapus: " + e.message);
+                } finally {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            } else {
+                // Offline fallback logic
+                products = products.filter(p => !selectedIds.has(p.id));
+                selectedIds.clear();
+                renderProducts();
+                alert("Terhapus (Lokal).");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        };
+
+        // --- MUSIC ---
         let isPlaying = false;
         window.toggleMusic = () => {
             const music = document.getElementById('bgMusic');
@@ -593,28 +650,43 @@
             container.innerHTML = filtered.map(p => {
                 if(p.type === 'link') {
                     return `
-                    <a href="${p.url}" target="_blank" class="snap-center shrink-0 w-36 md:w-56 glass rounded-xl overflow-hidden group relative flex flex-col justify-center items-center bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 p-6">
+                    <a href="${p.url}" target="_blank" class="w-full h-full min-h-[120px] glass rounded-xl overflow-hidden group relative flex flex-col justify-center items-center bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 p-4">
                          <div class="text-accent-cyan text-3xl mb-1 group-hover:scale-110 transition-transform"><i class="ri-arrow-right-circle-fill"></i></div>
-                         <h3 class="font-bold text-sm dark:text-white text-slate-800 text-center px-2">${p.title}</h3>
+                         <h3 class="font-bold text-xs dark:text-white text-slate-800 text-center">${p.title}</h3>
                     </a>`;
                 }
 
                 const waLink = `https://wa.me/6285161141114?text=Halo%20Malikfaza,%20tertarik%20${encodeURIComponent(p.title)}`;
 
                 return `
-                <div id="card-${p.id}" class="snap-center shrink-0 w-44 md:w-56 glass rounded-xl overflow-hidden group relative border border-gray-200 dark:border-gray-700">
-                    <div class="h-32 md:h-40 overflow-hidden relative bg-gray-200 dark:bg-gray-800">
+                <div id="card-${p.id}" class="w-full glass rounded-xl overflow-hidden group relative border border-gray-200 dark:border-gray-700 transition-all duration-200">
+                    <div class="h-32 md:h-48 overflow-hidden relative bg-gray-200 dark:bg-gray-800">
                         <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-black/30"></div>
+                        
                         <span class="absolute top-2 left-2 bg-black/60 backdrop-blur text-[9px] font-bold px-1.5 py-0.5 rounded text-white border border-white/20 uppercase">${p.category}</span>
-                        ${isAdmin ? `<div class="absolute top-2 right-2 z-40" onclick="event.stopPropagation()"><button onclick="window.openEditModal('${p.id}')" class="bg-accent-red text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg hover:scale-110 cursor-pointer border border-white"><i class="ri-pencil-fill text-sm"></i></button></div>` : ''}
-                        <div class="absolute bottom-2 right-2 flex gap-2 z-30">
-                             <button onclick="window.openProductModal('${p.id}')" class="w-8 h-8 rounded-full bg-white text-slate-900 flex items-center justify-center shadow-lg hover:bg-accent-cyan hover:text-white transition-all text-xs" title="Lihat Detail"><i class="ri-eye-line"></i></button>
-                            <a href="${waLink}" target="_blank" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center shadow-lg hover:bg-green-600 transition-all text-xs" title="Beli via WA"><i class="ri-whatsapp-line"></i></a>
+                        
+                        ${isAdmin ? `
+                        <div class="absolute top-2 right-2 z-40 flex flex-col gap-1 items-end" onclick="event.stopPropagation()">
+                            <input type="checkbox" onchange="window.toggleSelect('${p.id}')" class="custom-checkbox w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer bg-white">
+                            <button onclick="window.openEditModal('${p.id}')" class="bg-accent-cyan text-white w-7 h-7 rounded-full flex items-center justify-center shadow-lg hover:scale-110 cursor-pointer border border-white mt-1">
+                                <i class="ri-pencil-fill text-xs"></i>
+                            </button>
+                        </div>
+                        ` : ''}
+
+                        <div class="absolute bottom-2 right-2 flex gap-1.5 z-30">
+                             <button onclick="window.openProductModal('${p.id}')" class="w-7 h-7 rounded-full bg-white text-slate-900 flex items-center justify-center shadow-lg hover:bg-accent-cyan hover:text-white transition-all text-xs" title="Lihat Detail">
+                                <i class="ri-eye-line"></i>
+                            </button>
+                            <a href="${waLink}" target="_blank" class="w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center shadow-lg hover:bg-green-600 transition-all text-xs" title="Beli via WA">
+                                <i class="ri-whatsapp-line"></i>
+                            </a>
                         </div>
                     </div>
+                    
                     <div class="p-3 bg-white/50 dark:bg-transparent">
-                        <h3 id="title-${p.id}" class="card-title font-bold text-sm mb-0.5 truncate">${p.title}</h3>
+                        <h3 id="title-${p.id}" class="card-title font-bold text-xs md:text-sm mb-0.5 truncate">${p.title}</h3>
                         <p id="price-${p.id}" class="text-accent-cyan font-bold text-xs">${p.price}</p>
                     </div>
                 </div>
@@ -649,7 +721,7 @@
             document.getElementById('productModal').classList.add('flex');
         };
 
-        // --- EDIT LOGIC (UPDATED FOR CLOUD) ---
+        // --- EDIT & UPLOAD ---
         let tempImageBase64 = null;
 
         window.openEditModal = (id) => {
@@ -686,18 +758,16 @@
 
         const dropZone = document.getElementById('dropZone');
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, preventDefaults, false);
+            dropZone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); });
         });
-        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
         ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, () => dropZone.classList.add('drop-active'), false);
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('drop-active'));
         });
         ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, () => dropZone.classList.remove('drop-active'), false);
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('drop-active'));
         });
         dropZone.addEventListener('drop', (e) => {
-            const dt = e.dataTransfer;
-            const files = dt.files;
+            const files = e.dataTransfer.files;
             window.handleImageUpload(files[0]);
         });
 
@@ -713,11 +783,9 @@
             }
         }
 
-        // --- SUBMIT: SAVE TO CLOUD (AUTO SYNC) ---
         document.getElementById('editForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button[type="submit"]');
-            const originalText = btn.innerText;
             btn.innerText = "Menyimpan...";
             btn.disabled = true;
 
@@ -727,28 +795,22 @@
             
             const p = products.find(x => x.id === id);
             if(p) {
-                // Update Local object first for instant feedback
                 p.title = newTitle;
                 p.price = newPrice;
                 if(tempImageBase64) p.img = tempImageBase64;
                 
-                // 1. Update UI Lokal Dulu (Optimistic UI)
                 renderProducts();
-                
-                // 2. Save to Cloud Automatically
+                window.closeModal('editModal');
+
                 if(db) {
                     try {
                         await setDoc(doc(db, "products", id), p);
-                        // Optional: console.log("Auto-saved to cloud");
                     } catch (err) {
-                        alert("Gagal sinkronisasi ke server: " + err.message + "\nCek koneksi internet.");
+                        alert("Gagal simpan ke server: " + err.message);
                     }
                 }
-
-                window.closeModal('editModal');
             }
-            
-            btn.innerText = originalText;
+            btn.innerText = "Simpan Perubahan";
             btn.disabled = false;
         });
 
@@ -760,15 +822,9 @@
         window.togglePassword = () => {
             const input = document.getElementById('adminPass');
             const icon = document.getElementById('eyeIcon');
-            if(input.type === "password") {
-                input.type = "text";
-                icon.classList.remove('ri-eye-line');
-                icon.classList.add('ri-eye-off-line');
-            } else {
-                input.type = "password";
-                icon.classList.remove('ri-eye-off-line');
-                icon.classList.add('ri-eye-line');
-            }
+            input.type = input.type === "password" ? "text" : "password";
+            icon.classList.toggle('ri-eye-line');
+            icon.classList.toggle('ri-eye-off-line');
         };
 
         const themeBtn = document.getElementById('themeToggle');
@@ -793,11 +849,6 @@
             });
         });
 
-        // Carousel Scroll
-        const c = document.getElementById('productContainer');
-        document.getElementById('nextBtn').addEventListener('click', () => c.scrollBy({left: 300, behavior:'smooth'}));
-        document.getElementById('prevBtn').addEventListener('click', () => c.scrollBy({left: -300, behavior:'smooth'}));
-
         // Admin Auth
         document.getElementById('adminLoginFooter') && document.getElementById('adminLoginFooter').addEventListener('click', showLogin);
         document.getElementById('adminBtnMobile') && document.getElementById('adminBtnMobile').addEventListener('click', showLogin);
@@ -817,7 +868,7 @@
                 checkAdminState();
                 window.closeModal('loginModal');
                 renderProducts(); 
-                alert('Mode Owner Aktif! Klik "Upload Data ke Server" di panel untuk sinkronisasi awal.');
+                alert('Mode Owner Aktif!');
             } else {
                 alert('Password salah!');
             }
