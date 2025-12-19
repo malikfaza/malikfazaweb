@@ -187,7 +187,6 @@
                     Pusat tools premium, jasa kreatif, dan aset digital berkualitas tinggi.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
-                    <!-- Updated Scroll Action with Auto Music -->
                     <a href="#products" onclick="window.startMusic()" class="px-6 py-2.5 bg-accent-cyan text-white rounded-xl font-bold hover:bg-cyan-600 transition-all shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2 text-sm">
                         <i class="ri-shopping-bag-3-line"></i> <span data-i18n="cta_shop">Lihat Katalog</span>
                     </a>
@@ -202,20 +201,20 @@
         </div>
     </header>
 
-    <!-- Admin Control Panel (Updated with Sync Button) -->
+    <!-- Admin Control Panel (Updated with Sync Button & Status) -->
     <div id="adminPanel" class="hidden container mx-auto px-6 mb-6">
         <div class="p-4 rounded-xl border border-accent-red bg-red-50 dark:bg-red-900/10 shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
                 <h2 class="text-sm font-bold text-accent-red flex items-center gap-2">
                     <i class="ri-admin-line"></i> OWNER MODE
                 </h2>
-                <p class="text-[10px] text-gray-600 dark:text-gray-400 mt-1">
-                    Edit akan tersimpan <b class="text-accent-cyan">OTOMATIS</b> ke server.
-                </p>
+                <div class="text-[10px] text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-2">
+                    Status Database: <span id="dbStatus" class="font-bold text-red-500 flex items-center gap-1"><i class="ri-wifi-off-line"></i> Terputus (Mode Lokal)</span>
+                </div>
             </div>
             <div class="flex gap-3">
                 <button id="btnUpload" onclick="window.uploadToCloud()" class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
-                    <i class="ri-cloud-upload-line"></i> Reset/Upload Ulang Data
+                    <i class="ri-cloud-upload-line"></i> Upload Data ke Server
                 </button>
                 <button onclick="window.logoutAdmin()" class="text-xs underline text-red-600 dark:text-red-400 font-bold">Logout</button>
             </div>
@@ -237,7 +236,7 @@
                 <!-- JS Generated -->
             </div>
 
-            <!-- Product Container: Reverted to Carousel (Flex) -->
+            <!-- Product Container: Carousel (Flex) -->
             <div class="relative group">
                 <button id="prevBtn" class="hidden md:block absolute -left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white text-slate-900 shadow-xl hover:scale-110 transition-transform">
                     <i class="ri-arrow-left-s-line text-xl"></i>
@@ -390,7 +389,7 @@
                 <p id="modalDesc" class="text-gray-500 dark:text-gray-400 mb-6 text-xs leading-relaxed">Description.</p>
                 <a href="#" id="modalDetailLink" class="block w-full text-center py-3 bg-gray-200 dark:bg-gray-700 dark:text-white text-gray-700 rounded-xl font-bold text-sm mb-2">Detail (Coming Soon)</a>
                 <a id="modalWaLink" href="#" target="_blank" class="block w-full text-center py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-green-900/20 flex items-center justify-center gap-2 text-sm">
-                    <i class="ri-whatsapp-line text-lg"></i> Order via WhatsApp
+                    <i class="ri-whatsapp-line text-lg"></i> Order via aWhatsApp
                 </a>
             </div>
         </div>
@@ -403,30 +402,45 @@
         import { getFirestore, collection, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
         
-        const firebaseConfig = {
-            apiKey: "AIzaSyBoNAKRutDNTT7QjBH1NzHU5sXX31bxjXM",
-            authDomain: "katalog-82fbf.firebaseapp.com",
-            projectId: "katalog-82fbf",
-            storageBucket: "katalog-82fbf.firebasestorage.app",
-            messagingSenderId: "410997646826",
-            appId: "1:410997646826:web:8d292ce5afb4955f2bbe93",
-            measurementId: "G-220BRVP5H5"
-        };
+        // --- ⬇️ PASTE CONFIG FIREBASE BARU DI SINI ⬇️ ---
+       const firebaseConfig = {
+  apiKey: "AIzaSyCqKtipFHufA_VxMdnb5tOCYuiZqCRpR4w",
+  authDomain: "malikfazaweb.firebaseapp.com",
+  projectId: "malikfazaweb",
+  storageBucket: "malikfazaweb.firebasestorage.app",
+  messagingSenderId: "979422666312",
+  appId: "1:979422666312:web:5213b3d745a2d82c4cc27d",
+  measurementId: "G-HXGQGRWLMN"
+};
+        // --- ⬆️ PASTE CONFIG DI ATAS ⬆️ ---
         
         // Init Firebase safely
         let db;
         let auth;
         try { 
-            const app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-            console.log("Firebase Active");
-            
-            // Auto Login Anonymously for Sync
-            signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
+            // Cek apakah user sudah mengisi config atau belum
+            if (Object.keys(firebaseConfig).length === 0) {
+                console.warn("Firebase Config belum diisi!");
+            } else {
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                console.log("Firebase Initialized");
+                
+                // Indikator Visual di Admin Panel
+                const statusEl = document.getElementById('dbStatus');
+                if(statusEl) {
+                    statusEl.innerHTML = '<i class="ri-wifi-line"></i> Terhubung (Online)';
+                    statusEl.classList.remove('text-red-500');
+                    statusEl.classList.add('text-green-500');
+                }
+
+                // Auto Login Anonymously for Sync
+                signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
+            }
 
         } catch (e) {
-            console.warn("Firebase Init Error:", e);
+            console.warn("Firebase Init Error (Config mungkin salah/kosong):", e);
         }
 
         const categories = [
@@ -498,7 +512,7 @@
         window.uploadToCloud = async () => {
             const btn = document.getElementById('btnUpload');
             
-            if(!db) return alert("Firebase belum terkoneksi!");
+            if(!db) return alert("Firebase belum terkoneksi! Pastikan sudah mengisi Config.");
             if(!confirm("Anda yakin ingin meng-upload SEMUA data saat ini ke Server? Ini akan menimpa data lama.")) return;
             
             // Visual Feedback
@@ -713,6 +727,7 @@
             
             const p = products.find(x => x.id === id);
             if(p) {
+                // Update Local object first for instant feedback
                 p.title = newTitle;
                 p.price = newPrice;
                 if(tempImageBase64) p.img = tempImageBase64;
@@ -802,7 +817,7 @@
                 checkAdminState();
                 window.closeModal('loginModal');
                 renderProducts(); 
-                alert('Mode Owner Aktif! Edit produk akan otomatis tersimpan ke server.');
+                alert('Mode Owner Aktif! Klik "Upload Data ke Server" di panel untuk sinkronisasi awal.');
             } else {
                 alert('Password salah!');
             }
