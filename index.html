@@ -145,7 +145,7 @@
 
             <div class="flex items-center gap-2 md:gap-3">
                 <!-- Music Toggle -->
-                <button onclick="toggleMusic()" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-accent-red border border-transparent">
+                <button onclick="toggleMusic()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-accent-red border border-transparent">
                     <i id="musicIcon" class="ri-music-2-line"></i>
                 </button>
 
@@ -202,9 +202,9 @@
         </div>
     </header>
 
-    <!-- Admin Control Panel -->
+    <!-- Admin Control Panel (Updated with Sync Button) -->
     <div id="adminPanel" class="hidden container mx-auto px-6 mb-6">
-        <div class="p-4 rounded-xl border border-accent-red bg-red-50 dark:bg-red-900/10 shadow-lg flex justify-between items-center">
+        <div class="p-4 rounded-xl border border-accent-red bg-red-50 dark:bg-red-900/10 shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
                 <h2 class="text-sm font-bold text-accent-red flex items-center gap-2">
                     <i class="ri-admin-line"></i> OWNER MODE
@@ -213,7 +213,12 @@
                     Klik <i class="ri-pencil-fill bg-accent-red text-white p-0.5 rounded text-[10px]"></i> untuk edit.
                 </p>
             </div>
-            <button onclick="window.logoutAdmin()" class="text-xs underline text-red-600 dark:text-red-400 font-bold">Logout</button>
+            <div class="flex gap-3">
+                <button id="btnUpload" onclick="window.uploadToCloud()" class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                    <i class="ri-cloud-upload-line"></i> Upload Data ke Server
+                </button>
+                <button onclick="window.logoutAdmin()" class="text-xs underline text-red-600 dark:text-red-400 font-bold">Logout</button>
+            </div>
         </div>
     </div>
 
@@ -232,9 +237,16 @@
                 <!-- JS Generated -->
             </div>
 
-            <!-- Carousel -->
+            <!-- Product Container: Reverted to Carousel (Flex) -->
             <div class="relative group">
-                <div id="productContainer" class="flex overflow-x-auto gap-3 md:gap-6 pb-8 snap-x snap-mandatory no-scrollbar scroll-smooth px-2">
+                <button id="prevBtn" class="hidden md:block absolute -left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white text-slate-900 shadow-xl hover:scale-110 transition-transform">
+                    <i class="ri-arrow-left-s-line text-xl"></i>
+                </button>
+                <button id="nextBtn" class="hidden md:block absolute -right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white text-slate-900 shadow-xl hover:scale-110 transition-transform">
+                    <i class="ri-arrow-right-s-line text-xl"></i>
+                </button>
+
+                <div id="productContainer" class="flex overflow-x-auto gap-4 md:gap-6 pb-8 snap-x snap-mandatory no-scrollbar scroll-smooth px-2">
                     <!-- JS Generated -->
                 </div>
             </div>
@@ -254,6 +266,7 @@
                 </a>
             </div>
 
+            <!-- Services: 2 Kolom di HP (grid-cols-2), 3 Kolom di Desktop -->
             <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8" id="serviceContainer">
                 <!-- JS Generated -->
             </div>
@@ -323,7 +336,7 @@
         </div>
     </div>
 
-    <!-- Edit Modal (Super Complete) -->
+    <!-- Edit Modal -->
     <div id="editModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4">
         <div class="glass dark:bg-midnight bg-white p-6 rounded-2xl w-full max-w-md mx-auto relative shadow-2xl max-h-[90vh] overflow-y-auto">
             <button onclick="window.closeModal('editModal')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500"><i class="ri-close-line text-xl"></i></button>
@@ -331,17 +344,11 @@
             
             <form id="editForm" class="space-y-4">
                 <input type="hidden" id="editId">
-                
-                <!-- Image Preview -->
                 <div class="w-full h-32 bg-gray-200 dark:bg-black/30 rounded-lg overflow-hidden flex items-center justify-center border border-gray-500/30 relative group">
                     <img id="editPreview" src="" class="w-full h-full object-cover">
                 </div>
-
-                <!-- Drop Zone & Image Input -->
                 <div class="space-y-2">
                     <label class="text-xs text-gray-500 block">Ganti Gambar (Upload/Paste/URL)</label>
-                    
-                    <!-- Area Drop Zone -->
                     <div id="dropZone" class="border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg p-4 text-center transition-colors cursor-pointer relative hover:border-accent-cyan hover:bg-accent-cyan/5">
                         <input type="file" id="editImageFile" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleImageUpload(this.files[0])">
                         <div class="pointer-events-none">
@@ -349,14 +356,11 @@
                             <p class="text-[10px] text-gray-500 mt-1">Klik upload, Drag & Drop, atau <b>CTRL+V</b> (Paste)</p>
                         </div>
                     </div>
-
-                    <!-- URL Option -->
                     <div class="flex gap-2 items-center">
                         <span class="text-[10px] text-gray-400">ATAU</span>
                         <input type="text" id="editImageUrl" placeholder="Paste link gambar..." class="flex-1 px-3 py-1.5 rounded text-xs dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white" onchange="updatePreviewFromUrl(this.value)">
                     </div>
                 </div>
-
                 <div>
                     <label class="text-xs text-gray-500 mb-1 block">Judul Katalog</label>
                     <input type="text" id="editTitle" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan">
@@ -365,7 +369,6 @@
                     <label class="text-xs text-gray-500 mb-1 block">Harga</label>
                     <input type="text" id="editPrice" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan">
                 </div>
-                
                 <button type="submit" class="w-full py-2.5 bg-accent-green text-white rounded-lg font-bold hover:bg-green-600 transition-all text-sm shadow-lg">Simpan Perubahan</button>
             </form>
         </div>
@@ -385,11 +388,7 @@
                 </div>
                 <h3 id="modalTitle" class="text-xl font-bold mb-2 dark:text-white text-slate-900">Title</h3>
                 <p id="modalDesc" class="text-gray-500 dark:text-gray-400 mb-6 text-xs leading-relaxed">Description.</p>
-                
-                <a href="#" id="modalDetailLink" class="block w-full text-center py-3 bg-gray-200 dark:bg-gray-700 dark:text-white text-gray-700 rounded-xl font-bold text-sm mb-2">
-                   Detail (Coming Soon)
-                </a>
-                
+                <a href="#" id="modalDetailLink" class="block w-full text-center py-3 bg-gray-200 dark:bg-gray-700 dark:text-white text-gray-700 rounded-xl font-bold text-sm mb-2">Detail (Coming Soon)</a>
                 <a id="modalWaLink" href="#" target="_blank" class="block w-full text-center py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-green-900/20 flex items-center justify-center gap-2 text-sm">
                     <i class="ri-whatsapp-line text-lg"></i> Order via WhatsApp
                 </a>
@@ -401,6 +400,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyBoNAKRutDNTT7QjBH1NzHU5sXX31bxjXM",
@@ -412,7 +412,15 @@
             measurementId: "G-220BRVP5H5"
         };
         
-        try { const app = initializeApp(firebaseConfig); } catch (e) {}
+        // Init Firebase safely
+        let db;
+        try { 
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            console.log("Firebase Active");
+        } catch (e) {
+            console.warn("Firebase Init Error:", e);
+        }
 
         const categories = [
             { id: 'all', label: 'All' },
@@ -423,45 +431,19 @@
             { id: 'invite', label: 'Undangan' }
         ];
 
-        // Apps
-        const apps = Array.from({ length: 10 }, (_, i) => ({
-            id: `app-${i}`, category: 'app', title: `Premium App V${i+1}`, price: 'Rp 25.000', 
-            img: `https://picsum.photos/seed/apk${i}/300/200`, desc: 'Full premium features unlocked.'
-        }));
-        
-        // Gems
-        const gems = Array.from({ length: 5 }, (_, i) => ({
-            id: `gem-${i}`, category: 'gem', title: `Gem Pack ${i+1}`, price: 'Rp 50.000', 
-            img: `https://picsum.photos/seed/gem${i}/300/200`, desc: 'Legal dan aman 100%.'
-        }));
-
-        const classes = Array.from({ length: 5 }, (_, i) => ({
-            id: `class-${i}`, category: 'class', title: `Kelas Design #${i+1}`, price: 'Rp 150.000', 
-            img: `https://picsum.photos/seed/class${i}/300/200`, desc: 'Video tutorial lengkap HD.'
-        }));
-
-        const acts = [
+        // --- DEFAULT DATA (Fallback) ---
+        let products = [
+            ...Array.from({ length: 10 }, (_, i) => ({ id: `app-${i}`, category: 'app', title: `Premium App V${i+1}`, price: 'Rp 25.000', img: `https://picsum.photos/seed/apk${i}/300/200`, desc: 'Full premium.' })),
+            ...Array.from({ length: 5 }, (_, i) => ({ id: `gem-${i}`, category: 'gem', title: `Gem Pack ${i+1}`, price: 'Rp 50.000', img: `https://picsum.photos/seed/gem${i}/300/200`, desc: 'Legal.' })),
+            ...Array.from({ length: 5 }, (_, i) => ({ id: `class-${i}`, category: 'class', title: `Kelas Design #${i+1}`, price: 'Rp 150.000', img: `https://picsum.photos/seed/class${i}/300/200`, desc: 'Tutorial.' })),
             { id: 'act-1', category: 'activation', title: 'Canva Pro', price: 'Rp 20.000', img: 'https://picsum.photos/seed/canva/300/200', desc: 'Garansi resmi.' },
             { id: 'act-2', category: 'activation', title: 'Netflix 4K', price: 'Rp 35.000', img: 'https://picsum.photos/seed/netflix/300/200', desc: 'Private profile.' },
             { id: 'act-3', category: 'activation', title: 'YouTube Prem', price: 'Rp 15.000', img: 'https://picsum.photos/seed/yt/300/200', desc: 'No ads.' },
             { id: 'act-4', category: 'activation', title: 'ChatGPT Plus', price: 'Rp 50.000', img: 'https://picsum.photos/seed/gpt/300/200', desc: 'Shared account.' },
+            ...Array.from({ length: 5 }, (_, i) => ({ id: `inv-${i}`, category: 'invite', title: `Tema Wedding ${i+1}`, price: 'Rp 49.000', img: `https://picsum.photos/seed/wedding${i}/300/200`, desc: 'Modern.' })),
+            { id: 'inv-link', category: 'invite', type: 'link', title: 'Lihat Semua', price: 'Katalog', img: 'https://images.unsplash.com/photo-1516961642265-531546e84af2?q=80&w=300', url: 'https://malikfazakatalog.pages.dev' }
         ];
 
-        const invites = Array.from({ length: 5 }, (_, i) => ({
-            id: `inv-${i}`, category: 'invite', title: `Tema Wedding ${i+1}`, price: 'Rp 49.000', 
-            img: `https://picsum.photos/seed/wedding${i}/300/200`, desc: 'Undangan digital modern.'
-        }));
-        
-        const inviteLink = {
-            id: 'inv-link', category: 'invite', type: 'link', 
-            title: 'Lihat Semua', price: 'Katalog', 
-            img: 'https://images.unsplash.com/photo-1516961642265-531546e84af2?q=80&w=300', 
-            url: 'https://malikfazakatalog.pages.dev'
-        };
-
-        let products = [...apps, ...gems, ...classes, ...acts, ...invites, inviteLink];
-
-        // Services
         const services = [
             { id: 'srv-1', icon: 'ri-video-add-line', title: 'Video Editing', desc: 'Cinematic', color: 'text-accent-red', border: 'border-accent-red' },
             { id: 'srv-2', icon: 'ri-image-edit-line', title: 'Photo Retouch', desc: 'Pro Grading', color: 'text-accent-cyan', border: 'border-accent-cyan' },
@@ -480,11 +462,62 @@
             renderServices();
             checkAdminState();
             setTimeout(() => { if(window.AOS) window.AOS.init({ once: true }); }, 500);
-            
-            // Listen Paste Event for Image
             window.addEventListener('paste', handlePasteImage);
+            
+            // --- REALTIME SYNC LISTENER ---
+            if(db) {
+                const unsubscribe = onSnapshot(collection(db, "products"), (snapshot) => {
+                    if (!snapshot.empty) {
+                        const cloudProducts = [];
+                        snapshot.forEach((doc) => {
+                            cloudProducts.push(doc.data());
+                        });
+                        // Update local data with cloud data
+                        // Merge strategies can be complex, here we prefer Cloud if available
+                        if(cloudProducts.length > 0) {
+                            products = cloudProducts;
+                            // Re-sort or maintain order if needed
+                            products.sort((a,b) => a.id.localeCompare(b.id)); 
+                            renderProducts();
+                            console.log("Data synced from Cloud!");
+                        }
+                    }
+                }, (error) => {
+                    console.warn("Offline mode / Permission denied:", error);
+                });
+            }
         });
         
+        // --- DATA UPLOAD FUNCTION ---
+        window.uploadToCloud = async () => {
+            const btn = document.getElementById('btnUpload');
+            
+            if(!db) return alert("Firebase belum terkoneksi!");
+            if(!confirm("Anda yakin ingin meng-upload SEMUA data saat ini ke Server? Ini akan menimpa data lama.")) return;
+            
+            // Visual Feedback
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> Sedang Mengupload...';
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            try {
+                let count = 0;
+                for (const p of products) {
+                    await setDoc(doc(db, "products", p.id), p);
+                    count++;
+                }
+                alert(`✅ SUKSES! ${count} produk berhasil diupload ke server. Data sekarang live di semua perangkat.`);
+            } catch (e) {
+                alert("❌ Gagal upload: " + e.message + "\nPastikan Firestore Rules 'allow read, write: if true;' (Hanya untuk dev)");
+            } finally {
+                // Restore Button
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        };
+
         // --- MUSIC LOGIC ---
         let isPlaying = false;
         window.toggleMusic = () => {
@@ -502,11 +535,9 @@
             isPlaying = !isPlaying;
         };
 
-        // NEW: Function to force play music (for the catalog button)
         window.startMusic = () => {
              const music = document.getElementById('bgMusic');
              const icon = document.getElementById('musicIcon');
-             // Only play if not already playing
              if(!isPlaying) {
                  music.play().then(() => {
                      icon.classList.remove('ri-music-2-line');
@@ -516,7 +547,6 @@
              }
         };
 
-        // Functions
         function renderCategories() {
             const container = document.getElementById('categoryFilters');
             container.innerHTML = categories.map(cat => `
@@ -544,7 +574,7 @@
             container.innerHTML = filtered.map(p => {
                 if(p.type === 'link') {
                     return `
-                    <a href="${p.url}" target="_blank" class="snap-center shrink-0 w-36 md:w-56 glass rounded-xl overflow-hidden group relative flex flex-col justify-center items-center bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10">
+                    <a href="${p.url}" target="_blank" class="snap-center shrink-0 w-36 md:w-56 glass rounded-xl overflow-hidden group relative flex flex-col justify-center items-center bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 p-6">
                          <div class="text-accent-cyan text-3xl mb-1 group-hover:scale-110 transition-transform"><i class="ri-arrow-right-circle-fill"></i></div>
                          <h3 class="font-bold text-sm dark:text-white text-slate-800 text-center px-2">${p.title}</h3>
                     </a>`;
@@ -557,27 +587,13 @@
                     <div class="h-32 md:h-40 overflow-hidden relative bg-gray-200 dark:bg-gray-800">
                         <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-black/30"></div>
-                        
                         <span class="absolute top-2 left-2 bg-black/60 backdrop-blur text-[9px] font-bold px-1.5 py-0.5 rounded text-white border border-white/20 uppercase">${p.category}</span>
-                        
-                        ${isAdmin ? `
-                        <div class="absolute top-2 right-2 z-40" onclick="event.stopPropagation()">
-                            <button onclick="window.openEditModal('${p.id}')" class="bg-accent-red text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg hover:scale-110 cursor-pointer border border-white">
-                                <i class="ri-pencil-fill text-sm"></i>
-                            </button>
-                        </div>
-                        ` : ''}
-
+                        ${isAdmin ? `<div class="absolute top-2 right-2 z-40" onclick="event.stopPropagation()"><button onclick="window.openEditModal('${p.id}')" class="bg-accent-red text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg hover:scale-110 cursor-pointer border border-white"><i class="ri-pencil-fill text-sm"></i></button></div>` : ''}
                         <div class="absolute bottom-2 right-2 flex gap-2 z-30">
-                             <button onclick="window.openProductModal('${p.id}')" class="w-8 h-8 rounded-full bg-white text-slate-900 flex items-center justify-center shadow-lg hover:bg-accent-cyan hover:text-white transition-all text-xs" title="Lihat Detail">
-                                <i class="ri-eye-line"></i>
-                            </button>
-                            <a href="${waLink}" target="_blank" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center shadow-lg hover:bg-green-600 transition-all text-xs" title="Beli via WA">
-                                <i class="ri-whatsapp-line"></i>
-                            </a>
+                             <button onclick="window.openProductModal('${p.id}')" class="w-8 h-8 rounded-full bg-white text-slate-900 flex items-center justify-center shadow-lg hover:bg-accent-cyan hover:text-white transition-all text-xs" title="Lihat Detail"><i class="ri-eye-line"></i></button>
+                            <a href="${waLink}" target="_blank" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center shadow-lg hover:bg-green-600 transition-all text-xs" title="Beli via WA"><i class="ri-whatsapp-line"></i></a>
                         </div>
                     </div>
-                    
                     <div class="p-3 bg-white/50 dark:bg-transparent">
                         <h3 id="title-${p.id}" class="card-title font-bold text-sm mb-0.5 truncate">${p.title}</h3>
                         <p id="price-${p.id}" class="text-accent-cyan font-bold text-xs">${p.price}</p>
@@ -589,12 +605,12 @@
         function renderServices() {
             const container = document.getElementById('serviceContainer');
             container.innerHTML = services.map((s, i) => `
-                <a href="#" class="block p-3 md:p-5 glass rounded-xl hover:bg-white dark:hover:bg-white/5 transition-all border-l-2 ${s.border} shadow-sm group" data-aos="fade-up" data-aos-delay="${i * 50}">
-                    <div class="flex items-center justify-between mb-2">
-                        <i class="${s.icon} text-2xl ${s.color}"></i>
+                <a href="#" class="block p-4 md:p-5 glass rounded-xl hover:bg-white dark:hover:bg-white/5 transition-all border-l-4 ${s.border} shadow-sm group" data-aos="fade-up" data-aos-delay="${i * 50}">
+                    <div class="flex items-center justify-between mb-3">
+                        <i class="${s.icon} text-3xl ${s.color}"></i>
                     </div>
-                    <h3 class="text-xs md:text-sm font-bold mb-0.5 dark:text-white text-slate-900 group-hover:text-accent-cyan transition-colors">${s.title}</h3>
-                    <p class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 truncate">${s.desc}</p>
+                    <h3 class="text-base md:text-lg font-bold mb-1 dark:text-white text-slate-900 group-hover:text-accent-cyan transition-colors">${s.title}</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${s.desc}</p>
                 </a>
             `).join('');
         }
@@ -602,47 +618,41 @@
         window.openProductModal = (id) => {
             const p = products.find(x => x.id === id);
             if(!p || p.type === 'link') return;
-            
             document.getElementById('modalImg').src = p.img;
             document.getElementById('modalTitle').innerText = p.title;
             document.getElementById('modalPrice').innerText = p.price;
             document.getElementById('modalDesc').innerText = p.desc;
             document.getElementById('modalCategory').innerText = p.category;
-            
             const waUrl = `https://wa.me/6285161141114?text=Halo%20Malikfaza,%20saya%20tertarik%20membeli%20${encodeURIComponent(p.title)}`;
             document.getElementById('modalWaLink').href = waUrl;
             document.getElementById('modalDetailLink').href = "#";
-
             document.getElementById('productModal').classList.remove('hidden');
             document.getElementById('productModal').classList.add('flex');
         };
 
-        // --- NEW EDIT FEATURES ---
+        // --- EDIT LOGIC (UPDATED FOR CLOUD) ---
         let tempImageBase64 = null;
 
         window.openEditModal = (id) => {
             const p = products.find(x => x.id === id);
             if(!p) return;
-            
-            tempImageBase64 = null; // Reset image buffer
+            tempImageBase64 = null;
             document.getElementById('editId').value = id;
             document.getElementById('editTitle').value = p.title;
             document.getElementById('editPrice').value = p.price;
             document.getElementById('editPreview').src = p.img;
             document.getElementById('editImageUrl').value = "";
-            document.getElementById('editImageFile').value = ""; // Reset File input
-            
+            document.getElementById('editImageFile').value = "";
             document.getElementById('editModal').classList.remove('hidden');
             document.getElementById('editModal').classList.add('flex');
         };
 
-        // Handle Image Upload / Drop
         window.handleImageUpload = (file) => {
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     document.getElementById('editPreview').src = e.target.result;
-                    tempImageBase64 = e.target.result; // Store for saving
+                    tempImageBase64 = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
@@ -655,49 +665,37 @@
             }
         };
 
-        // Handle Drag & Drop
         const dropZone = document.getElementById('dropZone');
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropZone.addEventListener(eventName, preventDefaults, false);
         });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
         ['dragenter', 'dragover'].forEach(eventName => {
             dropZone.addEventListener(eventName, () => dropZone.classList.add('drop-active'), false);
         });
-
         ['dragleave', 'drop'].forEach(eventName => {
             dropZone.addEventListener(eventName, () => dropZone.classList.remove('drop-active'), false);
         });
-
         dropZone.addEventListener('drop', (e) => {
             const dt = e.dataTransfer;
             const files = dt.files;
             window.handleImageUpload(files[0]);
         });
 
-        // Handle Paste Image
         function handlePasteImage(e) {
-            // Only handle paste if modal is open
             if(document.getElementById('editModal').classList.contains('hidden')) return;
-
             const items = (e.clipboardData || e.originalEvent.clipboardData).items;
             for (let index in items) {
                 const item = items[index];
                 if (item.kind === 'file' && item.type.startsWith('image/')) {
                     const blob = item.getAsFile();
                     window.handleImageUpload(blob);
-                    // alert("Gambar berhasil di-paste!");
                 }
             }
         }
 
-        // Handle Edit Submit
-        document.getElementById('editForm').addEventListener('submit', (e) => {
+        // --- SUBMIT: SAVE TO CLOUD ---
+        document.getElementById('editForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('editId').value;
             const newTitle = document.getElementById('editTitle').value;
@@ -705,19 +703,18 @@
             
             const p = products.find(x => x.id === id);
             if(p) {
+                // Update Local object first for instant feedback
                 p.title = newTitle;
                 p.price = newPrice;
+                if(tempImageBase64) p.img = tempImageBase64;
                 
-                // If new image was set via upload/paste/url
-                if(tempImageBase64) {
-                    p.img = tempImageBase64;
-                }
-                
-                // Update DOM directly to reflect changes without reload
-                renderProducts(); // Re-render to show updated image
-                
+                renderProducts();
                 window.closeModal('editModal');
-                alert("Produk berhasil diupdate!");
+
+                // Update Cloud if Connected
+                // NOTE: We do not auto-save to cloud here to let user confirm via the big blue button
+                // but if you want instant save, uncomment line below:
+                // if(db) await setDoc(doc(db, "products", id), p);
             }
         });
 
@@ -726,7 +723,6 @@
             document.getElementById(id).classList.remove('flex');
         };
 
-        // Toggle Password Eye
         window.togglePassword = () => {
             const input = document.getElementById('adminPass');
             const icon = document.getElementById('eyeIcon');
@@ -741,7 +737,6 @@
             }
         };
 
-        // System
         const themeBtn = document.getElementById('themeToggle');
         themeBtn.addEventListener('click', () => {
             document.documentElement.classList.toggle('dark');
@@ -764,6 +759,11 @@
             });
         });
 
+        // Carousel Scroll
+        const c = document.getElementById('productContainer');
+        document.getElementById('nextBtn').addEventListener('click', () => c.scrollBy({left: 300, behavior:'smooth'}));
+        document.getElementById('prevBtn').addEventListener('click', () => c.scrollBy({left: -300, behavior:'smooth'}));
+
         // Admin Auth
         document.getElementById('adminLoginFooter') && document.getElementById('adminLoginFooter').addEventListener('click', showLogin);
         document.getElementById('adminBtnMobile') && document.getElementById('adminBtnMobile').addEventListener('click', showLogin);
@@ -783,7 +783,7 @@
                 checkAdminState();
                 window.closeModal('loginModal');
                 renderProducts(); 
-                alert('Mode Owner Aktif!');
+                alert('Mode Owner Aktif! Klik "Upload Data ke Server" di panel untuk sinkronisasi awal.');
             } else {
                 alert('Password salah!');
             }
