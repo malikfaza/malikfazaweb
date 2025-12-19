@@ -42,6 +42,7 @@
                     animation: {
                         'blob': 'blob 7s infinite',
                         'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
                         blob: {
@@ -52,7 +53,7 @@
                         },
                         float: {
                             '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
+                            '50%': { transform: 'translateY(-5px)' },
                         }
                     }
                 }
@@ -73,6 +74,7 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
         }
         .light .glass {
             background: #fffefb; 
@@ -96,7 +98,35 @@
         
         .drop-active { border-color: #06b6d4 !important; background-color: rgba(6, 182, 212, 0.1) !important; }
         .custom-checkbox:checked { background-color: #ef4444; border-color: #ef4444; }
-        .card-selected { border-color: #ef4444 !important; transform: scale(0.95); transition: all 0.2s; }
+        
+        /* Card Hover Effects (Stabilized) */
+        .card-interactive:hover {
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.3); /* Cyan Glow */
+            border-color: rgba(6, 182, 212, 0.5);
+            transform: translateY(-4px); /* Lift up slightly */
+        }
+        
+        .card-selected { 
+            border: 2px solid #ef4444 !important; 
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Fade In Up Keyframe */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-entry {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0; 
+        }
+
+        /* Promo Popup Animation */
+        .slide-up {
+            transform: translateY(0) !important;
+            opacity: 1 !important;
+        }
     </style>
 </head>
 <body class="bg-cream text-slate-800 dark:bg-midnight dark:text-slate-200 transition-colors duration-300 font-sans selection:bg-accent-cyan selection:text-white overflow-x-hidden">
@@ -165,7 +195,7 @@
                     Pusat tools premium, jasa kreatif, dan aset digital berkualitas tinggi.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
-                    <a href="#products" onclick="window.startMusic()" class="px-6 py-2.5 bg-accent-cyan text-white rounded-xl font-bold hover:bg-cyan-600 transition-all shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2 text-sm">
+                    <a href="#products" onclick="window.startMusic()" class="px-6 py-2.5 bg-accent-cyan text-white rounded-xl font-bold hover:bg-cyan-600 transition-all shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2 text-sm hover:scale-105 transform">
                         <i class="ri-shopping-bag-3-line"></i> <span data-i18n="cta_shop">Lihat Katalog</span>
                     </a>
                 </div>
@@ -178,37 +208,27 @@
         </div>
     </header>
 
-    <!-- Admin Control Panel (New Add Button) -->
+    <!-- Admin Control Panel -->
     <div id="adminPanel" class="hidden container mx-auto px-6 mb-6">
-        <div class="p-4 rounded-xl border border-accent-red bg-red-50 dark:bg-red-900/10 shadow-lg">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
-                <div>
-                    <h2 class="text-sm font-bold text-accent-red flex items-center gap-2">
-                        <i class="ri-admin-line"></i> OWNER MODE
-                    </h2>
-                    <div class="text-[10px] text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-2">
-                        Status: <span id="dbStatus" class="font-bold text-red-500">Offline</span>
-                    </div>
+        <div class="p-4 rounded-xl border border-accent-red bg-red-50 dark:bg-red-900/10 shadow-lg flex flex-col md:flex-row justify-between items-center gap-4 animate-fade-in">
+            <div>
+                <h2 class="text-sm font-bold text-accent-red flex items-center gap-2">
+                    <i class="ri-admin-line"></i> OWNER MODE
+                </h2>
+                <div class="text-[10px] text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-2">
+                    Status: <span id="dbStatus" class="font-bold text-red-500">Offline</span>
                 </div>
-                <button onclick="window.logoutAdmin()" class="text-xs underline text-red-600 dark:text-red-400 font-bold">Logout</button>
             </div>
-            
-            <!-- Action Buttons Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-                <button id="btnAdd" onclick="window.openAddModal()" class="col-span-2 md:col-span-1 px-3 py-2 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-1 shadow-lg shadow-green-900/20">
-                    <i class="ri-add-circle-line text-sm"></i> Tambah Produk
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 w-full md:w-auto">
+                <button id="btnAdd" onclick="window.openAddModal()" class="col-span-2 md:col-span-1 px-3 py-2 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-1 shadow-lg">
+                    <i class="ri-add-circle-line text-sm"></i> Tambah
                 </button>
-
                 <button id="btnDelete" onclick="window.deleteSelected()" class="px-3 py-2 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-1">
-                    <i class="ri-delete-bin-line"></i> Hapus Terpilih
+                    <i class="ri-delete-bin-line"></i> Hapus
                 </button>
-                
                 <button id="btnReset" onclick="window.uploadDefaultData()" class="px-3 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1">
-                    <i class="ri-database-2-line"></i> Reset Data Asli
+                    <i class="ri-database-2-line"></i> Reset Data
                 </button>
-            </div>
-            <div class="text-[10px] text-gray-500 mt-2 italic text-center md:text-left">
-                *Centang kotak untuk hapus banyak. Klik pensil untuk edit/hapus satu.
             </div>
         </div>
     </div>
@@ -225,8 +245,7 @@
             </div>
             <!-- Grid 2 Baris Horizontal (Mobile) -->
             <div class="relative group">
-                <!-- Height fix: h-[390px] to accommodate 2 rows including text -->
-                <div id="productContainer" class="grid grid-rows-2 grid-flow-col auto-cols-[10rem] md:auto-cols-[14rem] h-[390px] md:h-auto gap-4 overflow-x-auto snap-x md:grid-rows-none md:grid-flow-row md:grid-cols-3 lg:grid-cols-4 md:gap-6 pb-6 no-scrollbar">
+                <div id="productContainer" class="grid grid-rows-2 grid-flow-col auto-cols-[11rem] md:auto-cols-[16rem] h-[420px] md:h-auto gap-4 overflow-x-auto snap-x md:grid-rows-none md:grid-flow-row md:grid-cols-3 lg:grid-cols-4 md:gap-6 pb-6 no-scrollbar">
                     <!-- JS Generated -->
                 </div>
             </div>
@@ -286,8 +305,31 @@
         </div>
     </footer>
 
+    <!-- PROMO POPUP (New Feature) -->
+    <div id="promoPopup" class="fixed bottom-4 right-4 md:right-8 z-50 transform translate-y-full opacity-0 transition-all duration-500 ease-out max-w-xs md:max-w-sm w-[90%] md:w-full hidden">
+        <div class="glass border-l-4 border-accent-yellow bg-white/90 dark:bg-gray-900/90 p-4 rounded-xl shadow-2xl relative backdrop-blur-xl">
+            <button onclick="window.closePromo()" class="absolute top-2 right-2 text-gray-400 hover:text-red-500 transition-colors"><i class="ri-close-line text-lg"></i></button>
+            <div class="flex items-start gap-3">
+                <div class="bg-accent-yellow/20 p-2.5 rounded-full text-accent-yellow shrink-0 animate-pulse-slow">
+                    <i class="ri-coupon-3-fill text-2xl"></i>
+                </div>
+                <div>
+                    <h4 class="font-bold text-base text-slate-800 dark:text-white leading-tight">Diskon Spesial Hari Ini!</h4>
+                    <p class="text-xs text-gray-600 dark:text-gray-300 mt-1 mb-2">Dapatkan potongan <b class="text-green-500">20% All Item</b> dengan kode:</p>
+                    <div class="flex items-center gap-2">
+                        <span class="font-mono font-bold bg-accent-yellow/20 border border-accent-yellow/30 px-2 py-0.5 rounded text-accent-yellow select-all tracking-wider text-sm">FAZA20</span>
+                        <span class="text-[10px] text-gray-400">(Tap to copy)</span>
+                    </div>
+                    <div class="text-[10px] font-bold text-red-500 mt-2 flex items-center gap-1 bg-red-500/10 px-2 py-1 rounded w-fit">
+                        <i class="ri-timer-flash-line animate-pulse"></i> Hangus dalam: <span id="promoTimer" class="font-mono text-xs">37:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Login Modal -->
-    <div id="loginModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div id="loginModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-entry">
         <div class="glass p-6 rounded-2xl w-full max-w-xs mx-auto relative dark:bg-black/50 bg-white shadow-2xl">
             <button onclick="window.closeModal('loginModal')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500"><i class="ri-close-line text-xl"></i></button>
             <h3 class="text-lg font-bold mb-4 text-center dark:text-white text-slate-900">Admin Login</h3>
@@ -302,7 +344,7 @@
     </div>
 
     <!-- Edit/Add Modal (Multipurpose) -->
-    <div id="editModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+    <div id="editModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-entry">
         <div class="glass dark:bg-midnight bg-white p-6 rounded-2xl w-full max-w-md mx-auto relative shadow-2xl max-h-[90vh] overflow-y-auto">
             <button onclick="window.closeModal('editModal')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500"><i class="ri-close-line text-xl"></i></button>
             
@@ -310,8 +352,6 @@
             
             <form id="editForm" class="space-y-4">
                 <input type="hidden" id="editId">
-                
-                <!-- Image Preview Area -->
                 <div class="w-full h-32 bg-gray-200 dark:bg-black/30 rounded-lg overflow-hidden flex items-center justify-center border border-gray-500/30 relative group">
                     <img id="editPreview" src="" class="w-full h-full object-cover">
                     <div id="previewPlaceholder" class="absolute flex flex-col items-center text-gray-400 pointer-events-none">
@@ -319,8 +359,6 @@
                         <span class="text-[10px]">Preview</span>
                     </div>
                 </div>
-
-                <!-- Image Input -->
                 <div class="space-y-2">
                     <label class="text-xs text-gray-500 block">Gambar (Upload/Paste/URL)</label>
                     <div id="dropZone" class="border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg p-3 text-center transition-colors cursor-pointer relative hover:border-accent-cyan hover:bg-accent-cyan/5">
@@ -332,12 +370,12 @@
                         <input type="text" id="editImageUrl" placeholder="Paste link gambar..." class="flex-1 px-3 py-1.5 rounded text-xs dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white" onchange="updatePreviewFromUrl(this.value)">
                     </div>
                 </div>
-
-                <!-- Text Inputs -->
                 <div><label class="text-xs text-gray-500 mb-1 block">Judul Katalog</label><input type="text" id="editTitle" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan" required></div>
                 <div><label class="text-xs text-gray-500 mb-1 block">Harga</label><input type="text" id="editPrice" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan" required></div>
-                
-                <!-- Category Select (New) -->
+                <div>
+                    <label class="text-xs text-gray-500 mb-1 block">Link Detail (Opsional)</label>
+                    <input type="text" id="editDetailLink" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan" placeholder="https://lynk.id/malikfaza">
+                </div>
                 <div>
                     <label class="text-xs text-gray-500 mb-1 block">Kategori</label>
                     <select id="editCategory" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan">
@@ -348,13 +386,8 @@
                         <option value="invite">Undangan Digital</option>
                     </select>
                 </div>
-
                 <div class="flex gap-2 pt-2">
-                    <!-- Tombol Hapus Individual (Merah, hanya muncul saat Edit) -->
-                    <button type="button" id="btnDeleteIndividual" onclick="window.deleteCurrentProduct()" class="hidden px-3 py-2 bg-red-600/20 text-red-500 border border-red-600/50 rounded-lg hover:bg-red-600 hover:text-white transition-colors">
-                        <i class="ri-delete-bin-line"></i>
-                    </button>
-                    <!-- Tombol Simpan (Hijau) -->
+                    <button type="button" id="btnDeleteIndividual" onclick="window.deleteCurrentProduct()" class="hidden px-3 py-2 bg-red-600/20 text-red-500 border border-red-600/50 rounded-lg hover:bg-red-600 hover:text-white transition-colors"><i class="ri-delete-bin-line"></i></button>
                     <button type="submit" class="flex-1 py-2.5 bg-accent-green text-white rounded-lg font-bold hover:bg-green-600 transition-all text-sm shadow-lg">Simpan</button>
                 </div>
             </form>
@@ -362,7 +395,7 @@
     </div>
 
     <!-- Detail Modal -->
-    <div id="productModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+    <div id="productModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-entry">
         <div class="glass dark:bg-midnight bg-white p-0 rounded-2xl w-full max-w-sm relative overflow-hidden flex flex-col max-h-[85vh]">
             <div class="relative h-48 bg-gray-200">
                 <img id="modalImg" src="" class="w-full h-full object-cover">
@@ -372,7 +405,7 @@
                 <div class="flex justify-between items-start mb-2"><span id="modalCategory" class="text-[10px] font-bold px-2 py-1 rounded bg-accent-cyan/10 text-accent-cyan uppercase tracking-wider">APP</span><span id="modalPrice" class="text-lg font-bold text-accent-yellow">Rp 0</span></div>
                 <h3 id="modalTitle" class="text-xl font-bold mb-2 dark:text-white text-slate-900">Title</h3>
                 <p id="modalDesc" class="text-gray-500 dark:text-gray-400 mb-6 text-xs leading-relaxed">Description.</p>
-                <a href="#" id="modalDetailLink" class="block w-full text-center py-3 bg-gray-200 dark:bg-gray-700 dark:text-white text-gray-700 rounded-xl font-bold text-sm mb-2">Detail (Coming Soon)</a>
+                <a href="#" id="modalDetailLink" target="_blank" class="block w-full text-center py-3 bg-gray-200 dark:bg-gray-700 dark:text-white text-gray-700 rounded-xl font-bold text-sm mb-2 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Detail</a>
                 <a id="modalWaLink" href="#" target="_blank" class="block w-full text-center py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-green-900/20 flex items-center justify-center gap-2 text-sm"><i class="ri-whatsapp-line text-lg"></i> Order via WhatsApp</a>
             </div>
         </div>
@@ -429,15 +462,15 @@
 
         // --- HARDCODED DEFAULT DATA ---
         const defaultProducts = [
-            ...Array.from({ length: 10 }, (_, i) => ({ id: `app-${i}`, category: 'app', title: `Premium App V${i+1}`, price: 'Rp 25.000', img: `https://picsum.photos/seed/apk${i}/300/200`, desc: 'Full premium features unlocked.' })),
-            ...Array.from({ length: 5 }, (_, i) => ({ id: `gem-${i}`, category: 'gem', title: `Gem Pack ${i+1}`, price: 'Rp 50.000', img: `https://picsum.photos/seed/gem${i}/300/200`, desc: 'Legal dan aman 100%.' })),
-            ...Array.from({ length: 5 }, (_, i) => ({ id: `class-${i}`, category: 'class', title: `Kelas Design #${i+1}`, price: 'Rp 150.000', img: `https://picsum.photos/seed/class${i}/300/200`, desc: 'Video tutorial lengkap HD.' })),
-            { id: 'act-1', category: 'activation', title: 'Canva Pro', price: 'Rp 20.000', img: 'https://picsum.photos/seed/canva/300/200', desc: 'Garansi resmi.' },
-            { id: 'act-2', category: 'activation', title: 'Netflix 4K', price: 'Rp 35.000', img: 'https://picsum.photos/seed/netflix/300/200', desc: 'Private profile.' },
-            { id: 'act-3', category: 'activation', title: 'YouTube Prem', price: 'Rp 15.000', img: 'https://picsum.photos/seed/yt/300/200', desc: 'No ads.' },
-            { id: 'act-4', category: 'activation', title: 'ChatGPT Plus', price: 'Rp 50.000', img: 'https://picsum.photos/seed/gpt/300/200', desc: 'Shared account.' },
-            ...Array.from({ length: 5 }, (_, i) => ({ id: `inv-${i}`, category: 'invite', title: `Tema Wedding ${i+1}`, price: 'Rp 49.000', img: `https://picsum.photos/seed/wedding${i}/300/200`, desc: 'Undangan digital modern.' })),
-            { id: 'inv-link', category: 'invite', type: 'link', title: 'Lihat Semua', price: 'Katalog', img: 'https://images.unsplash.com/photo-1516961642265-531546e84af2?q=80&w=300', url: 'https://malikfazakatalog.pages.dev' }
+            ...Array.from({ length: 10 }, (_, i) => ({ id: `app-${i}`, category: 'app', title: `Premium App V${i+1}`, price: 'Rp 25.000', img: `https://picsum.photos/seed/apk${i}/300/200`, desc: 'Full premium features unlocked.', detailLink: 'https://lynk.id/malikfaza' })),
+            ...Array.from({ length: 5 }, (_, i) => ({ id: `gem-${i}`, category: 'gem', title: `Gem Pack ${i+1}`, price: 'Rp 50.000', img: `https://picsum.photos/seed/gem${i}/300/200`, desc: 'Legal dan aman 100%.', detailLink: 'https://lynk.id/malikfaza' })),
+            ...Array.from({ length: 5 }, (_, i) => ({ id: `class-${i}`, category: 'class', title: `Kelas Design #${i+1}`, price: 'Rp 150.000', img: `https://picsum.photos/seed/class${i}/300/200`, desc: 'Video tutorial lengkap HD.', detailLink: 'https://lynk.id/malikfaza' })),
+            { id: 'act-1', category: 'activation', title: 'Canva Pro', price: 'Rp 20.000', img: 'https://picsum.photos/seed/canva/300/200', desc: 'Garansi resmi.', detailLink: 'https://lynk.id/malikfaza' },
+            { id: 'act-2', category: 'activation', title: 'Netflix 4K', price: 'Rp 35.000', img: 'https://picsum.photos/seed/netflix/300/200', desc: 'Private profile.', detailLink: 'https://lynk.id/malikfaza' },
+            { id: 'act-3', category: 'activation', title: 'YouTube Prem', price: 'Rp 15.000', img: 'https://picsum.photos/seed/yt/300/200', desc: 'No ads.', detailLink: 'https://lynk.id/malikfaza' },
+            { id: 'act-4', category: 'activation', title: 'ChatGPT Plus', price: 'Rp 50.000', img: 'https://picsum.photos/seed/gpt/300/200', desc: 'Shared account.', detailLink: 'https://lynk.id/malikfaza' },
+            ...Array.from({ length: 5 }, (_, i) => ({ id: `inv-${i}`, category: 'invite', title: `Tema Wedding ${i+1}`, price: 'Rp 49.000', img: `https://picsum.photos/seed/wedding${i}/300/200`, desc: 'Undangan digital modern.', detailLink: 'https://lynk.id/malikfaza' })),
+            { id: 'inv-link', category: 'invite', type: 'link', title: 'Lihat Semua', price: 'Katalog', img: 'https://images.unsplash.com/photo-1516961642265-531546e84af2?q=80&w=300', url: 'https://malikfazakatalog.pages.dev', detailLink: 'https://lynk.id/malikfaza' }
         ];
 
         let products = [...defaultProducts]; // Start with default
@@ -490,7 +523,58 @@
             document.getElementById('btnDelete').addEventListener('click', deleteSelected);
             document.getElementById('btnReset').addEventListener('click', uploadDefaultData);
             document.getElementById('btnAdd').addEventListener('click', openAddModal);
+            
+            // PROMO POPUP LOGIC
+            const promoPopup = document.getElementById('promoPopup');
+            const productsSection = document.getElementById('products');
+            
+            // Observer to trigger popup when user reaches products section
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if(entry.isIntersecting) {
+                        window.showPromo();
+                    }
+                });
+            }, { threshold: 0.2 });
+            
+            if(productsSection) observer.observe(productsSection);
+            
+            // Timer Logic
+            let timeLeft = 37 * 60; // 37 minutes in seconds
+            const timerEl = document.getElementById('promoTimer');
+            
+            setInterval(() => {
+                if(timeLeft <= 0) return;
+                timeLeft--;
+                
+                const m = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+                const s = (timeLeft % 60).toString().padStart(2, '0');
+                
+                if(timerEl) timerEl.innerText = `${m}:${s}`;
+            }, 1000);
         });
+        
+        // --- PROMO FUNCTIONS ---
+        window.showPromo = () => {
+            const popup = document.getElementById('promoPopup');
+            // Only show if not previously closed (optional logic) or just show every time for now
+            if(popup && popup.classList.contains('hidden')) {
+                popup.classList.remove('hidden');
+                // Trigger reflow for transition
+                void popup.offsetWidth;
+                popup.classList.add('slide-up');
+            }
+        };
+        
+        window.closePromo = () => {
+            const popup = document.getElementById('promoPopup');
+            if(popup) {
+                popup.classList.remove('slide-up');
+                setTimeout(() => {
+                    popup.classList.add('hidden');
+                }, 500); // Wait for transition
+            }
+        };
         
         // --- ADD NEW: Open Modal in Add Mode ---
         function openAddModal() {
@@ -651,10 +735,15 @@
             const filtered = activeCategory === 'all' ? products : products.filter(p => p.category === activeCategory);
             const container = document.getElementById('productContainer');
             
-            container.innerHTML = filtered.map(p => {
+            // Add Fade In Animation Class to container on render
+            // To animate individual items, we would add the class to the items.
+            
+            container.innerHTML = filtered.map((p, index) => {
+                const animationDelay = index * 100; // Stagger effect
+                
                 if(p.type === 'link') {
                     return `
-                    <a href="${p.url}" target="_blank" class="w-full h-full min-h-[120px] glass rounded-xl overflow-hidden group relative flex flex-col justify-center items-center bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 p-4">
+                    <a href="${p.url}" target="_blank" class="w-full h-full min-h-[120px] glass rounded-xl overflow-hidden group relative flex flex-col justify-center items-center bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 p-4 card-interactive animate-entry" style="animation-delay: ${animationDelay}ms">
                          <div class="text-accent-cyan text-3xl mb-1 group-hover:scale-110 transition-transform"><i class="ri-arrow-right-circle-fill"></i></div>
                          <h3 class="font-bold text-xs dark:text-white text-slate-800 text-center">${p.title}</h3>
                     </a>`;
@@ -663,8 +752,8 @@
                 const waLink = `https://wa.me/6285161141114?text=Halo%20Malikfaza,%20tertarik%20${encodeURIComponent(p.title)}`;
 
                 return `
-                <div id="card-${p.id}" class="w-full glass rounded-xl overflow-hidden group relative border border-gray-200 dark:border-gray-700 transition-all duration-200">
-                    <div class="h-28 md:h-48 overflow-hidden relative bg-gray-200 dark:bg-gray-800">
+                <div id="card-${p.id}" class="w-full glass rounded-xl overflow-hidden group relative border border-gray-200 dark:border-gray-700 transition-all duration-200 flex flex-col card-interactive animate-entry" style="animation-delay: ${animationDelay}ms">
+                    <div class="h-28 md:h-40 overflow-hidden relative bg-gray-200 dark:bg-gray-800">
                         <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-black/30"></div>
                         
@@ -678,20 +767,17 @@
                             </button>
                         </div>
                         ` : ''}
-
-                        <div class="absolute bottom-2 right-2 flex gap-1.5 z-30">
-                             <button onclick="window.openProductModal('${p.id}')" class="w-7 h-7 rounded-full bg-white text-slate-900 flex items-center justify-center shadow-lg hover:bg-accent-cyan hover:text-white transition-all text-xs" title="Lihat Detail">
-                                <i class="ri-eye-line"></i>
-                            </button>
-                            <a href="${waLink}" target="_blank" class="w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center shadow-lg hover:bg-green-600 transition-all text-xs" title="Beli via WA">
-                                <i class="ri-whatsapp-line"></i>
-                            </a>
-                        </div>
                     </div>
                     
-                    <div class="p-3 bg-white/50 dark:bg-transparent">
-                        <h3 id="title-${p.id}" class="card-title font-bold text-xs md:text-sm mb-0.5 truncate">${p.title}</h3>
-                        <p id="price-${p.id}" class="text-accent-cyan font-bold text-xs">${p.price}</p>
+                    <div class="p-3 flex flex-col h-full justify-between bg-white/50 dark:bg-transparent flex-1">
+                        <div>
+                            <h3 id="title-${p.id}" class="card-title font-bold text-xs md:text-sm mb-0.5 truncate leading-tight">${p.title}</h3>
+                            <p id="price-${p.id}" class="text-accent-cyan font-bold text-xs">${p.price}</p>
+                        </div>
+                        <div class="flex gap-2 mt-2">
+                             <button onclick="window.openProductModal('${p.id}')" class="flex-1 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 text-slate-700 dark:text-white text-[10px] py-1.5 rounded-lg transition-colors font-medium border border-gray-200 dark:border-white/10">Detail</button>
+                            <a href="${waLink}" target="_blank" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-[10px] py-1.5 rounded-lg transition-colors font-medium text-center flex items-center justify-center gap-1"><i class="ri-whatsapp-line"></i> Order</a>
+                        </div>
                     </div>
                 </div>
             `}).join('');
@@ -700,7 +786,7 @@
         function renderServices() {
             const container = document.getElementById('serviceContainer');
             container.innerHTML = services.map((s, i) => `
-                <a href="#" class="block p-4 md:p-5 glass rounded-xl hover:bg-white dark:hover:bg-white/5 transition-all border-l-4 ${s.border} shadow-sm group" data-aos="fade-up" data-aos-delay="${i * 50}">
+                <a href="https://lynk.id/malikfaza" target="_blank" class="block p-4 md:p-5 glass rounded-xl hover:bg-white dark:hover:bg-white/5 transition-all border-l-4 ${s.border} shadow-sm group card-interactive animate-entry" style="animation-delay: ${i * 100}ms">
                     <div class="flex items-center justify-between mb-3">
                         <i class="${s.icon} text-3xl ${s.color}"></i>
                     </div>
@@ -718,9 +804,16 @@
             document.getElementById('modalPrice').innerText = p.price;
             document.getElementById('modalDesc').innerText = p.desc;
             document.getElementById('modalCategory').innerText = p.category;
+            
+            // Set Detail Link
+            const defaultLink = "https://lynk.id/malikfaza";
+            const detailBtn = document.getElementById('modalDetailLink');
+            detailBtn.href = p.detailLink || defaultLink;
+            detailBtn.innerText = "Detail"; 
+            
             const waUrl = `https://wa.me/6285161141114?text=Halo%20Malikfaza,%20saya%20tertarik%20membeli%20${encodeURIComponent(p.title)}`;
             document.getElementById('modalWaLink').href = waUrl;
-            document.getElementById('modalDetailLink').href = "#";
+
             document.getElementById('productModal').classList.remove('hidden');
             document.getElementById('productModal').classList.add('flex');
         };
@@ -738,6 +831,7 @@
             document.getElementById('editTitle').value = p.title;
             document.getElementById('editPrice').value = p.price;
             document.getElementById('editCategory').value = p.category;
+            document.getElementById('editDetailLink').value = p.detailLink || "https://lynk.id/malikfaza";
             
             // Set Modal Title
             document.getElementById('modalFormTitle').innerText = "Edit Produk";
@@ -780,11 +874,56 @@
 
         window.handleImageUpload = (file) => {
             if (file) {
+                // Limit file size check (optional but good practice)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert("Ukuran file terlalu besar! Maksimal 5MB.");
+                    return;
+                }
+
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    document.getElementById('editPreview').src = e.target.result;
-                    document.getElementById('previewPlaceholder').style.display = "none";
-                    tempImageBase64 = e.target.result;
+                    const img = new Image();
+                    img.onload = function() {
+                        // Create canvas
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        // Resize logic (Max width 800px)
+                        const MAX_WIDTH = 800;
+                        const MAX_HEIGHT = 800;
+
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Compress to JPEG with 0.7 quality
+                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+
+                        // Set preview & temp variable
+                        document.getElementById('editPreview').src = compressedBase64;
+                        document.getElementById('previewPlaceholder').style.display = "none";
+                        tempImageBase64 = compressedBase64;
+                        
+                        // Optional: Log size difference
+                        // console.log("Original: " + e.target.result.length);
+                        // console.log("Compressed: " + compressedBase64.length);
+                    };
+                    img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
@@ -836,6 +975,7 @@
             const title = document.getElementById('editTitle').value;
             const price = document.getElementById('editPrice').value;
             const category = document.getElementById('editCategory').value;
+            const detailLink = document.getElementById('editDetailLink').value;
             
             // Logic: if ID exists -> Update, if ID empty -> Create New
             let productId = id ? id : 'prod-' + Date.now();
@@ -845,6 +985,7 @@
                 title: title,
                 price: price,
                 category: category,
+                detailLink: detailLink,
                 img: tempImageBase64 ? tempImageBase64 : (id ? document.getElementById('editPreview').src : 'https://picsum.photos/300/200'),
                 desc: 'Deskripsi produk.' // Default desc for now
             };
