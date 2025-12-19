@@ -210,12 +210,12 @@
                     <i class="ri-admin-line"></i> OWNER MODE
                 </h2>
                 <p class="text-[10px] text-gray-600 dark:text-gray-400 mt-1">
-                    Klik <i class="ri-pencil-fill bg-accent-red text-white p-0.5 rounded text-[10px]"></i> untuk edit.
+                    Edit akan tersimpan <b class="text-accent-cyan">OTOMATIS</b> ke server.
                 </p>
             </div>
             <div class="flex gap-3">
                 <button id="btnUpload" onclick="window.uploadToCloud()" class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
-                    <i class="ri-cloud-upload-line"></i> Upload Data ke Server
+                    <i class="ri-cloud-upload-line"></i> Reset/Upload Ulang Data
                 </button>
                 <button onclick="window.logoutAdmin()" class="text-xs underline text-red-600 dark:text-red-400 font-bold">Logout</button>
             </div>
@@ -401,6 +401,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getFirestore, collection, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyBoNAKRutDNTT7QjBH1NzHU5sXX31bxjXM",
@@ -414,10 +415,16 @@
         
         // Init Firebase safely
         let db;
+        let auth;
         try { 
             const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
             db = getFirestore(app);
             console.log("Firebase Active");
+            
+            // Auto Login Anonymously for Sync
+            signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
+
         } catch (e) {
             console.warn("Firebase Init Error:", e);
         }
@@ -464,31 +471,30 @@
             setTimeout(() => { if(window.AOS) window.AOS.init({ once: true }); }, 500);
             window.addEventListener('paste', handlePasteImage);
             
-            // --- REALTIME SYNC LISTENER ---
-            if(db) {
-                const unsubscribe = onSnapshot(collection(db, "products"), (snapshot) => {
-                    if (!snapshot.empty) {
-                        const cloudProducts = [];
-                        snapshot.forEach((doc) => {
-                            cloudProducts.push(doc.data());
+            // --- REALTIME SYNC LISTENER (Only works if Auth or Rules allow) ---
+            if(db && auth) {
+                onAuthStateChanged(auth, (user) => {
+                    if(user) {
+                        console.log("Sync Active for User:", user.uid);
+                        const unsubscribe = onSnapshot(collection(db, "products"), (snapshot) => {
+                            if (!snapshot.empty) {
+                                const cloudProducts = [];
+                                snapshot.forEach((doc) => {
+                                    cloudProducts.push(doc.data());
+                                });
+                                if(cloudProducts.length > 0) {
+                                    products = cloudProducts;
+                                    products.sort((a,b) => a.id.localeCompare(b.id)); 
+                                    renderProducts();
+                                }
+                            }
                         });
-                        // Update local data with cloud data
-                        // Merge strategies can be complex, here we prefer Cloud if available
-                        if(cloudProducts.length > 0) {
-                            products = cloudProducts;
-                            // Re-sort or maintain order if needed
-                            products.sort((a,b) => a.id.localeCompare(b.id)); 
-                            renderProducts();
-                            console.log("Data synced from Cloud!");
-                        }
                     }
-                }, (error) => {
-                    console.warn("Offline mode / Permission denied:", error);
                 });
             }
         });
         
-        // --- DATA UPLOAD FUNCTION ---
+        // --- DATA UPLOAD FUNCTION (Manual Reset) ---
         window.uploadToCloud = async () => {
             const btn = document.getElementById('btnUpload');
             
@@ -509,9 +515,8 @@
                 }
                 alert(`✅ SUKSES! ${count} produk berhasil diupload ke server. Data sekarang live di semua perangkat.`);
             } catch (e) {
-                alert("❌ Gagal upload: " + e.message + "\nPastikan Firestore Rules 'allow read, write: if true;' (Hanya untuk dev)");
+                alert("❌ Gagal upload: " + e.message + "\nPastikan Firestore Rules 'allow read, write: if true;'");
             } finally {
-                // Restore Button
                 btn.innerHTML = originalText;
                 btn.disabled = false;
                 btn.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -694,28 +699,42 @@
             }
         }
 
-        // --- SUBMIT: SAVE TO CLOUD ---
+        // --- SUBMIT: SAVE TO CLOUD (AUTO SYNC) ---
         document.getElementById('editForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.innerText = "Menyimpan...";
+            btn.disabled = true;
+
             const id = document.getElementById('editId').value;
             const newTitle = document.getElementById('editTitle').value;
             const newPrice = document.getElementById('editPrice').value;
             
             const p = products.find(x => x.id === id);
             if(p) {
-                // Update Local object first for instant feedback
                 p.title = newTitle;
                 p.price = newPrice;
                 if(tempImageBase64) p.img = tempImageBase64;
                 
+                // 1. Update UI Lokal Dulu (Optimistic UI)
                 renderProducts();
-                window.closeModal('editModal');
+                
+                // 2. Save to Cloud Automatically
+                if(db) {
+                    try {
+                        await setDoc(doc(db, "products", id), p);
+                        // Optional: console.log("Auto-saved to cloud");
+                    } catch (err) {
+                        alert("Gagal sinkronisasi ke server: " + err.message + "\nCek koneksi internet.");
+                    }
+                }
 
-                // Update Cloud if Connected
-                // NOTE: We do not auto-save to cloud here to let user confirm via the big blue button
-                // but if you want instant save, uncomment line below:
-                // if(db) await setDoc(doc(db, "products", id), p);
+                window.closeModal('editModal');
             }
+            
+            btn.innerText = originalText;
+            btn.disabled = false;
         });
 
         window.closeModal = (id) => {
@@ -783,7 +802,7 @@
                 checkAdminState();
                 window.closeModal('loginModal');
                 renderProducts(); 
-                alert('Mode Owner Aktif! Klik "Upload Data ke Server" di panel untuk sinkronisasi awal.');
+                alert('Mode Owner Aktif! Edit produk akan otomatis tersimpan ke server.');
             } else {
                 alert('Password salah!');
             }
