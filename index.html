@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="id" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Malikfaza Studio - Premium Digital Solutions</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Remix Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- AOS Animation CSS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        midnight: '#000e1e', 
+                        cream: '#fdfbf7',   
+                        accent: {
+                            cyan: '#06b6d4',
+                            red: '#ef4444',
+                            orange: '#f97316',
+                            yellow: '#eab308',
+                            green: '#22c55e'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        heading: ['"Outfit"', 'sans-serif'],
+                    },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+
+        /* Glassmorphism & Card Logic */
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        /* Light Mode: Soft Cream Card Style */
+        .light .glass {
+            background: #fffefb; 
+            border: 1px solid rgba(231, 229, 228, 0.6); 
+            box-shadow: 
+                0 4px 6px -1px rgba(0, 0, 0, 0.05), 
+                0 10px 15px -3px rgba(210, 180, 140, 0.1); 
+            backdrop-filter: none;
+        }
+        
+        .light nav.glass {
+            background: rgba(253, 251, 247, 0.85); 
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            box-shadow: none;
+        }
+
+        .light .card-title { color: #1e293b; }
+        .dark .card-title { color: #f1f5f9; }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Drop Zone Active State */
+        .drop-active {
+            border-color: #06b6d4 !important;
+            background-color: rgba(6, 182, 212, 0.1) !important;
+        }
+    </style>
+</head>
+<body class="bg-cream text-slate-800 dark:bg-midnight dark:text-slate-200 transition-colors duration-300 font-sans selection:bg-accent-cyan selection:text-white overflow-x-hidden">
+
+    <!-- Background Audio -->
+    <audio id="bgMusic" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- Background Decor -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+        <div class="absolute top-0 left-1/4 w-48 h-48 md:w-96 md:h-96 bg-accent-cyan/10 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+        <div class="absolute top-0 right-1/4 w-48 h-48 md:w-96 md:h-96 bg-accent-orange/10 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass shadow-sm transition-all duration-300" id="navbar">
+        <div class="container mx-auto px-6 py-3 md:py-4 flex justify-between items-center">
+            <a href="#" class="text-lg md:text-2xl font-heading font-bold tracking-tight group dark:text-white text-slate-900">
+                Malikfaza<span class="text-accent-cyan">.</span>Studio
+            </a>
+            
+            <div class="hidden md:flex items-center gap-8 font-medium dark:text-gray-300 text-slate-600 text-sm">
+                <a href="#home" class="hover:text-accent-cyan transition-colors">Home</a>
+                <a href="#products" class="hover:text-accent-cyan transition-colors">Products</a>
+                <a href="#services" class="hover:text-accent-cyan transition-colors">Services</a>
+                <a href="#contact" class="hover:text-accent-cyan transition-colors">Contact</a>
+            </div>
+
+            <div class="flex items-center gap-2 md:gap-3">
+                <!-- Music Toggle -->
+                <button onclick="toggleMusic()" class="w-7 h-7 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-accent-red border border-transparent">
+                    <i id="musicIcon" class="ri-music-2-line"></i>
+                </button>
+
+                <button id="langToggle" class="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-bold text-[10px] border border-current w-7 h-7 flex items-center justify-center">ID</button>
+                <button id="themeToggle" class="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-accent-yellow w-7 h-7 flex items-center justify-center">
+                    <i class="ri-sun-line text-lg dark:hidden"></i>
+                    <i class="ri-moon-line text-lg hidden dark:block"></i>
+                </button>
+                <button class="md:hidden text-xl dark:text-white text-slate-900" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')">
+                    <i class="ri-menu-4-line"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden glass border-t border-gray-200 dark:border-gray-800 p-4 absolute w-full top-[60px] left-0 z-40 shadow-xl">
+            <div class="flex flex-col gap-3 font-medium dark:text-gray-200 text-slate-700 text-sm">
+                <a href="#home" class="block hover:text-accent-cyan hover:pl-2 transition-all">Home</a>
+                <a href="#products" class="block hover:text-accent-cyan hover:pl-2 transition-all">Products</a>
+                <a href="#services" class="block hover:text-accent-cyan hover:pl-2 transition-all">Services</a>
+                <a href="#contact" class="block hover:text-accent-cyan hover:pl-2 transition-all">Contact</a>
+                <button id="adminBtnMobile" class="text-left text-accent-red mt-2 font-bold uppercase tracking-wider text-xs">Admin Login</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header id="home" class="min-h-screen flex items-center pt-20 pb-12 relative">
+        <div class="container mx-auto px-6 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+            <div class="order-2 md:order-1 text-center md:text-left" data-aos="fade-right">
+                <div class="inline-block px-3 py-1.5 rounded-full border border-accent-cyan/30 bg-accent-cyan/10 text-accent-cyan text-[10px] md:text-xs font-semibold mb-4 animate-pulse">
+                    🚀 Premium Digital Solutions
+                </div>
+                <h1 class="text-3xl md:text-6xl font-heading font-bold mb-4 leading-tight dark:text-white text-slate-900">
+                    <span data-i18n="hero_title_1">Upgrade Your</span> <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-cyan via-accent-green to-accent-yellow">Digital Life</span>
+                </h1>
+                <p class="text-sm md:text-lg text-gray-600 dark:text-gray-400 mb-6 max-w-lg mx-auto md:mx-0" data-i18n="hero_desc">
+                    Pusat tools premium, jasa kreatif, dan aset digital berkualitas tinggi.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+                    <!-- Updated Scroll Action -->
+                    <a href="#products" class="px-6 py-2.5 bg-accent-cyan text-white rounded-xl font-bold hover:bg-cyan-600 transition-all shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2 text-sm">
+                        <i class="ri-shopping-bag-3-line"></i> <span data-i18n="cta_shop">Lihat Katalog</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="order-1 md:order-2 relative px-8 md:px-0" data-aos="fade-left">
+                <div class="relative z-10 animate-float">
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop" alt="Digital Creative" class="rounded-2xl shadow-2xl border-2 border-white/10 w-full h-56 md:h-[500px] object-cover">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Admin Control Panel -->
+    <div id="adminPanel" class="hidden container mx-auto px-6 mb-6">
+        <div class="p-4 rounded-xl border border-accent-red bg-red-50 dark:bg-red-900/10 shadow-lg flex justify-between items-center">
+            <div>
+                <h2 class="text-sm font-bold text-accent-red flex items-center gap-2">
+                    <i class="ri-admin-line"></i> OWNER MODE
+                </h2>
+                <p class="text-[10px] text-gray-600 dark:text-gray-400 mt-1">
+                    Klik <i class="ri-pencil-fill bg-accent-red text-white p-0.5 rounded text-[10px]"></i> untuk edit.
+                </p>
+            </div>
+            <button onclick="window.logoutAdmin()" class="text-xs underline text-red-600 dark:text-red-400 font-bold">Logout</button>
+        </div>
+    </div>
+
+    <!-- Products Section -->
+    <section id="products" class="py-12 md:py-20 relative overflow-hidden">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-8 md:mb-16" data-aos="fade-up">
+                <h2 class="text-2xl md:text-4xl font-heading font-bold mb-2 dark:text-white text-slate-900"><span class="text-accent-cyan">Digital</span> Catalog</h2>
+                <p class="text-xs md:text-base text-gray-500 dark:text-gray-400 max-w-xl mx-auto" data-i18n="products_subtitle">
+                    Koleksi tools premium pilihan.
+                </p>
+            </div>
+
+            <!-- Filter -->
+            <div class="flex overflow-x-auto gap-2 md:gap-4 mb-8 pb-2 md:pb-0 justify-start md:justify-center no-scrollbar px-1" id="categoryFilters">
+                <!-- JS Generated -->
+            </div>
+
+            <!-- Carousel -->
+            <div class="relative group">
+                <div id="productContainer" class="flex overflow-x-auto gap-3 md:gap-6 pb-8 snap-x snap-mandatory no-scrollbar scroll-smooth px-2">
+                    <!-- JS Generated -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-12 md:py-20 bg-gray-50 dark:bg-black/20">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-8 md:mb-12 text-center md:text-left" data-aos="fade-up">
+                <div class="w-full md:w-auto">
+                    <h2 class="text-2xl md:text-4xl font-heading font-bold mb-2 dark:text-white text-slate-900">Creative <span class="text-accent-yellow">Services</span></h2>
+                    <p class="text-gray-500 text-xs md:text-sm" data-i18n="services_subtitle">Klik kartu untuk melihat portofolio.</p>
+                </div>
+                <a href="https://wa.me/6285161141114?text=Halo%20Malikfaza,%20saya%20ingin%20konsultasi%20gratis." target="_blank" class="text-accent-yellow font-bold hover:underline mt-3 md:mt-0 flex items-center justify-center gap-2 w-full md:w-auto text-sm">
+                    Konsultasi Gratis <i class="ri-whatsapp-line"></i>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8" id="serviceContainer">
+                <!-- JS Generated -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-white dark:bg-black/40 pt-12 pb-6 border-t border-gray-200 dark:border-white/5">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-8 mb-8">
+                <div class="md:col-span-2">
+                    <h3 class="text-xl font-heading font-bold mb-3 dark:text-white text-slate-900">Malikfaza.Studio</h3>
+                    <p class="text-gray-500 mb-4 max-w-sm text-xs leading-relaxed">
+                        Partner digital terpercaya di Majalengka, Jawa Barat.
+                    </p>
+                    <div class="flex gap-3">
+                        <a href="#" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-slate-600 dark:text-white hover:bg-accent-cyan hover:text-white transition-all"><i class="ri-instagram-line"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-slate-600 dark:text-white hover:bg-accent-red hover:text-white transition-all"><i class="ri-youtube-fill"></i></a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-sm mb-3 dark:text-white text-slate-900">Contact</h4>
+                    <ul class="space-y-2 text-gray-500 text-xs">
+                        <li class="flex items-center gap-2">
+                            <i class="ri-whatsapp-line text-green-500"></i>
+                            <a href="https://wa.me/6285161141114?text=Halo" class="hover:text-accent-cyan">+62 851-6114-1114</a>
+                        </li>
+                        <li class="flex items-center gap-2">
+                            <i class="ri-mail-line text-accent-red"></i>
+                            <a href="mailto:abdul.m4lik1999@gmail.com" class="hover:text-accent-cyan break-all">abdul.m4lik1999@gmail.com</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-sm mb-3 dark:text-white text-slate-900">Links</h4>
+                    <ul class="space-y-2 text-gray-500 text-xs">
+                        <li><a href="#home" class="hover:text-accent-cyan">Home</a></li>
+                        <li><a href="#products" class="hover:text-accent-cyan">Catalog</a></li>
+                        <li><button id="adminLoginFooter" class="uppercase tracking-widest hover:text-accent-cyan mt-2 opacity-70 font-bold text-[10px]">Admin Access</button></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 dark:border-white/10 pt-6 text-center text-gray-500 text-[10px]">
+                &copy; 2024 Malikfaza Studio. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass p-6 rounded-2xl w-full max-w-xs mx-auto relative dark:bg-black/50 bg-white shadow-2xl transform transition-all">
+            <button onclick="window.closeModal('loginModal')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500"><i class="ri-close-line text-xl"></i></button>
+            <h3 class="text-lg font-bold mb-4 text-center dark:text-white text-slate-900">Admin Login</h3>
+            <form id="adminForm" class="space-y-4">
+                <div class="relative">
+                    <input type="password" id="adminPass" class="w-full pl-4 pr-10 py-2.5 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 focus:border-accent-cyan focus:outline-none dark:text-white text-slate-900 text-sm" placeholder="Password">
+                    <button type="button" onclick="togglePassword()" class="absolute right-3 top-2.5 text-gray-500 hover:text-accent-cyan">
+                        <i id="eyeIcon" class="ri-eye-line text-lg"></i>
+                    </button>
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-accent-cyan text-white rounded-lg font-bold hover:bg-cyan-600 transition-all text-sm shadow-lg">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Modal (Super Complete) -->
+    <div id="editModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+        <div class="glass dark:bg-midnight bg-white p-6 rounded-2xl w-full max-w-md mx-auto relative shadow-2xl max-h-[90vh] overflow-y-auto">
+            <button onclick="window.closeModal('editModal')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500"><i class="ri-close-line text-xl"></i></button>
+            <h3 class="text-lg font-bold mb-4 text-center dark:text-white text-slate-900">Edit Produk</h3>
+            
+            <form id="editForm" class="space-y-4">
+                <input type="hidden" id="editId">
+                
+                <!-- Image Preview -->
+                <div class="w-full h-32 bg-gray-200 dark:bg-black/30 rounded-lg overflow-hidden flex items-center justify-center border border-gray-500/30 relative group">
+                    <img id="editPreview" src="" class="w-full h-full object-cover">
+                </div>
+
+                <!-- Drop Zone & Image Input -->
+                <div class="space-y-2">
+                    <label class="text-xs text-gray-500 block">Ganti Gambar (Upload/Paste/URL)</label>
+                    
+                    <!-- Area Drop Zone -->
+                    <div id="dropZone" class="border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg p-4 text-center transition-colors cursor-pointer relative hover:border-accent-cyan hover:bg-accent-cyan/5">
+                        <input type="file" id="editImageFile" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleImageUpload(this.files[0])">
+                        <div class="pointer-events-none">
+                            <i class="ri-upload-cloud-2-line text-2xl text-gray-400"></i>
+                            <p class="text-[10px] text-gray-500 mt-1">Klik upload, Drag & Drop, atau <b>CTRL+V</b> (Paste)</p>
+                        </div>
+                    </div>
+
+                    <!-- URL Option -->
+                    <div class="flex gap-2 items-center">
+                        <span class="text-[10px] text-gray-400">ATAU</span>
+                        <input type="text" id="editImageUrl" placeholder="Paste link gambar..." class="flex-1 px-3 py-1.5 rounded text-xs dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white" onchange="updatePreviewFromUrl(this.value)">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs text-gray-500 mb-1 block">Judul Katalog</label>
+                    <input type="text" id="editTitle" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500 mb-1 block">Harga</label>
+                    <input type="text" id="editPrice" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan">
+                </div>
+                
+                <button type="submit" class="w-full py-2.5 bg-accent-green text-white rounded-lg font-bold hover:bg-green-600 transition-all text-sm shadow-lg">Simpan Perubahan</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="productModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+        <div class="glass dark:bg-midnight bg-white p-0 rounded-2xl w-full max-w-sm relative overflow-hidden flex flex-col max-h-[85vh]">
+            <div class="relative h-48 bg-gray-200">
+                <img id="modalImg" src="" class="w-full h-full object-cover">
+                <button onclick="window.closeModal('productModal')" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-red-500 transition-colors backdrop-blur"><i class="ri-close-line"></i></button>
+            </div>
+            <div class="p-5 overflow-y-auto">
+                <div class="flex justify-between items-start mb-2">
+                    <span id="modalCategory" class="text-[10px] font-bold px-2 py-1 rounded bg-accent-cyan/10 text-accent-cyan uppercase tracking-wider">APP</span>
+                    <span id="modalPrice" class="text-lg font-bold text-accent-yellow">Rp 0</span>
+                </div>
+                <h3 id="modalTitle" class="text-xl font-bold mb-2 dark:text-white text-slate-900">Title</h3>
+                <p id="modalDesc" class="text-gray-500 dark:text-gray-400 mb-6 text-xs leading-relaxed">Description.</p>
+                
+                <a href="#" id="modalDetailLink" class="block w-full text-center py-3 bg-gray-200 dark:bg-gray-700 dark:text-white text-gray-700 rounded-xl font-bold text-sm mb-2">
+                   Detail (Coming Soon)
+                </a>
+                
+                <a id="modalWaLink" href="#" target="_blank" class="block w-full text-center py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-green-900/20 flex items-center justify-center gap-2 text-sm">
+                    <i class="ri-whatsapp-line text-lg"></i> Order via WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyBoNAKRutDNTT7QjBH1NzHU5sXX31bxjXM",
+            authDomain: "katalog-82fbf.firebaseapp.com",
+            projectId: "katalog-82fbf",
+            storageBucket: "katalog-82fbf.firebasestorage.app",
+            messagingSenderId: "410997646826",
+            appId: "1:410997646826:web:8d292ce5afb4955f2bbe93",
+            measurementId: "G-220BRVP5H5"
+        };
+        
+        try { const app = initializeApp(firebaseConfig); } catch (e) {}
+
+        const categories = [
+            { id: 'all', label: 'All' },
+            { id: 'app', label: 'Apps' },
+            { id: 'gem', label: 'Tools' },
+            { id: 'class', label: 'Kelas' },
+            { id: 'activation', label: 'Akun' },
+            { id: 'invite', label: 'Undangan' }
+        ];
+
+        // Apps
+        const apps = Array.from({ length: 10 }, (_, i) => ({
+            id: `app-${i}`, category: 'app', title: `Premium App V${i+1}`, price: 'Rp 25.000', 
+            img: `https://picsum.photos/seed/apk${i}/300/200`, desc: 'Full premium features unlocked.'
+        }));
+        
+        // Gems
+        const gems = Array.from({ length: 5 }, (_, i) => ({
+            id: `gem-${i}`, category: 'gem', title: `Gem Pack ${i+1}`, price: 'Rp 50.000', 
+            img: `https://picsum.photos/seed/gem${i}/300/200`, desc: 'Legal dan aman 100%.'
+        }));
+
+        const classes = Array.from({ length: 5 }, (_, i) => ({
+            id: `class-${i}`, category: 'class', title: `Kelas Design #${i+1}`, price: 'Rp 150.000', 
+            img: `https://picsum.photos/seed/class${i}/300/200`, desc: 'Video tutorial lengkap HD.'
+        }));
+
+        const acts = [
+            { id: 'act-1', category: 'activation', title: 'Canva Pro', price: 'Rp 20.000', img: 'https://picsum.photos/seed/canva/300/200', desc: 'Garansi resmi.' },
+            { id: 'act-2', category: 'activation', title: 'Netflix 4K', price: 'Rp 35.000', img: 'https://picsum.photos/seed/netflix/300/200', desc: 'Private profile.' },
+            { id: 'act-3', category: 'activation', title: 'YouTube Prem', price: 'Rp 15.000', img: 'https://picsum.photos/seed/yt/300/200', desc: 'No ads.' },
+            { id: 'act-4', category: 'activation', title: 'ChatGPT Plus', price: 'Rp 50.000', img: 'https://picsum.photos/seed/gpt/300/200', desc: 'Shared account.' },
+        ];
+
+        const invites = Array.from({ length: 5 }, (_, i) => ({
+            id: `inv-${i}`, category: 'invite', title: `Tema Wedding ${i+1}`, price: 'Rp 49.000', 
+            img: `https://picsum.photos/seed/wedding${i}/300/200`, desc: 'Undangan digital modern.'
+        }));
+        
+        const inviteLink = {
+            id: 'inv-link', category: 'invite', type: 'link', 
+            title: 'Lihat Semua', price: 'Katalog', 
+            img: 'https://images.unsplash.com/photo-1516961642265-531546e84af2?q=80&w=300', 
+            url: 'https://malikfazakatalog.pages.dev'
+        };
+
+        let products = [...apps, ...gems, ...classes, ...acts, ...invites, inviteLink];
+
+        // Services
+        const services = [
+            { id: 'srv-1', icon: 'ri-video-add-line', title: 'Video Editing', desc: 'Cinematic', color: 'text-accent-red', border: 'border-accent-red' },
+            { id: 'srv-2', icon: 'ri-image-edit-line', title: 'Photo Retouch', desc: 'Pro Grading', color: 'text-accent-cyan', border: 'border-accent-cyan' },
+            { id: 'srv-3', icon: 'ri-brush-line', title: 'Banner Design', desc: 'Ads High Convert', color: 'text-accent-orange', border: 'border-accent-orange' },
+            { id: 'srv-4', icon: 'ri-layout-masonry-line', title: 'Landing Page', desc: 'Responsive Web', color: 'text-accent-green', border: 'border-accent-green' },
+            { id: 'srv-5', icon: 'ri-camera-lens-line', title: 'Product Photo', desc: 'High Quality', color: 'text-accent-yellow', border: 'border-accent-yellow' },
+            { id: 'srv-6', icon: 'ri-booklet-line', title: 'Catalog', desc: 'Menu & Brochure', color: 'text-gray-400', border: 'border-gray-400' }
+        ];
+
+        let activeCategory = 'all';
+        let isAdmin = localStorage.getItem('malikAdmin') === 'true';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCategories();
+            renderProducts();
+            renderServices();
+            checkAdminState();
+            setTimeout(() => { if(window.AOS) window.AOS.init({ once: true }); }, 500);
+            
+            // Listen Paste Event for Image
+            window.addEventListener('paste', handlePasteImage);
+        });
+        
+        // --- MUSIC LOGIC ---
+        let isPlaying = false;
+        window.toggleMusic = () => {
+            const music = document.getElementById('bgMusic');
+            const icon = document.getElementById('musicIcon');
+            if(isPlaying) {
+                music.pause();
+                icon.classList.remove('ri-pause-circle-line');
+                icon.classList.add('ri-music-2-line');
+            } else {
+                music.play();
+                icon.classList.remove('ri-music-2-line');
+                icon.classList.add('ri-pause-circle-line');
+            }
+            isPlaying = !isPlaying;
+        };
+
+        // Functions
+        function renderCategories() {
+            const container = document.getElementById('categoryFilters');
+            container.innerHTML = categories.map(cat => `
+                <button onclick="window.filterCategory('${cat.id}')" 
+                    class="shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all border 
+                    ${activeCategory === cat.id 
+                        ? 'bg-accent-cyan text-white border-accent-cyan shadow' 
+                        : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:border-accent-cyan'
+                    }">
+                    ${cat.label}
+                </button>
+            `).join('');
+        }
+
+        window.filterCategory = (catId) => {
+            activeCategory = catId;
+            renderCategories();
+            renderProducts();
+        };
+
+        function renderProducts() {
+            const filtered = activeCategory === 'all' ? products : products.filter(p => p.category === activeCategory);
+            const container = document.getElementById('productContainer');
+            
+            container.innerHTML = filtered.map(p => {
+                if(p.type === 'link') {
+                    return `
+                    <a href="${p.url}" target="_blank" class="snap-center shrink-0 w-36 md:w-56 glass rounded-xl overflow-hidden group relative flex flex-col justify-center items-center bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10">
+                         <div class="text-accent-cyan text-3xl mb-1 group-hover:scale-110 transition-transform"><i class="ri-arrow-right-circle-fill"></i></div>
+                         <h3 class="font-bold text-sm dark:text-white text-slate-800 text-center px-2">${p.title}</h3>
+                    </a>`;
+                }
+
+                const waLink = `https://wa.me/6285161141114?text=Halo%20Malikfaza,%20tertarik%20${encodeURIComponent(p.title)}`;
+
+                return `
+                <div id="card-${p.id}" class="snap-center shrink-0 w-44 md:w-56 glass rounded-xl overflow-hidden group relative border border-gray-200 dark:border-gray-700">
+                    <div class="h-32 md:h-40 overflow-hidden relative bg-gray-200 dark:bg-gray-800">
+                        <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/30"></div>
+                        
+                        <span class="absolute top-2 left-2 bg-black/60 backdrop-blur text-[9px] font-bold px-1.5 py-0.5 rounded text-white border border-white/20 uppercase">${p.category}</span>
+                        
+                        ${isAdmin ? `
+                        <div class="absolute top-2 right-2 z-40" onclick="event.stopPropagation()">
+                            <button onclick="window.openEditModal('${p.id}')" class="bg-accent-red text-white w-9 h-9 rounded-full flex items-center justify-center shadow-lg hover:scale-110 cursor-pointer border border-white">
+                                <i class="ri-pencil-fill text-sm"></i>
+                            </button>
+                        </div>
+                        ` : ''}
+
+                        <div class="absolute bottom-2 right-2 flex gap-2 z-30">
+                             <button onclick="window.openProductModal('${p.id}')" class="w-8 h-8 rounded-full bg-white text-slate-900 flex items-center justify-center shadow-lg hover:bg-accent-cyan hover:text-white transition-all text-xs" title="Lihat Detail">
+                                <i class="ri-eye-line"></i>
+                            </button>
+                            <a href="${waLink}" target="_blank" class="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center shadow-lg hover:bg-green-600 transition-all text-xs" title="Beli via WA">
+                                <i class="ri-whatsapp-line"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="p-3 bg-white/50 dark:bg-transparent">
+                        <h3 id="title-${p.id}" class="card-title font-bold text-sm mb-0.5 truncate">${p.title}</h3>
+                        <p id="price-${p.id}" class="text-accent-cyan font-bold text-xs">${p.price}</p>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        function renderServices() {
+            const container = document.getElementById('serviceContainer');
+            container.innerHTML = services.map((s, i) => `
+                <a href="#" class="block p-3 md:p-5 glass rounded-xl hover:bg-white dark:hover:bg-white/5 transition-all border-l-2 ${s.border} shadow-sm group" data-aos="fade-up" data-aos-delay="${i * 50}">
+                    <div class="flex items-center justify-between mb-2">
+                        <i class="${s.icon} text-2xl ${s.color}"></i>
+                    </div>
+                    <h3 class="text-xs md:text-sm font-bold mb-0.5 dark:text-white text-slate-900 group-hover:text-accent-cyan transition-colors">${s.title}</h3>
+                    <p class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400 truncate">${s.desc}</p>
+                </a>
+            `).join('');
+        }
+
+        window.openProductModal = (id) => {
+            const p = products.find(x => x.id === id);
+            if(!p || p.type === 'link') return;
+            
+            document.getElementById('modalImg').src = p.img;
+            document.getElementById('modalTitle').innerText = p.title;
+            document.getElementById('modalPrice').innerText = p.price;
+            document.getElementById('modalDesc').innerText = p.desc;
+            document.getElementById('modalCategory').innerText = p.category;
+            
+            const waUrl = `https://wa.me/6285161141114?text=Halo%20Malikfaza,%20saya%20tertarik%20membeli%20${encodeURIComponent(p.title)}`;
+            document.getElementById('modalWaLink').href = waUrl;
+            document.getElementById('modalDetailLink').href = "#";
+
+            document.getElementById('productModal').classList.remove('hidden');
+            document.getElementById('productModal').classList.add('flex');
+        };
+
+        // --- NEW EDIT FEATURES ---
+        let tempImageBase64 = null;
+
+        window.openEditModal = (id) => {
+            const p = products.find(x => x.id === id);
+            if(!p) return;
+            
+            tempImageBase64 = null; // Reset image buffer
+            document.getElementById('editId').value = id;
+            document.getElementById('editTitle').value = p.title;
+            document.getElementById('editPrice').value = p.price;
+            document.getElementById('editPreview').src = p.img;
+            document.getElementById('editImageUrl').value = "";
+            document.getElementById('editImageFile').value = ""; // Reset File input
+            
+            document.getElementById('editModal').classList.remove('hidden');
+            document.getElementById('editModal').classList.add('flex');
+        };
+
+        // Handle Image Upload / Drop
+        window.handleImageUpload = (file) => {
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('editPreview').src = e.target.result;
+                    tempImageBase64 = e.target.result; // Store for saving
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.updatePreviewFromUrl = (url) => {
+            if(url) {
+                document.getElementById('editPreview').src = url;
+                tempImageBase64 = url;
+            }
+        };
+
+        // Handle Drag & Drop
+        const dropZone = document.getElementById('dropZone');
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('drop-active'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('drop-active'), false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            window.handleImageUpload(files[0]);
+        });
+
+        // Handle Paste Image
+        function handlePasteImage(e) {
+            // Only handle paste if modal is open
+            if(document.getElementById('editModal').classList.contains('hidden')) return;
+
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let index in items) {
+                const item = items[index];
+                if (item.kind === 'file' && item.type.startsWith('image/')) {
+                    const blob = item.getAsFile();
+                    window.handleImageUpload(blob);
+                    // alert("Gambar berhasil di-paste!");
+                }
+            }
+        }
+
+        // Handle Edit Submit
+        document.getElementById('editForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editId').value;
+            const newTitle = document.getElementById('editTitle').value;
+            const newPrice = document.getElementById('editPrice').value;
+            
+            const p = products.find(x => x.id === id);
+            if(p) {
+                p.title = newTitle;
+                p.price = newPrice;
+                
+                // If new image was set via upload/paste/url
+                if(tempImageBase64) {
+                    p.img = tempImageBase64;
+                }
+                
+                // Update DOM directly to reflect changes without reload
+                renderProducts(); // Re-render to show updated image
+                
+                window.closeModal('editModal');
+                alert("Produk berhasil diupdate!");
+            }
+        });
+
+        window.closeModal = (id) => {
+            document.getElementById(id).classList.add('hidden');
+            document.getElementById(id).classList.remove('flex');
+        };
+
+        // Toggle Password Eye
+        window.togglePassword = () => {
+            const input = document.getElementById('adminPass');
+            const icon = document.getElementById('eyeIcon');
+            if(input.type === "password") {
+                input.type = "text";
+                icon.classList.remove('ri-eye-line');
+                icon.classList.add('ri-eye-off-line');
+            } else {
+                input.type = "password";
+                icon.classList.remove('ri-eye-off-line');
+                icon.classList.add('ri-eye-line');
+            }
+        };
+
+        // System
+        const themeBtn = document.getElementById('themeToggle');
+        themeBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            document.documentElement.classList.toggle('light');
+        });
+
+        const langBtn = document.getElementById('langToggle');
+        let curLang = 'id';
+        const txts = {
+            id: { hero_title_1: "Tingkatkan", hero_desc: "Pusat tools premium, jasa kreatif, dan aset digital berkualitas tinggi.", cta_shop: "Lihat Katalog" },
+            en: { hero_title_1: "Upgrade Your", hero_desc: "Premium tools hub, creative services, and high-quality digital assets.", cta_shop: "View Catalog" }
+        };
+        
+        langBtn.addEventListener('click', () => {
+            curLang = curLang === 'id' ? 'en' : 'id';
+            langBtn.innerText = curLang.toUpperCase();
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const k = el.getAttribute('data-i18n');
+                if(txts[curLang][k]) el.innerText = txts[curLang][k];
+            });
+        });
+
+        // Admin Auth
+        document.getElementById('adminLoginFooter') && document.getElementById('adminLoginFooter').addEventListener('click', showLogin);
+        document.getElementById('adminBtnMobile') && document.getElementById('adminBtnMobile').addEventListener('click', showLogin);
+
+        function showLogin() {
+            if(isAdmin) return alert("Sudah login.");
+            document.getElementById('loginModal').classList.remove('hidden');
+            document.getElementById('loginModal').classList.add('flex');
+        }
+
+        document.getElementById('adminForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const pass = document.getElementById('adminPass').value;
+            if(pass === 'malikfaza99') {
+                isAdmin = true;
+                localStorage.setItem('malikAdmin', 'true');
+                checkAdminState();
+                window.closeModal('loginModal');
+                renderProducts(); 
+                alert('Mode Owner Aktif!');
+            } else {
+                alert('Password salah!');
+            }
+        });
+
+        window.logoutAdmin = () => {
+            isAdmin = false;
+            localStorage.removeItem('malikAdmin');
+            checkAdminState();
+            renderProducts();
+            alert('Logout.');
+        };
+
+        function checkAdminState() {
+            const panel = document.getElementById('adminPanel');
+            if(isAdmin) panel.classList.remove('hidden');
+            else panel.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
