@@ -62,35 +62,22 @@
 
     <style>
         /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        .dark ::-webkit-scrollbar-thumb {
-            background: #334155;
-        }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #334155; }
 
-        /* Glassmorphism & Card Logic */
+        /* Glassmorphism */
         .glass {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        
         .light .glass {
             background: #fffefb; 
             border: 1px solid rgba(231, 229, 228, 0.6); 
-            box-shadow: 
-                0 4px 6px -1px rgba(0, 0, 0, 0.05), 
-                0 10px 15px -3px rgba(210, 180, 140, 0.1); 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
             backdrop-filter: none;
         }
         
@@ -107,20 +94,14 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        .drop-active {
-            border-color: #06b6d4 !important;
-            background-color: rgba(6, 182, 212, 0.1) !important;
-        }
+        .drop-active { border-color: #06b6d4 !important; background-color: rgba(6, 182, 212, 0.1) !important; }
+        .custom-checkbox:checked { background-color: #ef4444; border-color: #ef4444; }
         
-        .custom-checkbox:checked {
-            background-color: #ef4444;
-            border-color: #ef4444;
-        }
-
-        /* Selected Card Effect */
-        .card-selected {
-            border-color: #ef4444 !important;
+        /* Highlight kartu yang dipilih */
+        .card-selected { 
+            border: 2px solid #ef4444 !important; 
             transform: scale(0.98);
+            transition: all 0.2s ease;
         }
     </style>
 </head>
@@ -195,7 +176,6 @@
                     </a>
                 </div>
             </div>
-
             <div class="order-1 md:order-2 relative px-8 md:px-0" data-aos="fade-left">
                 <div class="relative z-10 animate-float">
                     <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop" alt="Digital Creative" class="rounded-2xl shadow-2xl border-2 border-white/10 w-full h-56 md:h-[500px] object-cover">
@@ -204,7 +184,7 @@
         </div>
     </header>
 
-    <!-- Admin Control Panel (Advanced) -->
+    <!-- Admin Control Panel (New Add Button) -->
     <div id="adminPanel" class="hidden container mx-auto px-6 mb-6">
         <div class="p-4 rounded-xl border border-accent-red bg-red-50 dark:bg-red-900/10 shadow-lg">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
@@ -213,23 +193,29 @@
                         <i class="ri-admin-line"></i> OWNER MODE
                     </h2>
                     <div class="text-[10px] text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-2">
-                        Status Database: <span id="dbStatus" class="font-bold text-red-500 flex items-center gap-1"><i class="ri-wifi-off-line"></i> Offline</span>
+                        Status: <span id="dbStatus" class="font-bold text-red-500">Offline</span>
                     </div>
                 </div>
                 <button onclick="window.logoutAdmin()" class="text-xs underline text-red-600 dark:text-red-400 font-bold">Logout</button>
             </div>
             
-            <!-- Action Buttons -->
+            <!-- Action Buttons Grid -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                <!-- Add Product Button (New) -->
+                <button id="btnAdd" onclick="window.openAddModal()" class="col-span-2 md:col-span-1 px-3 py-2 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-1 shadow-lg shadow-green-900/20">
+                    <i class="ri-add-circle-line text-sm"></i> Tambah Produk
+                </button>
+
                 <button id="btnDelete" onclick="window.deleteSelected()" class="px-3 py-2 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-1">
                     <i class="ri-delete-bin-line"></i> Hapus Terpilih
                 </button>
+                
                 <button id="btnReset" onclick="window.uploadDefaultData()" class="px-3 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1">
                     <i class="ri-database-2-line"></i> Reset Data Asli
                 </button>
-                <div class="col-span-2 md:col-span-2 text-[10px] text-gray-500 flex items-center italic">
-                    *Centang kotak di kartu untuk memilih.
-                </div>
+            </div>
+            <div class="text-[10px] text-gray-500 mt-2 italic text-center md:text-left">
+                *Centang kotak untuk hapus banyak. Klik pensil untuk edit/hapus satu.
             </div>
         </div>
     </div>
@@ -239,20 +225,14 @@
         <div class="container mx-auto px-6">
             <div class="text-center mb-8 md:mb-16" data-aos="fade-up">
                 <h2 class="text-2xl md:text-4xl font-heading font-bold mb-2 dark:text-white text-slate-900"><span class="text-accent-cyan">Digital</span> Catalog</h2>
-                <p class="text-xs md:text-base text-gray-500 dark:text-gray-400 max-w-xl mx-auto" data-i18n="products_subtitle">
-                    Koleksi tools premium pilihan.
-                </p>
+                <p class="text-xs md:text-base text-gray-500 dark:text-gray-400 max-w-xl mx-auto" data-i18n="products_subtitle">Koleksi tools premium pilihan.</p>
             </div>
-
-            <!-- Filter -->
             <div class="flex overflow-x-auto gap-2 md:gap-4 mb-8 pb-2 md:pb-0 justify-start md:justify-center no-scrollbar px-1" id="categoryFilters">
                 <!-- JS Generated -->
             </div>
-
-            <!-- Product Container: Grid 2 Baris Horizontal (Mobile) & Grid 4 Kolom (Desktop) -->
+            <!-- Grid 2 Baris Horizontal (Mobile) -->
             <div class="relative group">
-                <!-- Grid CSS Modified for 2-Row Horizontal Scroll on Mobile -->
-                <div id="productContainer" class="grid grid-rows-2 grid-flow-col auto-cols-[10rem] md:auto-cols-[14rem] gap-4 overflow-x-auto snap-x md:grid-rows-none md:grid-flow-row md:grid-cols-3 lg:grid-cols-4 md:gap-6 pb-6 no-scrollbar">
+                <div id="productContainer" class="grid grid-rows-2 grid-flow-col auto-cols-[10rem] md:auto-cols-[14rem] h-[340px] md:h-auto gap-4 overflow-x-auto snap-x md:grid-rows-none md:grid-flow-row md:grid-cols-3 lg:grid-cols-4 md:gap-6 pb-6 no-scrollbar">
                     <!-- JS Generated -->
                 </div>
             </div>
@@ -271,7 +251,6 @@
                     Konsultasi Gratis <i class="ri-whatsapp-line"></i>
                 </a>
             </div>
-
             <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8" id="serviceContainer">
                 <!-- JS Generated -->
             </div>
@@ -284,30 +263,20 @@
             <div class="grid md:grid-cols-4 gap-8 mb-8">
                 <div class="md:col-span-2">
                     <h3 class="text-xl font-heading font-bold mb-3 dark:text-white text-slate-900">Malikfaza.Studio</h3>
-                    <p class="text-gray-500 mb-4 max-w-sm text-xs leading-relaxed">
-                        Partner digital terpercaya di Majalengka, Jawa Barat.
-                    </p>
+                    <p class="text-gray-500 mb-4 max-w-sm text-xs leading-relaxed">Partner digital terpercaya di Majalengka, Jawa Barat.</p>
                     <div class="flex gap-3">
                         <a href="#" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-slate-600 dark:text-white hover:bg-accent-cyan hover:text-white transition-all"><i class="ri-instagram-line"></i></a>
                         <a href="#" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-slate-600 dark:text-white hover:bg-accent-red hover:text-white transition-all"><i class="ri-youtube-fill"></i></a>
                         <a href="https://lynk.id/malikfaza" target="_blank" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-slate-600 dark:text-white hover:bg-accent-green hover:text-white transition-all"><i class="ri-shopping-bag-3-fill"></i></a>
                     </div>
                 </div>
-                
                 <div>
                     <h4 class="font-bold text-sm mb-3 dark:text-white text-slate-900">Contact</h4>
                     <ul class="space-y-2 text-gray-500 text-xs">
-                        <li class="flex items-center gap-2">
-                            <i class="ri-whatsapp-line text-green-500"></i>
-                            <a href="https://wa.me/6285161141114?text=Halo" class="hover:text-accent-cyan">+62 851-6114-1114</a>
-                        </li>
-                        <li class="flex items-center gap-2">
-                            <i class="ri-mail-line text-accent-red"></i>
-                            <a href="mailto:abdul.m4lik1999@gmail.com" class="hover:text-accent-cyan break-all">abdul.m4lik1999@gmail.com</a>
-                        </li>
+                        <li class="flex items-center gap-2"><i class="ri-whatsapp-line text-green-500"></i><a href="https://wa.me/6285161141114?text=Halo" class="hover:text-accent-cyan">+62 851-6114-1114</a></li>
+                        <li class="flex items-center gap-2"><i class="ri-mail-line text-accent-red"></i><a href="mailto:abdul.m4lik1999@gmail.com" class="hover:text-accent-cyan break-all">abdul.m4lik1999@gmail.com</a></li>
                     </ul>
                 </div>
-
                 <div>
                     <h4 class="font-bold text-sm mb-3 dark:text-white text-slate-900">Links</h4>
                     <ul class="space-y-2 text-gray-500 text-xs">
@@ -317,7 +286,6 @@
                     </ul>
                 </div>
             </div>
-            
             <div class="border-t border-gray-200 dark:border-white/10 pt-6 text-center text-gray-500 text-[10px]">
                 &copy; 2024 Malikfaza Studio. All rights reserved.
             </div>
@@ -326,55 +294,75 @@
 
     <!-- Login Modal -->
     <div id="loginModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-        <div class="glass p-6 rounded-2xl w-full max-w-xs mx-auto relative dark:bg-black/50 bg-white shadow-2xl transform transition-all">
+        <div class="glass p-6 rounded-2xl w-full max-w-xs mx-auto relative dark:bg-black/50 bg-white shadow-2xl">
             <button onclick="window.closeModal('loginModal')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500"><i class="ri-close-line text-xl"></i></button>
             <h3 class="text-lg font-bold mb-4 text-center dark:text-white text-slate-900">Admin Login</h3>
             <form id="adminForm" class="space-y-4">
                 <div class="relative">
                     <input type="password" id="adminPass" class="w-full pl-4 pr-10 py-2.5 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 focus:border-accent-cyan focus:outline-none dark:text-white text-slate-900 text-sm" placeholder="Password">
-                    <button type="button" onclick="togglePassword()" class="absolute right-3 top-2.5 text-gray-500 hover:text-accent-cyan">
-                        <i id="eyeIcon" class="ri-eye-line text-lg"></i>
-                    </button>
+                    <button type="button" onclick="togglePassword()" class="absolute right-3 top-2.5 text-gray-500 hover:text-accent-cyan"><i id="eyeIcon" class="ri-eye-line text-lg"></i></button>
                 </div>
                 <button type="submit" class="w-full py-2.5 bg-accent-cyan text-white rounded-lg font-bold hover:bg-cyan-600 transition-all text-sm shadow-lg">Login</button>
             </form>
         </div>
     </div>
 
-    <!-- Edit Modal -->
+    <!-- Edit/Add Modal (Multipurpose) -->
     <div id="editModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4">
         <div class="glass dark:bg-midnight bg-white p-6 rounded-2xl w-full max-w-md mx-auto relative shadow-2xl max-h-[90vh] overflow-y-auto">
             <button onclick="window.closeModal('editModal')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500"><i class="ri-close-line text-xl"></i></button>
-            <h3 class="text-lg font-bold mb-4 text-center dark:text-white text-slate-900">Edit Produk</h3>
+            
+            <h3 id="modalFormTitle" class="text-lg font-bold mb-4 text-center dark:text-white text-slate-900">Edit Produk</h3>
             
             <form id="editForm" class="space-y-4">
                 <input type="hidden" id="editId">
+                
+                <!-- Image Preview Area -->
                 <div class="w-full h-32 bg-gray-200 dark:bg-black/30 rounded-lg overflow-hidden flex items-center justify-center border border-gray-500/30 relative group">
                     <img id="editPreview" src="" class="w-full h-full object-cover">
+                    <div id="previewPlaceholder" class="absolute flex flex-col items-center text-gray-400 pointer-events-none">
+                        <i class="ri-image-line text-3xl"></i>
+                        <span class="text-[10px]">Preview</span>
+                    </div>
                 </div>
+
+                <!-- Image Input -->
                 <div class="space-y-2">
-                    <label class="text-xs text-gray-500 block">Ganti Gambar (Upload/Paste/URL)</label>
-                    <div id="dropZone" class="border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg p-4 text-center transition-colors cursor-pointer relative hover:border-accent-cyan hover:bg-accent-cyan/5">
+                    <label class="text-xs text-gray-500 block">Gambar (Upload/Paste/URL)</label>
+                    <div id="dropZone" class="border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg p-3 text-center transition-colors cursor-pointer relative hover:border-accent-cyan hover:bg-accent-cyan/5">
                         <input type="file" id="editImageFile" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleImageUpload(this.files[0])">
-                        <div class="pointer-events-none">
-                            <i class="ri-upload-cloud-2-line text-2xl text-gray-400"></i>
-                            <p class="text-[10px] text-gray-500 mt-1">Klik upload, Drag & Drop, atau <b>CTRL+V</b> (Paste)</p>
-                        </div>
+                        <div class="pointer-events-none"><i class="ri-upload-cloud-2-line text-xl text-gray-400"></i><p class="text-[10px] text-gray-500 mt-1">Klik upload, Drag, atau <b>CTRL+V</b></p></div>
                     </div>
                     <div class="flex gap-2 items-center">
                         <span class="text-[10px] text-gray-400">ATAU</span>
                         <input type="text" id="editImageUrl" placeholder="Paste link gambar..." class="flex-1 px-3 py-1.5 rounded text-xs dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white" onchange="updatePreviewFromUrl(this.value)">
                     </div>
                 </div>
+
+                <!-- Text Inputs -->
+                <div><label class="text-xs text-gray-500 mb-1 block">Judul Katalog</label><input type="text" id="editTitle" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan" required></div>
+                <div><label class="text-xs text-gray-500 mb-1 block">Harga</label><input type="text" id="editPrice" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan" required></div>
+                
+                <!-- Category Select (New) -->
                 <div>
-                    <label class="text-xs text-gray-500 mb-1 block">Judul Katalog</label>
-                    <input type="text" id="editTitle" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan">
+                    <label class="text-xs text-gray-500 mb-1 block">Kategori</label>
+                    <select id="editCategory" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan">
+                        <option value="app">Premium Apps</option>
+                        <option value="gem">Tools/Gems</option>
+                        <option value="class">Masterclass</option>
+                        <option value="activation">Akun Premium</option>
+                        <option value="invite">Undangan Digital</option>
+                    </select>
                 </div>
-                <div>
-                    <label class="text-xs text-gray-500 mb-1 block">Harga</label>
-                    <input type="text" id="editPrice" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan">
+
+                <div class="flex gap-2 pt-2">
+                    <!-- Tombol Hapus Individual (Merah, hanya muncul saat Edit) -->
+                    <button type="button" id="btnDeleteIndividual" onclick="window.deleteCurrentProduct()" class="hidden px-3 py-2 bg-red-600/20 text-red-500 border border-red-600/50 rounded-lg hover:bg-red-600 hover:text-white transition-colors">
+                        <i class="ri-delete-bin-line"></i>
+                    </button>
+                    <!-- Tombol Simpan (Hijau) -->
+                    <button type="submit" class="flex-1 py-2.5 bg-accent-green text-white rounded-lg font-bold hover:bg-green-600 transition-all text-sm shadow-lg">Simpan</button>
                 </div>
-                <button type="submit" class="w-full py-2.5 bg-accent-green text-white rounded-lg font-bold hover:bg-green-600 transition-all text-sm shadow-lg">Simpan Perubahan</button>
             </form>
         </div>
     </div>
@@ -387,16 +375,11 @@
                 <button onclick="window.closeModal('productModal')" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-red-500 transition-colors backdrop-blur"><i class="ri-close-line text-xl"></i></button>
             </div>
             <div class="p-5 overflow-y-auto">
-                <div class="flex justify-between items-start mb-2">
-                    <span id="modalCategory" class="text-[10px] font-bold px-2 py-1 rounded bg-accent-cyan/10 text-accent-cyan uppercase tracking-wider">APP</span>
-                    <span id="modalPrice" class="text-lg font-bold text-accent-yellow">Rp 0</span>
-                </div>
+                <div class="flex justify-between items-start mb-2"><span id="modalCategory" class="text-[10px] font-bold px-2 py-1 rounded bg-accent-cyan/10 text-accent-cyan uppercase tracking-wider">APP</span><span id="modalPrice" class="text-lg font-bold text-accent-yellow">Rp 0</span></div>
                 <h3 id="modalTitle" class="text-xl font-bold mb-2 dark:text-white text-slate-900">Title</h3>
                 <p id="modalDesc" class="text-gray-500 dark:text-gray-400 mb-6 text-xs leading-relaxed">Description.</p>
                 <a href="#" id="modalDetailLink" class="block w-full text-center py-3 bg-gray-200 dark:bg-gray-700 dark:text-white text-gray-700 rounded-xl font-bold text-sm mb-2">Detail (Coming Soon)</a>
-                <a id="modalWaLink" href="#" target="_blank" class="block w-full text-center py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-green-900/20 flex items-center justify-center gap-2 text-sm">
-                    <i class="ri-whatsapp-line text-lg"></i> Order via WhatsApp
-                </a>
+                <a id="modalWaLink" href="#" target="_blank" class="block w-full text-center py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-green-900/20 flex items-center justify-center gap-2 text-sm"><i class="ri-whatsapp-line text-lg"></i> Order via WhatsApp</a>
             </div>
         </div>
     </div>
@@ -500,7 +483,6 @@
                                 products.sort((a,b) => a.id.localeCompare(b.id)); 
                                 renderProducts();
                             } else {
-                                // If DB is explicitly empty (after full delete), products = []
                                 products = [];
                                 renderProducts();
                             }
@@ -508,13 +490,39 @@
                     }
                 });
             }
+            
+            // Manually Attach Button Listeners
+            document.getElementById('btnDelete').addEventListener('click', deleteSelected);
+            document.getElementById('btnReset').addEventListener('click', uploadDefaultData);
+            document.getElementById('btnAdd').addEventListener('click', openAddModal);
         });
         
-        // --- ATTACH TO WINDOW EXPLICITLY ---
-        
+        // --- ADD NEW: Open Modal in Add Mode ---
+        function openAddModal() {
+            // Reset Form for Add Mode
+            document.getElementById('editForm').reset();
+            document.getElementById('editId').value = ""; // Empty ID = New Product
+            document.getElementById('modalFormTitle').innerText = "Tambah Produk Baru";
+            
+            // Reset Preview
+            document.getElementById('editPreview').src = "";
+            document.getElementById('previewPlaceholder').style.display = "flex";
+            
+            // Reset Dropzone & Image input
+            document.getElementById('editImageFile').value = "";
+            tempImageBase64 = null;
+
+            // Hide Individual Delete Button
+            document.getElementById('btnDeleteIndividual').classList.add('hidden');
+
+            document.getElementById('editModal').classList.remove('hidden');
+            document.getElementById('editModal').classList.add('flex');
+        }
+
+        window.openAddModal = openAddModal; // Expose to window
+
         // --- UPLOAD DEFAULT DATA (RESET) ---
-        window.uploadDefaultData = async () => {
-            console.log("Reset clicked");
+        async function uploadDefaultData() {
             if(!db) return alert("Firebase belum terkoneksi atau error! Pastikan koneksi internet lancar.");
             if(!confirm("⚠️ PERINGATAN: Ini akan MENGHAPUS semua data saat ini dan menggantinya dengan DATA ASLI (Default). Yakin?")) return;
             
@@ -525,15 +533,12 @@
 
             try {
                 const batch = writeBatch(db);
-                
-                // Overwrite with defaults
                 for (const p of defaultProducts) {
                     const ref = doc(db, "products", p.id);
                     batch.set(ref, p);
                 }
-                
                 await batch.commit();
-                alert(`✅ Database berhasil di-reset ke Data Asli (${defaultProducts.length} item).`);
+                alert(`✅ Reset Berhasil!`);
             } catch (e) {
                 console.error(e);
                 alert("Gagal reset: " + e.message);
@@ -543,7 +548,6 @@
             }
         };
 
-        // --- TOGGLE SELECT ---
         window.toggleSelect = (id) => {
             const card = document.getElementById(`card-${id}`);
             if (selectedIds.has(id)) {
@@ -555,9 +559,7 @@
             }
         };
 
-        // --- DELETE SELECTED ---
-        window.deleteSelected = async () => {
-            console.log("Delete clicked", selectedIds);
+        async function deleteSelected() {
             if (selectedIds.size === 0) return alert("Pilih minimal satu produk untuk dihapus (centang kotak).");
             if(!confirm(`Yakin ingin menghapus ${selectedIds.size} produk ini selamanya?`)) return;
 
@@ -584,7 +586,6 @@
                     btn.disabled = false;
                 }
             } else {
-                // Offline fallback logic
                 products = products.filter(p => !selectedIds.has(p.id));
                 selectedIds.clear();
                 renderProducts();
@@ -593,6 +594,10 @@
                 btn.disabled = false;
             }
         };
+
+        // Expose functions to window for HTML access
+        window.uploadDefaultData = uploadDefaultData;
+        window.deleteSelected = deleteSelected;
 
         // --- MUSIC ---
         let isPlaying = false;
@@ -663,9 +668,7 @@
                     <div class="h-32 md:h-48 overflow-hidden relative bg-gray-200 dark:bg-gray-800">
                         <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-black/30"></div>
-                        
                         <span class="absolute top-2 left-2 bg-black/60 backdrop-blur text-[9px] font-bold px-1.5 py-0.5 rounded text-white border border-white/20 uppercase">${p.category}</span>
-                        
                         ${isAdmin ? `
                         <div class="absolute top-2 right-2 z-40 flex flex-col gap-1 items-end" onclick="event.stopPropagation()">
                             <input type="checkbox" onchange="window.toggleSelect('${p.id}')" class="custom-checkbox w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer bg-white">
@@ -674,17 +677,11 @@
                             </button>
                         </div>
                         ` : ''}
-
                         <div class="absolute bottom-2 right-2 flex gap-1.5 z-30">
-                             <button onclick="window.openProductModal('${p.id}')" class="w-7 h-7 rounded-full bg-white text-slate-900 flex items-center justify-center shadow-lg hover:bg-accent-cyan hover:text-white transition-all text-xs" title="Lihat Detail">
-                                <i class="ri-eye-line"></i>
-                            </button>
-                            <a href="${waLink}" target="_blank" class="w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center shadow-lg hover:bg-green-600 transition-all text-xs" title="Beli via WA">
-                                <i class="ri-whatsapp-line"></i>
-                            </a>
+                             <button onclick="window.openProductModal('${p.id}')" class="w-7 h-7 rounded-full bg-white text-slate-900 flex items-center justify-center shadow-lg hover:bg-accent-cyan hover:text-white transition-all text-xs" title="Lihat Detail"><i class="ri-eye-line"></i></button>
+                            <a href="${waLink}" target="_blank" class="w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center shadow-lg hover:bg-green-600 transition-all text-xs" title="Beli via WA"><i class="ri-whatsapp-line"></i></a>
                         </div>
                     </div>
-                    
                     <div class="p-3 bg-white/50 dark:bg-transparent">
                         <h3 id="title-${p.id}" class="card-title font-bold text-xs md:text-sm mb-0.5 truncate">${p.title}</h3>
                         <p id="price-${p.id}" class="text-accent-cyan font-bold text-xs">${p.price}</p>
@@ -728,14 +725,50 @@
             const p = products.find(x => x.id === id);
             if(!p) return;
             tempImageBase64 = null;
+            
+            // Set Form Values
             document.getElementById('editId').value = id;
             document.getElementById('editTitle').value = p.title;
             document.getElementById('editPrice').value = p.price;
+            document.getElementById('editCategory').value = p.category;
+            
+            // Set Modal Title
+            document.getElementById('modalFormTitle').innerText = "Edit Produk";
+            
+            // Set Preview
             document.getElementById('editPreview').src = p.img;
+            document.getElementById('previewPlaceholder').style.display = "none";
+            
             document.getElementById('editImageUrl').value = "";
             document.getElementById('editImageFile').value = "";
+            
+            // Show Individual Delete Button
+            document.getElementById('btnDeleteIndividual').classList.remove('hidden');
+            
             document.getElementById('editModal').classList.remove('hidden');
             document.getElementById('editModal').classList.add('flex');
+        };
+
+        // --- NEW: DELETE INDIVIDUAL (INSIDE EDIT MODAL) ---
+        window.deleteCurrentProduct = async () => {
+            const id = document.getElementById('editId').value;
+            if(!id) return;
+            
+            if(!confirm("Yakin hapus produk ini?")) return;
+            
+            if(db) {
+                try {
+                    await deleteDoc(doc(db, "products", id));
+                    alert("Terhapus!");
+                    window.closeModal('editModal');
+                } catch(e) {
+                    alert("Gagal: " + e.message);
+                }
+            } else {
+                products = products.filter(p => p.id !== id);
+                renderProducts();
+                window.closeModal('editModal');
+            }
         };
 
         window.handleImageUpload = (file) => {
@@ -743,6 +776,7 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     document.getElementById('editPreview').src = e.target.result;
+                    document.getElementById('previewPlaceholder').style.display = "none";
                     tempImageBase64 = e.target.result;
                 };
                 reader.readAsDataURL(file);
@@ -752,6 +786,7 @@
         window.updatePreviewFromUrl = (url) => {
             if(url) {
                 document.getElementById('editPreview').src = url;
+                document.getElementById('previewPlaceholder').style.display = "none";
                 tempImageBase64 = url;
             }
         };
@@ -783,6 +818,7 @@
             }
         }
 
+        // --- SUBMIT FORM (HANDLE BOTH ADD AND EDIT) ---
         document.getElementById('editForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button[type="submit"]');
@@ -790,27 +826,47 @@
             btn.disabled = true;
 
             const id = document.getElementById('editId').value;
-            const newTitle = document.getElementById('editTitle').value;
-            const newPrice = document.getElementById('editPrice').value;
+            const title = document.getElementById('editTitle').value;
+            const price = document.getElementById('editPrice').value;
+            const category = document.getElementById('editCategory').value;
             
-            const p = products.find(x => x.id === id);
-            if(p) {
-                p.title = newTitle;
-                p.price = newPrice;
-                if(tempImageBase64) p.img = tempImageBase64;
-                
-                renderProducts();
-                window.closeModal('editModal');
+            // Logic: if ID exists -> Update, if ID empty -> Create New
+            let productId = id ? id : 'prod-' + Date.now();
+            
+            const newProductData = {
+                id: productId,
+                title: title,
+                price: price,
+                category: category,
+                img: tempImageBase64 ? tempImageBase64 : (id ? document.getElementById('editPreview').src : 'https://picsum.photos/300/200'),
+                desc: 'Deskripsi produk.' // Default desc for now
+            };
 
-                if(db) {
-                    try {
-                        await setDoc(doc(db, "products", id), p);
-                    } catch (err) {
-                        alert("Gagal simpan ke server: " + err.message);
-                    }
-                }
+            // Local Update (Optimistic)
+            if(id) {
+                // Edit Mode
+                const idx = products.findIndex(p => p.id === id);
+                if(idx !== -1) products[idx] = newProductData;
+            } else {
+                // Add Mode
+                products.push(newProductData);
             }
-            btn.innerText = "Simpan Perubahan";
+            
+            renderProducts();
+            window.closeModal('editModal');
+
+            // Cloud Update
+            if(db) {
+                try {
+                    await setDoc(doc(db, "products", productId), newProductData);
+                } catch (err) {
+                    alert("Gagal simpan ke server: " + err.message);
+                }
+            } else {
+                alert("Disimpan Lokal (Offline)");
+            }
+            
+            btn.innerText = "Simpan";
             btn.disabled = false;
         });
 
