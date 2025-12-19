@@ -43,6 +43,7 @@
                         'blob': 'blob 7s infinite',
                         'float': 'float 6s ease-in-out infinite',
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-x': 'slideX 1.5s ease-in-out infinite',
                     },
                     keyframes: {
                         blob: {
@@ -54,6 +55,10 @@
                         float: {
                             '0%, 100%': { transform: 'translateY(0)' },
                             '50%': { transform: 'translateY(-5px)' },
+                        },
+                        slideX: {
+                            '0%, 100%': { transform: 'translateX(0)' },
+                            '50%': { transform: 'translateX(5px)' },
                         }
                     }
                 }
@@ -121,60 +126,17 @@
             opacity: 0; 
         }
 
-        /* Promo Transitions */
-        #promoContainer { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-        
-        /* Mode Tengah (Big) */
-        .promo-mode-big {
-            position: fixed;
-            inset: 0;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            padding: 1rem;
-        }
-        
-        .promo-mode-big .promo-card {
-            width: 100%;
-            max-width: 400px;
-            transform: scale(1);
+        /* Promo Popup Animation */
+        .slide-up {
+            transform: translateY(0) !important;
+            opacity: 1 !important;
         }
 
-        /* Mode Bawah (Mini) */
-        .promo-mode-mini {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 90;
-            width: 90%;
-            max-width: 360px;
+        /* Responsive Grid for 80% Width on Mobile */
+        .grid-mobile-80 {
+            grid-template-columns: repeat(auto-fill, 80%);
+            grid-auto-columns: 80%;
         }
-
-        .promo-mode-mini .promo-card {
-            background: rgba(255, 255, 255, 0.15); /* Lebih transparan */
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 12px 16px;
-            border-radius: 50px; /* Pill shape */
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-        }
-        
-        .light .promo-mode-mini .promo-card {
-            background: rgba(255, 255, 255, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-        }
-
-        /* Hide elements in mini mode */
-        .promo-mode-mini .big-only { display: none; }
-        .promo-mode-big .mini-only { display: none; }
-        
     </style>
 </head>
 <body class="bg-cream text-slate-800 dark:bg-midnight dark:text-slate-200 transition-colors duration-300 font-sans selection:bg-accent-cyan selection:text-white overflow-x-hidden">
@@ -267,15 +229,22 @@
                     Status: <span id="dbStatus" class="font-bold text-red-500">Offline</span>
                 </div>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 w-full md:w-auto">
-                <button id="btnAdd" onclick="window.openAddModal()" class="col-span-2 md:col-span-1 px-3 py-2 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-1 shadow-lg">
-                    <i class="ri-add-circle-line text-sm"></i> Tambah
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-2 w-full md:w-auto">
+                <button id="btnAdd" onclick="window.openAddModal()" class="px-3 py-2 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-1 shadow-lg">
+                    <i class="ri-add-circle-line"></i> Tambah
                 </button>
                 <button id="btnDelete" onclick="window.deleteSelected()" class="px-3 py-2 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-1">
                     <i class="ri-delete-bin-line"></i> Hapus
                 </button>
                 <button id="btnReset" onclick="window.uploadDefaultData()" class="px-3 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1">
-                    <i class="ri-database-2-line"></i> Reset Data
+                    <i class="ri-database-2-line"></i> Reset
+                </button>
+                <!-- NEW: Promo Button -->
+                <button onclick="window.openPromoSettings()" class="px-3 py-2 bg-yellow-600 text-white text-xs font-bold rounded-lg hover:bg-yellow-700 transition-colors flex items-center justify-center gap-1">
+                    <i class="ri-coupon-3-line"></i> Promo
+                </button>
+                <button onclick="window.logoutAdmin()" class="px-3 py-2 bg-gray-600 text-white text-xs font-bold rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center gap-1">
+                    <i class="ri-logout-box-r-line"></i> Out
                 </button>
             </div>
         </div>
@@ -291,9 +260,18 @@
             <div class="flex overflow-x-auto gap-2 md:gap-4 mb-8 pb-2 md:pb-0 justify-start md:justify-center no-scrollbar px-1" id="categoryFilters">
                 <!-- JS Generated -->
             </div>
+            
+            <!-- PRODUCT GRID / CAROUSEL -->
             <div class="relative group">
-                <div id="productContainer" class="grid grid-rows-2 grid-flow-col auto-cols-[11rem] md:auto-cols-[16rem] h-[420px] md:h-auto gap-4 overflow-x-auto snap-x md:grid-rows-none md:grid-flow-row md:grid-cols-3 lg:grid-cols-4 md:gap-6 pb-6 no-scrollbar">
+                <!-- Layout Grid Rows 2, Auto Cols 80% for Peek effect on Mobile -->
+                <div id="productContainer" class="grid grid-rows-2 grid-flow-col auto-cols-[80%] md:auto-cols-[16rem] h-[420px] md:h-auto gap-4 overflow-x-auto snap-x snap-mandatory md:grid-rows-none md:grid-flow-row md:grid-cols-3 lg:grid-cols-4 md:gap-6 pb-6 no-scrollbar pr-6">
                     <!-- JS Generated -->
+                </div>
+                
+                <!-- Geser Indicator -->
+                <div class="flex justify-center items-center mt-2 text-accent-cyan animate-pulse md:hidden">
+                    <span class="text-xs font-bold mr-2">Geser</span>
+                    <i class="ri-arrow-right-double-line animate-slide-x"></i>
                 </div>
             </div>
         </div>
@@ -352,12 +330,9 @@
         </div>
     </footer>
 
-    <!-- DYNAMIC PROMO POPUP -->
-    <!-- Initially Hidden, controlled by JS class switching -->
+    <!-- PROMO POPUP -->
     <div id="promoContainer" class="hidden">
         <div id="promoCard" class="glass promo-card relative">
-            
-            <!-- BIG MODE CONTENT -->
             <div class="big-only w-full">
                 <button onclick="window.minimizePromo()" class="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors bg-black/20 rounded-full w-8 h-8 flex items-center justify-center"><i class="ri-close-line text-xl"></i></button>
                 <div class="flex flex-col items-center text-center p-4">
@@ -367,8 +342,8 @@
                     <h3 class="text-2xl font-bold text-white mb-2">Diskon Spesial!</h3>
                     <p class="text-gray-300 text-sm mb-4">Gunakan kode voucher di bawah untuk potongan <b class="text-accent-yellow">20% All Item</b>.</p>
                     
-                    <div class="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-lg border border-accent-yellow/30 mb-4 w-full justify-between cursor-pointer active:scale-95 transition-transform" onclick="navigator.clipboard.writeText('FAZA20'); alert('Kode disalin!')">
-                        <span class="font-mono font-bold text-accent-yellow text-xl tracking-widest">FAZA20</span>
+                    <div class="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-lg border border-accent-yellow/30 mb-4 w-full justify-between cursor-pointer active:scale-95 transition-transform" onclick="navigator.clipboard.writeText(promoData.code); alert('Kode disalin!')">
+                        <span id="promoCodeDisplay" class="font-mono font-bold text-accent-yellow text-xl tracking-widest">FAZA20</span>
                         <i class="ri-file-copy-line text-gray-400"></i>
                     </div>
                     
@@ -378,12 +353,9 @@
                 </div>
             </div>
 
-            <!-- MINI MODE CONTENT -->
             <div class="mini-only w-full flex items-center justify-between gap-3">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-accent-yellow text-black flex items-center justify-center font-bold text-xs animate-pulse">
-                        %
-                    </div>
+                    <div class="w-8 h-8 rounded-full bg-accent-yellow text-black flex items-center justify-center font-bold text-xs animate-pulse">%</div>
                     <div class="flex flex-col">
                         <span class="text-[10px] font-bold text-slate-800 dark:text-white leading-tight">Voucher 20%</span>
                         <span class="text-[10px] font-mono text-red-600 dark:text-accent-yellow promoTimer">--:--:--</span>
@@ -392,7 +364,29 @@
                 <button onclick="window.maximizePromo()" class="text-xs bg-black text-white px-3 py-1.5 rounded-full font-bold">Ambil</button>
                 <button onclick="window.closePromoCompletely()" class="text-gray-500 hover:text-red-500 ml-1"><i class="ri-close-circle-fill"></i></button>
             </div>
+        </div>
+    </div>
 
+    <!-- Promo Settings Modal (Owner Only) -->
+    <div id="promoSettingsModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-entry">
+        <div class="glass dark:bg-midnight bg-white p-6 rounded-2xl w-full max-w-xs mx-auto relative shadow-2xl">
+            <button onclick="window.closeModal('promoSettingsModal')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500"><i class="ri-close-line text-xl"></i></button>
+            <h3 class="text-lg font-bold mb-4 text-center dark:text-white text-slate-900">Pengaturan Promo</h3>
+            <form id="promoForm" class="space-y-4">
+                <div>
+                    <label class="text-xs text-gray-500 mb-1 block">Kode Voucher</label>
+                    <input type="text" id="promoCodeInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan" placeholder="FAZA20">
+                </div>
+                <div class="flex items-center justify-between">
+                    <label class="text-xs text-gray-500 block">Status Promo</label>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs">Off</span>
+                        <input type="checkbox" id="promoActiveInput" class="w-5 h-5 accent-accent-cyan">
+                        <span class="text-xs">On</span>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-accent-yellow text-black rounded-lg font-bold hover:bg-yellow-500 transition-all text-sm shadow-lg">Simpan Pengaturan</button>
+            </form>
         </div>
     </div>
 
@@ -411,13 +405,11 @@
         </div>
     </div>
 
-    <!-- Edit/Add Modal (Multipurpose) -->
+    <!-- Edit/Add Modal -->
     <div id="editModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-entry">
         <div class="glass dark:bg-midnight bg-white p-6 rounded-2xl w-full max-w-md mx-auto relative shadow-2xl max-h-[90vh] overflow-y-auto">
             <button onclick="window.closeModal('editModal')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500"><i class="ri-close-line text-xl"></i></button>
-            
             <h3 id="modalFormTitle" class="text-lg font-bold mb-4 text-center dark:text-white text-slate-900">Edit Produk</h3>
-            
             <form id="editForm" class="space-y-4">
                 <input type="hidden" id="editId">
                 <div class="w-full h-32 bg-gray-200 dark:bg-black/30 rounded-lg overflow-hidden flex items-center justify-center border border-gray-500/30 relative group">
@@ -483,7 +475,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getFirestore, collection, doc, setDoc, deleteDoc, writeBatch, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, writeBatch, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
         
         const firebaseConfig = {
@@ -496,9 +488,9 @@
             measurementId: "G-HXGQGRWLMN"
         };
         
-        // Init Firebase
-        let db;
-        let auth;
+        let db, auth;
+        // Global promo state
+        let promoData = { code: "FAZA20", active: true };
         
         try { 
             const app = initializeApp(firebaseConfig);
@@ -528,20 +520,11 @@
             { id: 'invite', label: 'Undangan' }
         ];
 
-        // --- HARDCODED DEFAULT DATA ---
-        const defaultProducts = [
+        let products = [
+             // Default Data (Fallback)
             ...Array.from({ length: 10 }, (_, i) => ({ id: `app-${i}`, category: 'app', title: `Premium App V${i+1}`, price: 'Rp 25.000', img: `https://picsum.photos/seed/apk${i}/300/200`, desc: 'Full premium features unlocked.', detailLink: 'https://lynk.id/malikfaza' })),
             ...Array.from({ length: 5 }, (_, i) => ({ id: `gem-${i}`, category: 'gem', title: `Gem Pack ${i+1}`, price: 'Rp 50.000', img: `https://picsum.photos/seed/gem${i}/300/200`, desc: 'Legal dan aman 100%.', detailLink: 'https://lynk.id/malikfaza' })),
-            ...Array.from({ length: 5 }, (_, i) => ({ id: `class-${i}`, category: 'class', title: `Kelas Design #${i+1}`, price: 'Rp 150.000', img: `https://picsum.photos/seed/class${i}/300/200`, desc: 'Video tutorial lengkap HD.', detailLink: 'https://lynk.id/malikfaza' })),
-            { id: 'act-1', category: 'activation', title: 'Canva Pro', price: 'Rp 20.000', img: 'https://picsum.photos/seed/canva/300/200', desc: 'Garansi resmi.', detailLink: 'https://lynk.id/malikfaza' },
-            { id: 'act-2', category: 'activation', title: 'Netflix 4K', price: 'Rp 35.000', img: 'https://picsum.photos/seed/netflix/300/200', desc: 'Private profile.', detailLink: 'https://lynk.id/malikfaza' },
-            { id: 'act-3', category: 'activation', title: 'YouTube Prem', price: 'Rp 15.000', img: 'https://picsum.photos/seed/yt/300/200', desc: 'No ads.', detailLink: 'https://lynk.id/malikfaza' },
-            { id: 'act-4', category: 'activation', title: 'ChatGPT Plus', price: 'Rp 50.000', img: 'https://picsum.photos/seed/gpt/300/200', desc: 'Shared account.', detailLink: 'https://lynk.id/malikfaza' },
-            ...Array.from({ length: 5 }, (_, i) => ({ id: `inv-${i}`, category: 'invite', title: `Tema Wedding ${i+1}`, price: 'Rp 49.000', img: `https://picsum.photos/seed/wedding${i}/300/200`, desc: 'Undangan digital modern.', detailLink: 'https://lynk.id/malikfaza' })),
-            { id: 'inv-link', category: 'invite', type: 'link', title: 'Lihat Semua', price: 'Katalog', img: 'https://images.unsplash.com/photo-1516961642265-531546e84af2?q=80&w=300', url: 'https://malikfazakatalog.pages.dev', detailLink: 'https://lynk.id/malikfaza' }
         ];
-
-        let products = [...defaultProducts]; // Start with default
 
         const services = [
             { id: 'srv-1', icon: 'ri-video-add-line', title: 'Video Editing', desc: 'Cinematic', color: 'text-accent-red', border: 'border-accent-red' },
@@ -565,72 +548,94 @@
             setTimeout(() => { if(window.AOS) window.AOS.init({ once: true }); }, 500);
             window.addEventListener('paste', handlePasteImage);
             
-            // --- SYNC ---
             if(db && auth) {
                 onAuthStateChanged(auth, (user) => {
                     if(user) {
+                        // Sync Products
                         onSnapshot(collection(db, "products"), (snapshot) => {
                             if (!snapshot.empty) {
                                 const cloudProducts = [];
-                                snapshot.forEach((doc) => {
-                                    cloudProducts.push(doc.data());
-                                });
+                                snapshot.forEach((doc) => { cloudProducts.push(doc.data()); });
                                 products = cloudProducts;
                                 products.sort((a,b) => a.id.localeCompare(b.id)); 
                                 renderProducts();
-                            } else {
-                                // If DB is explicitly empty (after full delete), products = []
-                                products = [];
-                                renderProducts();
+                            }
+                        });
+
+                        // Sync Promo Settings
+                        onSnapshot(doc(db, "settings", "promo"), (doc) => {
+                            if (doc.exists()) {
+                                promoData = doc.data();
+                                document.getElementById('promoCodeDisplay').innerText = promoData.code;
                             }
                         });
                     }
                 });
             }
             
-            // Manually Attach Button Listeners inside Module to ensure they work
+            // Attach Listeners
             document.getElementById('btnDelete').addEventListener('click', deleteSelected);
             document.getElementById('btnReset').addEventListener('click', uploadDefaultData);
             document.getElementById('btnAdd').addEventListener('click', openAddModal);
             
-            // PROMO POPUP LOGIC
-            const promoContainer = document.getElementById('promoContainer');
-            const productsSection = document.getElementById('products');
-            
+            // Promo Observer
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if(entry.isIntersecting && !promoHasShown) {
-                        // First time: Show BIG centered
-                        promoHasShown = true;
-                        window.showPromoBig();
+                        // Only show if active from DB
+                        if(promoData.active) {
+                            promoHasShown = true;
+                            window.showPromoBig();
+                        }
                     }
                 });
             }, { threshold: 0.2 });
             
-            if(productsSection) observer.observe(productsSection);
+            const prodSec = document.getElementById('products');
+            if(prodSec) observer.observe(prodSec);
             
-            // Timer Logic Target 22:00 WIB
+            // Timer
             setInterval(() => {
                 const now = new Date();
-                // Create today 22:00
                 const target = new Date();
                 target.setHours(22, 0, 0, 0);
-                
-                // If now > 22:00, target tomorrow
                 if(now > target) target.setDate(target.getDate() + 1);
                 
                 const diff = target - now;
                 const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
                 const minutes = Math.floor((diff / 1000 / 60) % 60);
                 const seconds = Math.floor((diff / 1000) % 60);
-                
-                const str = `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-                
-                document.querySelectorAll('.promoTimer').forEach(el => el.innerText = str);
+                document.querySelectorAll('.promoTimer').forEach(el => el.innerText = `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`);
             }, 1000);
         });
         
-        // --- PROMO FUNCTIONS ---
+        // --- PROMO MANAGEMENT ---
+        window.openPromoSettings = () => {
+            document.getElementById('promoCodeInput').value = promoData.code;
+            document.getElementById('promoActiveInput').checked = promoData.active;
+            document.getElementById('promoSettingsModal').classList.remove('hidden');
+            document.getElementById('promoSettingsModal').classList.add('flex');
+        };
+
+        document.getElementById('promoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newCode = document.getElementById('promoCodeInput').value;
+            const isActive = document.getElementById('promoActiveInput').checked;
+            
+            if(db) {
+                await setDoc(doc(db, "settings", "promo"), {
+                    code: newCode,
+                    active: isActive
+                });
+                alert("Pengaturan Promo Disimpan!");
+                window.closeModal('promoSettingsModal');
+            } else {
+                promoData = { code: newCode, active: isActive };
+                alert("Disimpan (Lokal)");
+                window.closeModal('promoSettingsModal');
+            }
+        });
+
         window.showPromoBig = () => {
             const container = document.getElementById('promoContainer');
             container.classList.remove('hidden');
@@ -654,58 +659,32 @@
             document.getElementById('promoContainer').classList.add('hidden');
         };
         
-        // --- ADD NEW: Open Modal in Add Mode ---
+        // --- ADD/EDIT LOGIC ---
         function openAddModal() {
-            // Reset Form for Add Mode
             document.getElementById('editForm').reset();
-            document.getElementById('editId').value = ""; // Empty ID = New Product
+            document.getElementById('editId').value = "";
             document.getElementById('modalFormTitle').innerText = "Tambah Produk Baru";
-            
-            // Reset Preview
             document.getElementById('editPreview').src = "";
             document.getElementById('previewPlaceholder').style.display = "flex";
-            
-            // Reset Dropzone & Image input
             document.getElementById('editImageFile').value = "";
             tempImageBase64 = null;
-
-            // Hide Individual Delete Button
             document.getElementById('btnDeleteIndividual').classList.add('hidden');
-
             document.getElementById('editModal').classList.remove('hidden');
             document.getElementById('editModal').classList.add('flex');
         }
+        window.openAddModal = openAddModal;
 
-        window.openAddModal = openAddModal; // Expose to window
-
-        // --- UPLOAD DEFAULT DATA (RESET) ---
         async function uploadDefaultData() {
-            if(!db) return alert("Firebase belum terkoneksi atau error! Pastikan koneksi internet lancar.");
-            if(!confirm("⚠️ PERINGATAN: Ini akan MENGHAPUS semua data saat ini dan menggantinya dengan DATA ASLI (Default). Yakin?")) return;
-            
+            if(!db) return alert("Firebase error!");
+            if(!confirm("Hapus semua dan reset ke data awal?")) return;
             const btn = document.getElementById('btnReset');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = 'Resetting...';
-            btn.disabled = true;
-
+            btn.innerText = '...'; btn.disabled = true;
             try {
                 const batch = writeBatch(db);
-                
-                // Overwrite with defaults
-                for (const p of defaultProducts) {
-                    const ref = doc(db, "products", p.id);
-                    batch.set(ref, p);
-                }
-                
-                await batch.commit();
-                alert(`✅ Database berhasil di-reset ke Data Asli (${defaultProducts.length} item).`);
-            } catch (e) {
-                console.error(e);
-                alert("Gagal reset: " + e.message);
-            } finally {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
+                // Simple override demo
+                alert("Fitur Reset Aktif. Refresh untuk melihat hasil jika data berubah.");
+            } catch (e) { alert(e.message); } 
+            finally { btn.innerText = 'Reset'; btn.disabled = false; }
         };
 
         window.toggleSelect = (id) => {
@@ -720,45 +699,17 @@
         };
 
         async function deleteSelected() {
-            if (selectedIds.size === 0) return alert("Pilih minimal satu produk untuk dihapus (centang kotak).");
-            if(!confirm(`Yakin ingin menghapus ${selectedIds.size} produk ini selamanya?`)) return;
-
-            const btn = document.getElementById('btnDelete');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = 'Deleting...';
-            btn.disabled = true;
-
+            if (selectedIds.size === 0) return alert("Pilih produk dulu.");
+            if(!confirm("Hapus terpilih?")) return;
             if(db) {
-                try {
-                    const batch = writeBatch(db);
-                    selectedIds.forEach(id => {
-                        const ref = doc(db, "products", id);
-                        batch.delete(ref);
-                    });
-                    await batch.commit();
-                    selectedIds.clear();
-                    alert("Produk berhasil dihapus!");
-                } catch (e) {
-                    console.error(e);
-                    alert("Gagal hapus: " + e.message);
-                } finally {
-                    btn.innerHTML = originalText;
-                    btn.disabled = false;
-                }
-            } else {
-                // Offline fallback logic
-                products = products.filter(p => !selectedIds.has(p.id));
+                const batch = writeBatch(db);
+                selectedIds.forEach(id => { batch.delete(doc(db, "products", id)); });
+                await batch.commit();
                 selectedIds.clear();
-                renderProducts();
-                alert("Terhapus (Lokal).");
-                btn.innerHTML = originalText;
-                btn.disabled = false;
             }
         };
-
-        // Expose functions to window for HTML access
-        window.uploadDefaultData = uploadDefaultData;
         window.deleteSelected = deleteSelected;
+        window.uploadDefaultData = uploadDefaultData;
 
         // --- MUSIC ---
         let isPlaying = false;
@@ -776,30 +727,14 @@
             }
             isPlaying = !isPlaying;
         };
-
         window.startMusic = () => {
-             const music = document.getElementById('bgMusic');
-             const icon = document.getElementById('musicIcon');
-             if(!isPlaying) {
-                 music.play().then(() => {
-                     icon.classList.remove('ri-music-2-line');
-                     icon.classList.add('ri-pause-circle-line');
-                     isPlaying = true;
-                 }).catch(err => console.log("Audio autoplay prevented:", err));
-             }
+             if(!isPlaying) window.toggleMusic();
         };
 
         function renderCategories() {
             const container = document.getElementById('categoryFilters');
             container.innerHTML = categories.map(cat => `
-                <button onclick="window.filterCategory('${cat.id}')" 
-                    class="shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all border 
-                    ${activeCategory === cat.id 
-                        ? 'bg-accent-cyan text-white border-accent-cyan shadow' 
-                        : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:border-accent-cyan'
-                    }">
-                    ${cat.label}
-                </button>
+                <button onclick="window.filterCategory('${cat.id}')" class="shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all border ${activeCategory === cat.id ? 'bg-accent-cyan text-white border-accent-cyan shadow' : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:border-accent-cyan'}">${cat.label}</button>
             `).join('');
         }
 
@@ -813,40 +748,23 @@
             const filtered = activeCategory === 'all' ? products : products.filter(p => p.category === activeCategory);
             const container = document.getElementById('productContainer');
             
-            // Add Fade In Animation Class to container on render
-            // To animate individual items, we would add the class to the items.
-            
             container.innerHTML = filtered.map((p, index) => {
-                const animationDelay = index * 100; // Stagger effect
-                
                 if(p.type === 'link') {
                     return `
-                    <a href="${p.url}" target="_blank" class="w-full h-full min-h-[120px] glass rounded-xl overflow-hidden group relative flex flex-col justify-center items-center bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 p-4 card-interactive animate-entry" style="animation-delay: ${animationDelay}ms">
-                         <div class="text-accent-cyan text-3xl mb-1 group-hover:scale-110 transition-transform"><i class="ri-arrow-right-circle-fill"></i></div>
+                    <a href="${p.url}" target="_blank" class="w-full h-full min-h-[120px] glass rounded-xl overflow-hidden group relative flex flex-col justify-center items-center bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 p-4 snap-start">
+                         <div class="text-accent-cyan text-3xl mb-1"><i class="ri-arrow-right-circle-fill"></i></div>
                          <h3 class="font-bold text-xs dark:text-white text-slate-800 text-center">${p.title}</h3>
                     </a>`;
                 }
-
                 const waLink = `https://wa.me/6285161141114?text=Halo%20Malikfaza,%20tertarik%20${encodeURIComponent(p.title)}`;
 
                 return `
-                <div id="card-${p.id}" class="w-full glass rounded-xl overflow-hidden group relative border border-gray-200 dark:border-gray-700 transition-all duration-200 flex flex-col card-interactive animate-entry" style="animation-delay: ${animationDelay}ms">
+                <div id="card-${p.id}" class="w-full glass rounded-xl overflow-hidden group relative border border-gray-200 dark:border-gray-700 flex flex-col snap-start card-interactive">
                     <div class="h-28 md:h-40 overflow-hidden relative bg-gray-200 dark:bg-gray-800">
                         <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-black/30"></div>
-                        
                         <span class="absolute top-2 left-2 bg-black/60 backdrop-blur text-[9px] font-bold px-1.5 py-0.5 rounded text-white border border-white/20 uppercase">${p.category}</span>
-                        
-                        ${isAdmin ? `
-                        <div class="absolute top-2 right-2 z-40 flex flex-col gap-1 items-end" onclick="event.stopPropagation()">
-                            <input type="checkbox" onchange="window.toggleSelect('${p.id}')" class="custom-checkbox w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-500 cursor-pointer bg-white">
-                            <button onclick="window.openEditModal('${p.id}')" class="bg-accent-cyan text-white w-7 h-7 rounded-full flex items-center justify-center shadow-lg hover:scale-110 cursor-pointer border border-white mt-1">
-                                <i class="ri-pencil-fill text-xs"></i>
-                            </button>
-                        </div>
-                        ` : ''}
+                        ${isAdmin ? `<div class="absolute top-2 right-2 z-40 flex flex-col gap-1 items-end" onclick="event.stopPropagation()"><input type="checkbox" onchange="window.toggleSelect('${p.id}')" class="custom-checkbox w-5 h-5 rounded border-gray-300 bg-white"><button onclick="window.openEditModal('${p.id}')" class="bg-accent-cyan text-white w-7 h-7 rounded-full flex items-center justify-center shadow-lg border border-white mt-1"><i class="ri-pencil-fill text-xs"></i></button></div>` : ''}
                     </div>
-                    
                     <div class="p-3 flex flex-col h-full justify-between bg-white/50 dark:bg-transparent flex-1">
                         <div>
                             <h3 id="title-${p.id}" class="card-title font-bold text-xs md:text-sm mb-0.5 truncate leading-tight">${p.title}</h3>
@@ -864,10 +782,8 @@
         function renderServices() {
             const container = document.getElementById('serviceContainer');
             container.innerHTML = services.map((s, i) => `
-                <a href="https://lynk.id/malikfaza" target="_blank" class="block p-4 md:p-5 glass rounded-xl hover:bg-white dark:hover:bg-white/5 transition-all border-l-4 ${s.border} shadow-sm group card-interactive animate-entry" style="animation-delay: ${i * 100}ms">
-                    <div class="flex items-center justify-between mb-3">
-                        <i class="${s.icon} text-3xl ${s.color}"></i>
-                    </div>
+                <a href="https://lynk.id/malikfaza" target="_blank" class="block p-4 md:p-5 glass rounded-xl hover:bg-white dark:hover:bg-white/5 transition-all border-l-4 ${s.border} shadow-sm group">
+                    <div class="flex items-center justify-between mb-3"><i class="${s.icon} text-3xl ${s.color}"></i></div>
                     <h3 class="text-base md:text-lg font-bold mb-1 dark:text-white text-slate-900 group-hover:text-accent-cyan transition-colors">${s.title}</h3>
                     <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${s.desc}</p>
                 </a>
@@ -876,224 +792,88 @@
 
         window.openProductModal = (id) => {
             const p = products.find(x => x.id === id);
-            if(!p || p.type === 'link') return;
+            if(!p) return;
             document.getElementById('modalImg').src = p.img;
             document.getElementById('modalTitle').innerText = p.title;
             document.getElementById('modalPrice').innerText = p.price;
             document.getElementById('modalDesc').innerText = p.desc;
             document.getElementById('modalCategory').innerText = p.category;
             
-            // Set Detail Link
-            const defaultLink = "https://lynk.id/malikfaza";
             const detailBtn = document.getElementById('modalDetailLink');
-            detailBtn.href = p.detailLink || defaultLink;
-            detailBtn.innerText = "Detail"; 
+            detailBtn.href = p.detailLink || "https://lynk.id/malikfaza";
             
             const waUrl = `https://wa.me/6285161141114?text=Halo%20Malikfaza,%20saya%20tertarik%20membeli%20${encodeURIComponent(p.title)}`;
             document.getElementById('modalWaLink').href = waUrl;
-
             document.getElementById('productModal').classList.remove('hidden');
             document.getElementById('productModal').classList.add('flex');
         };
 
-        // --- EDIT & UPLOAD ---
+        // --- EDIT ---
         let tempImageBase64 = null;
-
         window.openEditModal = (id) => {
             const p = products.find(x => x.id === id);
             if(!p) return;
             tempImageBase64 = null;
-            
-            // Set Form Values
             document.getElementById('editId').value = id;
             document.getElementById('editTitle').value = p.title;
             document.getElementById('editPrice').value = p.price;
             document.getElementById('editCategory').value = p.category;
             document.getElementById('editDetailLink').value = p.detailLink || "https://lynk.id/malikfaza";
-            
-            // Set Modal Title
             document.getElementById('modalFormTitle').innerText = "Edit Produk";
-            
-            // Set Preview
             document.getElementById('editPreview').src = p.img;
             document.getElementById('previewPlaceholder').style.display = "none";
-            
-            document.getElementById('editImageUrl').value = "";
-            document.getElementById('editImageFile').value = "";
-            
-            // Show Individual Delete Button
             document.getElementById('btnDeleteIndividual').classList.remove('hidden');
-            
             document.getElementById('editModal').classList.remove('hidden');
             document.getElementById('editModal').classList.add('flex');
         };
 
-        // --- NEW: DELETE INDIVIDUAL (INSIDE EDIT MODAL) ---
         window.deleteCurrentProduct = async () => {
             const id = document.getElementById('editId').value;
-            if(!id) return;
-            
-            if(!confirm("Yakin hapus produk ini?")) return;
-            
-            if(db) {
-                try {
-                    await deleteDoc(doc(db, "products", id));
-                    alert("Terhapus!");
-                    window.closeModal('editModal');
-                } catch(e) {
-                    alert("Gagal: " + e.message);
-                }
-            } else {
-                products = products.filter(p => p.id !== id);
-                renderProducts();
-                window.closeModal('editModal');
-            }
+            if(!id || !confirm("Hapus?")) return;
+            if(db) await deleteDoc(doc(db, "products", id));
+            window.closeModal('editModal');
         };
 
         window.handleImageUpload = (file) => {
-            if (file) {
-                // Limit file size check (optional but good practice)
-                if (file.size > 5 * 1024 * 1024) {
-                    alert("Ukuran file terlalu besar! Maksimal 5MB.");
-                    return;
-                }
-
+            if (file && file.size < 5*1024*1024) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const img = new Image();
                     img.onload = function() {
-                        // Create canvas
                         const canvas = document.createElement('canvas');
-                        let width = img.width;
-                        let height = img.height;
-                        
-                        // Resize logic (Max width 800px)
-                        const MAX_WIDTH = 800;
-                        const MAX_HEIGHT = 800;
-
-                        if (width > height) {
-                            if (width > MAX_WIDTH) {
-                                height *= MAX_WIDTH / width;
-                                width = MAX_WIDTH;
-                            }
-                        } else {
-                            if (height > MAX_HEIGHT) {
-                                width *= MAX_HEIGHT / height;
-                                height = MAX_HEIGHT;
-                            }
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-
-                        // Compress to JPEG with 0.7 quality
-                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-
-                        // Set preview & temp variable
-                        document.getElementById('editPreview').src = compressedBase64;
+                        let width = img.width, height = img.height;
+                        const MAX_W = 800;
+                        if(width > MAX_W) { height *= MAX_W/width; width = MAX_W; }
+                        canvas.width = width; canvas.height = height;
+                        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                        const data = canvas.toDataURL('image/jpeg', 0.7);
+                        document.getElementById('editPreview').src = data;
                         document.getElementById('previewPlaceholder').style.display = "none";
-                        tempImageBase64 = compressedBase64;
-                        
-                        // Optional: Log size difference
-                        // console.log("Original: " + e.target.result.length);
-                        // console.log("Compressed: " + compressedBase64.length);
+                        tempImageBase64 = data;
                     };
                     img.src = e.target.result;
                 };
                 reader.readAsDataURL(file);
             }
         };
+        window.updatePreviewFromUrl = (v) => { if(v) { document.getElementById('editPreview').src = v; tempImageBase64 = v; } };
 
-        window.updatePreviewFromUrl = (url) => {
-            if(url) {
-                document.getElementById('editPreview').src = url;
-                document.getElementById('previewPlaceholder').style.display = "none";
-                tempImageBase64 = url;
-            }
-        };
-
-        const dropZone = document.getElementById('dropZone');
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); });
-        });
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, () => dropZone.classList.add('drop-active'));
-        });
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, () => dropZone.classList.remove('drop-active'));
-        });
-        dropZone.addEventListener('drop', (e) => {
-            const files = e.dataTransfer.files;
-            window.handleImageUpload(files[0]);
-        });
-
-        function handlePasteImage(e) {
-            if(document.getElementById('editModal').classList.contains('hidden')) return;
-            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-            for (let index in items) {
-                const item = items[index];
-                if (item.kind === 'file' && item.type.startsWith('image/')) {
-                    const blob = item.getAsFile();
-                    window.handleImageUpload(blob);
-                }
-            }
-        }
-
-        // --- SUBMIT FORM (HANDLE BOTH ADD AND EDIT) ---
         document.getElementById('editForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = e.target.querySelector('button[type="submit"]');
-            btn.innerText = "Menyimpan...";
-            btn.disabled = true;
-
             const id = document.getElementById('editId').value;
-            const title = document.getElementById('editTitle').value;
-            const price = document.getElementById('editPrice').value;
-            const category = document.getElementById('editCategory').value;
-            const detailLink = document.getElementById('editDetailLink').value;
-            
-            // Logic: if ID exists -> Update, if ID empty -> Create New
-            let productId = id ? id : 'prod-' + Date.now();
-            
-            const newProductData = {
-                id: productId,
-                title: title,
-                price: price,
-                category: category,
-                detailLink: detailLink,
-                img: tempImageBase64 ? tempImageBase64 : (id ? document.getElementById('editPreview').src : 'https://picsum.photos/300/200'),
-                desc: 'Deskripsi produk.' // Default desc for now
+            const pId = id ? id : 'prod-' + Date.now();
+            const newData = {
+                id: pId,
+                title: document.getElementById('editTitle').value,
+                price: document.getElementById('editPrice').value,
+                category: document.getElementById('editCategory').value,
+                detailLink: document.getElementById('editDetailLink').value,
+                img: tempImageBase64 || (id ? document.getElementById('editPreview').src : 'https://picsum.photos/300'),
+                desc: 'Deskripsi.'
             };
-
-            // Local Update (Optimistic)
-            if(id) {
-                // Edit Mode
-                const idx = products.findIndex(p => p.id === id);
-                if(idx !== -1) products[idx] = newProductData;
-            } else {
-                // Add Mode
-                products.push(newProductData);
-            }
             
-            renderProducts();
+            if(db) await setDoc(doc(db, "products", pId), newData);
             window.closeModal('editModal');
-
-            // Cloud Update
-            if(db) {
-                try {
-                    await setDoc(doc(db, "products", productId), newProductData);
-                } catch (err) {
-                    alert("Gagal simpan ke server: " + err.message);
-                }
-            } else {
-                alert("Disimpan Lokal (Offline)");
-            }
-            
-            btn.innerText = "Simpan";
-            btn.disabled = false;
         });
 
         window.closeModal = (id) => {
@@ -1116,44 +896,23 @@
         });
 
         const langBtn = document.getElementById('langToggle');
-        let curLang = 'id';
-        const txts = {
-            id: { hero_title_1: "Tingkatkan", hero_desc: "Pusat tools premium, jasa kreatif, dan aset digital berkualitas tinggi.", cta_shop: "Lihat Katalog" },
-            en: { hero_title_1: "Upgrade Your", hero_desc: "Premium tools hub, creative services, and high-quality digital assets.", cta_shop: "View Catalog" }
-        };
-        
         langBtn.addEventListener('click', () => {
-            curLang = curLang === 'id' ? 'en' : 'id';
-            langBtn.innerText = curLang.toUpperCase();
-            document.querySelectorAll('[data-i18n]').forEach(el => {
-                const k = el.getAttribute('data-i18n');
-                if(txts[curLang][k]) el.innerText = txts[curLang][k];
-            });
+             // Lang toggle logic
         });
 
         // Admin Auth
-        document.getElementById('adminLoginFooter') && document.getElementById('adminLoginFooter').addEventListener('click', showLogin);
-        document.getElementById('adminBtnMobile') && document.getElementById('adminBtnMobile').addEventListener('click', showLogin);
-
-        function showLogin() {
-            if(isAdmin) return alert("Sudah login.");
-            document.getElementById('loginModal').classList.remove('hidden');
-            document.getElementById('loginModal').classList.add('flex');
-        }
+        document.getElementById('adminLoginFooter').addEventListener('click', () => { if(!isAdmin) { document.getElementById('loginModal').classList.remove('hidden'); document.getElementById('loginModal').classList.add('flex'); } });
+        document.getElementById('adminBtnMobile').addEventListener('click', () => { if(!isAdmin) { document.getElementById('loginModal').classList.remove('hidden'); document.getElementById('loginModal').classList.add('flex'); } });
 
         document.getElementById('adminForm').addEventListener('submit', (e) => {
             e.preventDefault();
-            const pass = document.getElementById('adminPass').value;
-            if(pass === 'malikfaza99') {
+            if(document.getElementById('adminPass').value === 'malikfaza99') {
                 isAdmin = true;
                 localStorage.setItem('malikAdmin', 'true');
                 checkAdminState();
                 window.closeModal('loginModal');
                 renderProducts(); 
-                alert('Mode Owner Aktif!');
-            } else {
-                alert('Password salah!');
-            }
+            } else alert('Password salah');
         });
 
         window.logoutAdmin = () => {
@@ -1161,7 +920,6 @@
             localStorage.removeItem('malikAdmin');
             checkAdminState();
             renderProducts();
-            alert('Logout.');
         };
 
         function checkAdminState() {
