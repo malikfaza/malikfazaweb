@@ -87,10 +87,10 @@
         .dark ::-webkit-scrollbar-thumb { background: #334155; }
         .dark ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-        /* Glassmorphism - Adjusted for sharpness */
+        /* Glassmorphism */
         .glass {
-            background: rgba(255, 255, 255, 0.05); /* Sedikit lebih solid agar tidak terlalu blur */
-            backdrop-filter: blur(10px); /* Dikurangi dari 16px agar lebih tajam */
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             transition: all 0.3s ease;
@@ -99,7 +99,7 @@
             background: rgba(255, 255, 255, 0.9); 
             border: 1px solid rgba(255, 255, 255, 0.5); 
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); 
-            backdrop-filter: blur(8px); /* Dikurangi dari 12px */
+            backdrop-filter: blur(8px);
             color: #0f172a;
         }
         
@@ -119,28 +119,29 @@
         .drop-active { border-color: #06b6d4 !important; background-color: rgba(6, 182, 212, 0.1) !important; }
         .custom-checkbox:checked { background-color: #ef4444; border-color: #ef4444; }
         
-        /* --- CARD NEON HOVER EFFECTS --- */
+        /* --- CARD NEON HOVER EFFECTS (REINFORCED) --- */
         .card-interactive {
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s ease;
-            will-change: transform;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            will-change: transform, box-shadow;
+            transform-origin: center center;
         }
 
-        /* Dark Mode Neon Glow */
+        /* Dark Mode Hover */
         .dark .card-interactive:hover {
             box-shadow: 
-                0 0 20px rgba(6, 182, 212, 0.4), /* Cyan Outer Glow */
-                0 0 40px rgba(6, 182, 212, 0.1), /* Cyan Diffuse Glow */
-                inset 0 0 2px rgba(6, 182, 212, 0.5); /* Inner Glow */
-            border-color: rgba(34, 211, 238, 0.5); /* Cyan Border */
-            transform: translateY(-8px) scale(1.02); 
+                0 10px 30px -10px rgba(6, 182, 212, 0.5),
+                0 0 20px rgba(6, 182, 212, 0.2),
+                inset 0 0 0 1px rgba(6, 182, 212, 0.5);
+            border-color: rgba(34, 211, 238, 0.8);
+            transform: translateY(-5px) scale(1.03);
             z-index: 20;
         }
 
-        /* Light Mode Strong Shadow & Outline */
+        /* Light Mode Hover */
         .light .card-interactive:hover {
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-            border-color: #0ea5e9; /* Sky Blue Border */
-            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: #0ea5e9;
+            transform: translateY(-5px) scale(1.03);
             z-index: 20;
         }
         
@@ -159,9 +160,9 @@
         .sortable-ghost { opacity: 0.5; background: rgba(34, 211, 238, 0.1); border: 2px dashed #06b6d4; }
         .sortable-drag { cursor: grabbing; transform: scale(1.05); }
 
-        /* --- PROMO POPUP ANIMATIONS (BUTTERY SMOOTH) --- */
+        /* --- PROMO POPUP ANIMATIONS --- */
         #promoContainer { 
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); /* Custom Bezier for Smoothness */
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); 
         }
         
         /* BIG MODE */
@@ -175,22 +176,22 @@
             width: 100%; max-width: 400px; 
             transform: scale(1) translateY(0); 
             opacity: 1;
-            border-radius: 24px; /* Super Rounded */
+            border-radius: 24px;
         }
 
         /* MINI MODE */
         .promo-mode-mini {
             position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
             z-index: 90; width: auto; min-width: 320px; max-width: 90%;
-            pointer-events: none; /* Container pass-through */
+            pointer-events: none;
         }
         .promo-mode-mini .promo-card {
             background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.15); padding: 8px 16px;
-            border-radius: 9999px; /* Pill Shape */
+            border-radius: 9999px;
             display: flex; align-items: center; justify-content: space-between;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-            pointer-events: auto; /* Card clickable */
+            pointer-events: auto;
             transform: scale(1) translateY(0);
         }
         .light .promo-mode-mini .promo-card { 
@@ -208,16 +209,27 @@
              transform: scale(0.9) translateY(20px);
         }
         .promo-mode-mini.promo-hidden {
-             transform: translateX(-50%) translateY(100px); /* Slide down */
+             transform: translateX(-50%) translateY(100px);
         }
 
-        /* Hide elements based on mode */
         .promo-mode-mini .big-only { display: none; }
         .promo-mode-big .mini-only { display: none; }
 
         .grid-mobile-80 {
             grid-template-columns: repeat(auto-fill, 80%);
             grid-auto-columns: 80%;
+        }
+        
+        /* Height Transition for Toggle Form */
+        .collapsible-content {
+            transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+        .collapsible-content.open {
+            max-height: 500px;
+            opacity: 1;
         }
     </style>
 </head>
@@ -241,10 +253,10 @@
             </a>
             
             <div class="hidden md:flex items-center gap-8 font-medium dark:text-gray-300 text-slate-600 text-sm">
-                <a href="#home" class="hover:text-accent-cyan transition-colors relative group">Home<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-cyan transition-all group-hover:w-full"></span></a>
-                <a href="#products" class="hover:text-accent-cyan transition-colors relative group">Products<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-cyan transition-all group-hover:w-full"></span></a>
-                <a href="#services" class="hover:text-accent-cyan transition-colors relative group">Services<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-cyan transition-all group-hover:w-full"></span></a>
-                <a href="#contact" class="hover:text-accent-cyan transition-colors relative group">Contact<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-cyan transition-all group-hover:w-full"></span></a>
+                <a href="#home" class="hover:text-accent-cyan transition-colors relative group" data-i18n="nav_home">Home<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-cyan transition-all group-hover:w-full"></span></a>
+                <a href="#products" class="hover:text-accent-cyan transition-colors relative group" data-i18n="nav_products">Products<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-cyan transition-all group-hover:w-full"></span></a>
+                <a href="#services" class="hover:text-accent-cyan transition-colors relative group" data-i18n="nav_services">Services<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-cyan transition-all group-hover:w-full"></span></a>
+                <a href="#contact" class="hover:text-accent-cyan transition-colors relative group" data-i18n="nav_contact">Contact<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-cyan transition-all group-hover:w-full"></span></a>
             </div>
 
             <div class="flex items-center gap-2 md:gap-3">
@@ -264,10 +276,10 @@
         
         <div id="mobileMenu" class="hidden md:hidden glass border-t border-gray-200 dark:border-gray-800 p-4 absolute w-full top-[60px] left-0 z-40 shadow-xl backdrop-blur-xl">
             <div class="flex flex-col gap-4 font-medium dark:text-gray-200 text-slate-700 text-sm">
-                <a href="#home" class="block hover:text-accent-cyan hover:pl-2 transition-all">Home</a>
-                <a href="#products" class="block hover:text-accent-cyan hover:pl-2 transition-all">Products</a>
-                <a href="#services" class="block hover:text-accent-cyan hover:pl-2 transition-all">Services</a>
-                <a href="#contact" class="block hover:text-accent-cyan hover:pl-2 transition-all">Contact</a>
+                <a href="#home" class="block hover:text-accent-cyan hover:pl-2 transition-all" data-i18n="nav_home">Home</a>
+                <a href="#products" class="block hover:text-accent-cyan hover:pl-2 transition-all" data-i18n="nav_products">Products</a>
+                <a href="#services" class="block hover:text-accent-cyan hover:pl-2 transition-all" data-i18n="nav_services">Services</a>
+                <a href="#contact" class="block hover:text-accent-cyan hover:pl-2 transition-all" data-i18n="nav_contact">Contact</a>
                 <button id="adminBtnMobile" class="text-left text-accent-red mt-2 font-bold uppercase tracking-wider text-xs border-t border-dashed border-gray-500/30 pt-4">Admin Login</button>
             </div>
         </div>
@@ -283,7 +295,7 @@
                 </div>
                 <h1 class="text-4xl md:text-6xl lg:text-7xl font-heading font-extrabold mb-6 leading-tight dark:text-white text-slate-900">
                     <span data-i18n="hero_title_1">Upgrade Your</span> <br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-cyan via-accent-green to-accent-yellow animate-pulse-slow">Digital Life</span>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-cyan via-accent-green to-accent-yellow animate-pulse-slow" data-i18n="hero_highlight">Digital Life</span>
                 </h1>
                 <p class="text-sm md:text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-lg mx-auto md:mx-0 leading-relaxed" data-i18n="hero_desc">
                     Pusat tools premium, jasa kreatif, dan aset digital berkualitas tinggi. Tingkatkan produktivitas Anda sekarang.
@@ -293,7 +305,7 @@
                         <i class="ri-shopping-bag-3-line text-lg"></i> <span data-i18n="cta_shop">Lihat Katalog</span>
                     </a>
                     <a href="#contact" class="px-8 py-3.5 bg-transparent border border-slate-300 dark:border-white/20 text-slate-700 dark:text-white rounded-xl font-bold hover:bg-slate-100 dark:hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-sm hover:-translate-y-1">
-                        Hubungi Kami
+                        <span data-i18n="cta_contact">Hubungi Kami</span>
                     </a>
                 </div>
             </div>
@@ -335,7 +347,7 @@
                     <i class="ri-admin-fill text-xl"></i> ADMIN DASHBOARD
                 </h2>
                 <div class="text-[11px] text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-2">
-                    System Status: <span id="dbStatus" class="font-bold text-green-500 flex items-center gap-1"><i class="ri-wifi-line"></i> Online (Mock Mode)</span>
+                    System Status: <span id="dbStatus" class="font-bold text-green-500 flex items-center gap-1"><i class="ri-wifi-line"></i> Online (Firebase)</span>
                 </div>
             </div>
             <div class="flex flex-wrap gap-2 w-full md:w-auto justify-center md:justify-end">
@@ -362,12 +374,12 @@
     <section id="products" class="py-12 md:py-24 relative overflow-hidden">
         <div class="container mx-auto px-6">
             <div class="text-center mb-10 md:mb-16" data-aos="fade-up">
-                <h2 class="text-3xl md:text-5xl font-heading font-bold mb-3 dark:text-white text-slate-900"><span class="text-accent-cyan">Digital</span> Catalog</h2>
+                <h2 class="text-3xl md:text-5xl font-heading font-bold mb-3 dark:text-white text-slate-900"><span class="text-accent-cyan">Digital</span> <span data-i18n="section_products_title">Catalog</span></h2>
                 <div class="w-20 h-1.5 bg-gradient-to-r from-accent-cyan to-accent-green mx-auto rounded-full mb-4"></div>
-                <p class="text-sm text-gray-500 dark:text-gray-400 max-w-xl mx-auto" data-i18n="products_subtitle">Koleksi tools premium pilihan untuk kebutuhan digital Anda.</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 max-w-xl mx-auto" data-i18n="section_products_subtitle">Koleksi tools premium pilihan untuk kebutuhan digital Anda.</p>
             </div>
 
-            <!-- SEARCH BAR FIXED: Icon Moved After Input for Sharpness -->
+            <!-- SEARCH BAR -->
             <div class="max-w-xl mx-auto mb-10 relative px-2" data-aos="fade-up" data-aos-delay="100">
                 <input type="text" id="searchInput" placeholder="Cari aplikasi, tools, atau jasa..." class="w-full pl-14 pr-6 py-4 rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:border-accent-cyan focus:ring-2 focus:ring-accent-cyan/20 focus:outline-none dark:text-white shadow-lg text-sm transition-all backdrop-blur-sm relative z-0" oninput="window.handleSearch(this.value)">
                 <div class="absolute inset-y-0 left-6 flex items-center pointer-events-none z-10">
@@ -396,8 +408,8 @@
         <div class="container mx-auto px-6">
             <div class="flex flex-col md:flex-row justify-between items-end mb-12 text-center md:text-left" data-aos="fade-up">
                 <div class="w-full md:w-auto">
-                    <h2 class="text-3xl md:text-4xl font-heading font-bold mb-3 dark:text-white text-slate-900">Creative <span class="text-accent-yellow">Services</span></h2>
-                    <p class="text-gray-500 text-sm" data-i18n="services_subtitle">Solusi kreatif profesional untuk bisnis Anda.</p>
+                    <h2 class="text-3xl md:text-4xl font-heading font-bold mb-3 dark:text-white text-slate-900">Creative <span class="text-accent-yellow" data-i18n="section_services_title">Services</span></h2>
+                    <p class="text-gray-500 text-sm" data-i18n="section_services_subtitle">Solusi kreatif profesional untuk bisnis Anda.</p>
                 </div>
                 <a href="https://wa.me/6285161141114?text=Halo%20Malikfaza,%20saya%20ingin%20konsultasi%20gratis." target="_blank" class="text-accent-yellow font-bold hover:text-white hover:bg-accent-yellow px-4 py-2 rounded-lg transition-all mt-4 md:mt-0 flex items-center justify-center gap-2 w-full md:w-auto text-sm border border-accent-yellow">
                     Konsultasi Gratis <i class="ri-whatsapp-line"></i>
@@ -409,8 +421,58 @@
         </div>
     </section>
 
+    <!-- Contact Form Section (REALLY SIMPLE & CENTERED) -->
+    <section id="contact" class="py-20 relative overflow-hidden">
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="glass p-8 rounded-3xl border border-gray-200 dark:border-white/10 bg-white/50 dark:bg-white/5 shadow-2xl max-w-2xl mx-auto text-center" data-aos="fade-up">
+                
+                <div class="mb-8">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent-cyan/10 text-accent-cyan text-xs font-bold uppercase tracking-wider mb-4 border border-accent-cyan/20">
+                        <span class="w-2 h-2 rounded-full bg-accent-cyan animate-pulse"></span>
+                        Let's Connect
+                    </div>
+                    <h2 class="text-2xl md:text-4xl font-heading font-bold mb-3 dark:text-white text-slate-900 leading-tight">
+                        <span data-i18n="contact_title">Punya Ide Project?</span> <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-cyan to-accent-green" data-i18n="contact_subtitle">Mari Wujudkan.</span>
+                    </h2>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed max-w-md mx-auto" data-i18n="contact_desc">
+                        Klik tombol di bawah untuk mengirim pesan cepat langsung ke WhatsApp Admin.
+                    </p>
+                </div>
+
+                <!-- Toggle Button (Centered) -->
+                <button id="toggleFormBtn" onclick="toggleContactForm()" class="w-full max-w-xs mx-auto py-3 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 rounded-xl font-bold shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2 group mb-2">
+                    <i class="ri-mail-add-line text-lg text-accent-cyan"></i>
+                    <span class="dark:text-white text-slate-700 text-sm" data-i18n="toggle_form_open">Buka Formulir Pesan</span>
+                    <i id="toggleIcon" class="ri-arrow-down-s-line transition-transform"></i>
+                </button>
+
+                <!-- Collapsible Form Container (Centered & Compact) -->
+                <div id="formWrapper" class="collapsible-content max-w-xs mx-auto">
+                    <div class="pt-4">
+                        <form onsubmit="window.sendToWhatsapp(event)" class="space-y-4 bg-white dark:bg-black/40 p-5 rounded-2xl border border-gray-200 dark:border-white/10 shadow-lg text-left">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide" data-i18n="form_name">Nama</label>
+                                <input type="text" id="contactName" required class="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan outline-none transition-all dark:text-white text-sm" placeholder="Nama Anda">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide" data-i18n="form_message">Pesan</label>
+                                <textarea id="contactMessage" rows="3" required class="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan outline-none transition-all dark:text-white text-sm resize-none" placeholder="Tulis pesan singkat..."></textarea>
+                            </div>
+                            <button type="submit" class="w-full py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl font-bold transition-all shadow-lg hover:shadow-green-500/30 transform hover:-translate-y-1 flex items-center justify-center gap-2 group text-sm">
+                                <span data-i18n="form_btn">Kirim via WhatsApp</span>
+                                <i class="ri-whatsapp-fill text-lg group-hover:rotate-12 transition-transform"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
-    <footer id="contact" class="bg-white dark:bg-black/40 pt-16 pb-8 border-t border-gray-200 dark:border-white/5 relative overflow-hidden">
+    <footer class="bg-white dark:bg-black/40 pt-16 pb-8 border-t border-gray-200 dark:border-white/5 relative overflow-hidden">
         <!-- Footer bg decoration -->
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-accent-cyan to-transparent opacity-50"></div>
         
@@ -654,7 +716,7 @@
         </div>
     </div>
 
-    <!-- Toast Notification (NEW) -->
+    <!-- Toast Notification -->
     <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] opacity-0 pointer-events-none transition-all duration-300 transform translate-y-10">
         <div class="glass bg-slate-900/90 text-white px-6 py-3 rounded-full shadow-2xl border border-white/10 flex items-center gap-3 backdrop-blur-md">
             <i class="ri-checkbox-circle-line text-green-400 text-xl"></i>
@@ -709,6 +771,56 @@
         let products = [...mockProducts];
         let sortableInstance = null;
         
+        // --- TRANSLATION DICTIONARY ---
+        const translations = {
+            id: {
+                nav_home: "Beranda",
+                nav_products: "Produk",
+                nav_services: "Jasa",
+                nav_contact: "Kontak",
+                hero_title_1: "Upgrade",
+                hero_highlight: "Kehidupan Digital",
+                hero_desc: "Pusat tools premium, jasa kreatif, dan aset digital berkualitas tinggi. Tingkatkan produktivitas Anda sekarang.",
+                cta_shop: "Lihat Katalog",
+                cta_contact: "Hubungi Kami",
+                section_products_title: "Katalog",
+                section_products_subtitle: "Koleksi tools premium pilihan untuk kebutuhan digital Anda.",
+                section_services_title: "Jasa",
+                section_services_subtitle: "Solusi kreatif profesional untuk bisnis Anda.",
+                contact_title: "Punya Ide Project?",
+                contact_subtitle: "Mari Wujudkan.",
+                contact_desc: "Isi formulir ini untuk terhubung langsung dengan kami. Pesan Anda akan otomatis diteruskan ke WhatsApp Admin untuk respon yang lebih cepat.",
+                form_name: "Nama",
+                form_message: "Pesan",
+                form_btn: "Kirim via WhatsApp",
+                toggle_form_open: "Buka Formulir Pesan",
+                toggle_form_close: "Tutup Formulir"
+            },
+            en: {
+                nav_home: "Home",
+                nav_products: "Products",
+                nav_services: "Services",
+                nav_contact: "Contact",
+                hero_title_1: "Upgrade Your",
+                hero_highlight: "Digital Life",
+                hero_desc: "Hub for premium tools, creative services, and high-quality digital assets. Boost your productivity now.",
+                cta_shop: "Browse Catalog",
+                cta_contact: "Contact Us",
+                section_products_title: "Catalog",
+                section_products_subtitle: "Curated premium tools for your digital needs.",
+                section_services_title: "Services",
+                section_services_subtitle: "Professional creative solutions for your business.",
+                contact_title: "Have a Project?",
+                contact_subtitle: "Let's Make It Happen.",
+                contact_desc: "Fill out this form to connect with us. Your message will be forwarded to Admin WhatsApp for faster response.",
+                form_name: "Name",
+                form_message: "Message",
+                form_btn: "Send via WhatsApp",
+                toggle_form_open: "Open Contact Form",
+                toggle_form_close: "Close Form"
+            }
+        };
+
         // --- GLOBAL HELPER FUNCTIONS ---
         
         const handleImageUpload = (file) => {
@@ -843,11 +955,12 @@
         let isAdmin = localStorage.getItem('malikAdmin') === 'true';
         let selectedIds = new Set();
         let promoHasShown = false;
+        let currentLang = 'id'; // Default Language
 
         // --- TIMER UPDATE FUNCTION ---
         const updateTimer = () => {
              const now = new Date();
-             const [endHour, endMinute] = (promoData.endTime || "22:00").split(':');
+             const [endHour, endMinute] = (promoData.endTime || "23:59").split(':');
              const target = new Date();
              target.setHours(endHour, endMinute, 0);
              
@@ -868,6 +981,7 @@
             renderProducts();
             renderServices();
             checkAdminState();
+            updateLanguage(currentLang);
             setTimeout(() => { if(window.AOS) window.AOS.init({ once: true, duration: 800 }); }, 500);
             window.addEventListener('paste', handlePasteImage);
             
@@ -900,7 +1014,14 @@
             document.getElementById('btnReset').addEventListener('click', uploadDefaultData);
             document.getElementById('btnAdd').addEventListener('click', openAddModal);
             
-            // FIXED: Promo Logic with more sensitive trigger
+            // Language Toggle Logic
+            document.getElementById('langToggle').addEventListener('click', () => {
+                currentLang = currentLang === 'id' ? 'en' : 'id';
+                document.getElementById('langToggle').innerText = currentLang.toUpperCase();
+                updateLanguage(currentLang);
+            });
+
+            // Promo Logic with Strict "Once per Session"
             const observerOptions = {
                 root: null, // viewport
                 rootMargin: '0px',
@@ -945,11 +1066,49 @@
             updateTimer(); // Initial Call
         });
         
+        function updateLanguage(lang) {
+            const t = translations[lang];
+            
+            // Loop through all elements with data-i18n attribute
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) {
+                    el.innerText = t[key];
+                }
+            });
+
+            // Specific updates for toggle button text depending on state
+            const toggleText = document.querySelector('#toggleFormBtn span');
+            if(toggleText) {
+                const formWrapper = document.getElementById('formWrapper');
+                const isOpen = formWrapper.classList.contains('open');
+                toggleText.innerText = isOpen ? t.toggle_form_close : t.toggle_form_open;
+            }
+        }
+
         function renderPromoContent() {
             document.getElementById('promoCodeDisplay').innerText = promoData.code;
             document.getElementById('promoTitleDisplay').innerText = promoData.title || "Diskon Spesial!";
             document.getElementById('promoDescDisplay').innerText = promoData.desc || "Potongan 20% All Item";
         }
+
+        // --- CONTACT FORM TOGGLE ---
+        window.toggleContactForm = () => {
+            const formWrapper = document.getElementById('formWrapper');
+            const icon = document.getElementById('toggleIcon');
+            const btnText = document.querySelector('#toggleFormBtn span');
+            const t = translations[currentLang];
+
+            formWrapper.classList.toggle('open');
+            
+            if (formWrapper.classList.contains('open')) {
+                icon.style.transform = 'rotate(180deg)';
+                btnText.innerText = t.toggle_form_close;
+            } else {
+                icon.style.transform = 'rotate(0deg)';
+                btnText.innerText = t.toggle_form_open;
+            }
+        };
 
         // --- SEARCH FEATURE ---
         window.handleSearch = (query) => {
@@ -971,6 +1130,21 @@
             }
 
             renderFilteredProducts(filtered);
+        };
+
+        // --- WHATSAPP FORM HANDLER (NEW) ---
+        window.sendToWhatsapp = (e) => {
+            e.preventDefault();
+            const name = document.getElementById('contactName').value;
+            const message = document.getElementById('contactMessage').value;
+
+            const waNumber = "6285161141114";
+            
+            // Format pesan rapi dengan %0A untuk baris baru (Encoding URL)
+            const text = `*Halo Malikfaza Studio,*%0A%0ASaya ingin menghubungi Anda.%0A%0A*Detail Pengirim:*%0ANama: ${name}%0A%0A*Pesan:*%0A${message}`;
+
+            const url = `https://wa.me/${waNumber}?text=${text}`; // Tidak perlu encodeURIComponent lagi karena manual %0A
+            window.open(url, '_blank');
         };
 
         window.openPromoSettings = () => {
@@ -996,18 +1170,18 @@
             if(db) {
                 try {
                      await setDoc(doc(db, "settings", "promo"), newData);
-                     alert("Pengaturan Promo Disimpan ke Cloud!");
+                     window.showToast("Pengaturan Promo Disimpan ke Cloud!");
                 } catch(err) {
                      promoData = newData;
                      renderPromoContent();
                      updateTimer(); // FORCE UPDATE IMMEDIATELY
-                     alert("Disimpan (Lokal/Mock Mode)");
+                     window.showToast("Disimpan (Lokal/Mock Mode)");
                 }
             } else {
                 promoData = newData;
                 renderPromoContent();
                 updateTimer(); // FORCE UPDATE IMMEDIATELY
-                alert("Disimpan (Lokal)");
+                window.showToast("Disimpan (Lokal)");
             }
 
             if(isActive) {
@@ -1069,11 +1243,11 @@
                          batch.set(doc(db, "products", p.id), p);
                     });
                     await batch.commit();
-                    alert("Database di-reset ke default!");
+                    window.showToast("Database di-reset ke default!");
                 } else {
                     products = [...mockProducts];
                     renderProducts();
-                    alert("Reset Local Data Berhasil");
+                    window.showToast("Reset Local Data Berhasil");
                 }
             } catch (e) { alert("Mock Mode Reset: " + e.message); products = [...mockProducts]; renderProducts(); } 
             finally { btn.innerHTML = '<i class="ri-refresh-line text-base"></i> Reset Data'; btn.disabled = false; }
@@ -1099,14 +1273,17 @@
                     const batch = writeBatch(db);
                     selectedIds.forEach(id => { batch.delete(doc(db, "products", id)); });
                     await batch.commit();
+                    window.showToast("Produk dihapus (Cloud)");
                 } catch(e) {
                      // Fallback local
                      products = products.filter(p => !selectedIds.has(p.id));
                      renderProducts();
+                     window.showToast("Produk dihapus (Lokal)");
                 }
             } else {
                 products = products.filter(p => !selectedIds.has(p.id));
                 renderProducts();
+                window.showToast("Produk dihapus (Lokal)");
             }
             selectedIds.clear();
         };
@@ -1278,8 +1455,8 @@
             if(!id || !confirm("Hapus produk ini?")) return;
             
             if(db) {
-                try { await deleteDoc(doc(db, "products", id)); } 
-                catch(e) { /* fallback local delete if cloud fails */ }
+                try { await deleteDoc(doc(db, "products", id)); window.showToast("Produk dihapus (Cloud)"); } 
+                catch(e) { window.showToast("Gagal menghapus"); }
             }
             
             // Local update for immediate UI feedback
@@ -1308,7 +1485,7 @@
             };
             
             if(db) {
-                try { await setDoc(doc(db, "products", pId), newData); }
+                try { await setDoc(doc(db, "products", pId), newData); window.showToast("Produk Disimpan (Cloud)"); }
                 catch(e) { console.log("Saved locally"); }
             }
             
@@ -1351,7 +1528,7 @@
                 checkAdminState();
                 window.closeModal('loginModal');
                 renderProducts(); 
-                alert("Welcome back, Master!");
+                window.showToast("Welcome back, Master!");
             } else alert('Password salah!');
         });
 
