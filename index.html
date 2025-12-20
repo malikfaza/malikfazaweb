@@ -654,6 +654,14 @@
         </div>
     </div>
 
+    <!-- Toast Notification (NEW) -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] opacity-0 pointer-events-none transition-all duration-300 transform translate-y-10">
+        <div class="glass bg-slate-900/90 text-white px-6 py-3 rounded-full shadow-2xl border border-white/10 flex items-center gap-3 backdrop-blur-md">
+            <i class="ri-checkbox-circle-line text-green-400 text-xl"></i>
+            <span id="toastMessage" class="font-bold text-sm tracking-wide">Berhasil disalin!</span>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
     <script type="module">
@@ -744,17 +752,27 @@
             }
         };
         
-        // --- COPY FUNCTION (ROBUST FALLBACK) ---
+        // --- TOAST FUNCTION (New Notification) ---
+        window.showToast = (message) => {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toastMessage');
+            
+            msgEl.innerText = message;
+            toast.classList.remove('opacity-0', 'translate-y-10');
+            
+            // Auto hide after 2.5 seconds
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-10');
+            }, 2500);
+        }
+
+        // --- COPY FUNCTION (UPDATED) ---
         window.copyToClipboard = (text) => {
             const finalText = text || document.getElementById('promoCodeDisplay').innerText;
             
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(finalText).then(() => {
-                    // Visual feedback
-                    const btn = document.getElementById('promoCodeDisplay');
-                    const original = btn.innerText;
-                    btn.innerText = "COPIED!";
-                    setTimeout(() => btn.innerText = original, 1500);
+                    window.showToast(`Kode "${finalText}" Tersalin!`);
                 }).catch(err => {
                     fallbackCopyTextToClipboard(finalText);
                 });
@@ -775,9 +793,10 @@
 
             try {
                 var successful = document.execCommand('copy');
-                if(successful) alert('Kode disalin!');
+                if(successful) window.showToast(`Kode "${text}" Tersalin!`);
+                else prompt("Salin manual:", text);
             } catch (err) {
-                prompt("Copy manual:", text);
+                prompt("Salin manual:", text);
             }
             document.body.removeChild(textArea);
         }
@@ -881,24 +900,34 @@
             document.getElementById('btnReset').addEventListener('click', uploadDefaultData);
             document.getElementById('btnAdd').addEventListener('click', openAddModal);
             
-            // Promo Logic with Strict "Once per Session"
+            // FIXED: Promo Logic with more sensitive trigger
+            const observerOptions = {
+                root: null, // viewport
+                rootMargin: '0px',
+                threshold: 0.1 // Trigger when just 10% of the section is visible (was 0.2)
+            };
+
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if(entry.isIntersecting && !promoHasShown) {
                         // Check Time Limit
                         const now = new Date();
-                        const [endHour, endMinute] = (promoData.endTime || "22:00").split(':');
+                        const [endHour, endMinute] = (promoData.endTime || "23:59").split(':');
                         const target = new Date();
                         target.setHours(endHour, endMinute, 0);
 
+                        // Only show if active AND time hasn't passed (optional, currently just checks active)
                         if(promoData.active) {
-                            promoHasShown = true; // Mark as shown immediately
+                            promoHasShown = true; // Mark as shown immediately to prevent double trigger
                             
                             const options = { day: 'numeric', month: 'short' };
                             const dateStr = now.toLocaleDateString('id-ID', options);
-                            document.getElementById('promoDateText').innerText = `Promo Spesial ${dateStr} s/d Pukul ${promoData.endTime || "22:00"}`;
+                            document.getElementById('promoDateText').innerText = `Promo Spesial ${dateStr} s/d Pukul ${promoData.endTime || "23:59"}`;
                             
-                            setTimeout(() => window.showPromoBig(), 1000); // Delay show
+                            // Delay slightly for effect, then show
+                            setTimeout(() => {
+                                window.showPromoBig();
+                            }, 800); 
                             
                             // DISCONNECT OBSERVER: Stops listening to scroll events entirely
                             // This ensures popup never triggers again in this session
@@ -906,7 +935,7 @@
                         }
                     }
                 });
-            }, { threshold: 0.2 });
+            }, observerOptions);
             
             const prodSec = document.getElementById('products');
             if(prodSec) observer.observe(prodSec);
