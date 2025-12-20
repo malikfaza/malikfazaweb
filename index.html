@@ -459,8 +459,17 @@
             <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-tr from-white/10 to-transparent pointer-events-none"></div>
 
             <!-- BIG MODE CONTENT -->
-            <div class="big-only w-full">
-                <button onclick="window.minimizePromo()" class="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors bg-black/20 rounded-full w-8 h-8 flex items-center justify-center z-10 hover:rotate-90"><i class="ri-arrow-down-s-line text-xl"></i></button>
+            <div class="big-only w-full relative">
+                <!-- Minimize Button (Moved to Top Left) -->
+                <button onclick="window.minimizePromo()" class="absolute top-3 left-3 text-gray-400 hover:text-white transition-colors bg-black/20 rounded-full w-8 h-8 flex items-center justify-center z-10 hover:bg-black/30" title="Minimize">
+                    <i class="ri-arrow-down-s-line text-xl"></i>
+                </button>
+                
+                <!-- Close Button (Moved to Top Right - Standard UX) -->
+                <button onclick="window.closePromoCompletely()" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors bg-black/20 rounded-full w-8 h-8 flex items-center justify-center z-10 hover:rotate-90" title="Tutup Selamanya">
+                    <i class="ri-close-line text-xl"></i>
+                </button>
+
                 <div class="flex flex-col items-center text-center p-6">
                     <div class="bg-gradient-to-br from-accent-yellow to-orange-500 p-4 rounded-full text-white mb-4 animate-bounce shadow-lg shadow-orange-500/30 ring-4 ring-orange-500/20">
                         <i class="ri-gift-2-fill text-4xl"></i>
@@ -872,7 +881,7 @@
             document.getElementById('btnReset').addEventListener('click', uploadDefaultData);
             document.getElementById('btnAdd').addEventListener('click', openAddModal);
             
-            // Promo Logic
+            // Promo Logic with Strict "Once per Session"
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if(entry.isIntersecting && !promoHasShown) {
@@ -883,11 +892,17 @@
                         target.setHours(endHour, endMinute, 0);
 
                         if(promoData.active) {
-                            promoHasShown = true;
+                            promoHasShown = true; // Mark as shown immediately
+                            
                             const options = { day: 'numeric', month: 'short' };
                             const dateStr = now.toLocaleDateString('id-ID', options);
                             document.getElementById('promoDateText').innerText = `Promo Spesial ${dateStr} s/d Pukul ${promoData.endTime || "22:00"}`;
+                            
                             setTimeout(() => window.showPromoBig(), 1000); // Delay show
+                            
+                            // DISCONNECT OBSERVER: Stops listening to scroll events entirely
+                            // This ensures popup never triggers again in this session
+                            observer.disconnect(); 
                         }
                     }
                 });
