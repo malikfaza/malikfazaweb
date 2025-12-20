@@ -687,7 +687,8 @@
              })),
         ];
         
-        let promoData = { code: "FAZA20", active: true, title: "Diskon Spesial!", desc: "Potongan 20% All Item", endTime: "22:00" };
+        // Set default timer to 23:59 to ensure it runs for first demo
+        let promoData = { code: "FAZA20", active: true, title: "Diskon Spesial!", desc: "Potongan 20% All Item", endTime: "23:59" };
         let products = [...mockProducts];
         let sortableInstance = null;
         
@@ -932,7 +933,7 @@
             document.getElementById('promoTitleInput').value = promoData.title || "";
             document.getElementById('promoDescInput').value = promoData.desc || "";
             document.getElementById('promoCodeInput').value = promoData.code;
-            document.getElementById('promoTimeInput').value = promoData.endTime || "22:00";
+            document.getElementById('promoTimeInput').value = promoData.endTime || "23:59";
             document.getElementById('promoActiveInput').checked = promoData.active;
             document.getElementById('promoSettingsModal').classList.remove('hidden');
             document.getElementById('promoSettingsModal').classList.add('flex');
@@ -943,7 +944,7 @@
             const newTitle = document.getElementById('promoTitleInput').value;
             const newDesc = document.getElementById('promoDescInput').value;
             const newCode = document.getElementById('promoCodeInput').value;
-            const newTime = document.getElementById('promoTimeInput').value || "22:00";
+            const newTime = document.getElementById('promoTimeInput').value || "23:59";
             const isActive = document.getElementById('promoActiveInput').checked;
             
             const newData = { title: newTitle, desc: newDesc, code: newCode, endTime: newTime, active: isActive };
@@ -968,14 +969,17 @@
             if(isActive) {
                 // Force show updated promo for visual feedback
                 window.showPromoBig();
+            } else {
+                window.closePromoCompletely();
             }
 
             window.closeModal('promoSettingsModal');
         });
 
+        // FIXED: Using 'promo-hidden' instead of 'hidden' to match CSS transitions
         window.showPromoBig = () => {
             const container = document.getElementById('promoContainer');
-            container.classList.remove('hidden');
+            container.classList.remove('promo-hidden'); 
             container.classList.add('promo-mode-big');
             container.classList.remove('promo-mode-mini');
         };
@@ -989,7 +993,10 @@
             container.classList.add('promo-mode-big');
             container.classList.remove('promo-mode-mini');
         };
-        window.closePromoCompletely = () => document.getElementById('promoContainer').classList.add('hidden');
+        window.closePromoCompletely = () => {
+            const container = document.getElementById('promoContainer');
+            container.classList.add('promo-hidden');
+        };
         
         function openAddModal() {
             document.getElementById('editForm').reset();
