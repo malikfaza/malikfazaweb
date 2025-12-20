@@ -22,6 +22,9 @@
     <!-- SortableJS -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
+    <!-- Typography Plugin for Epic Descriptions -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -119,25 +122,20 @@
         .drop-active { border-color: #06b6d4 !important; background-color: rgba(6, 182, 212, 0.1) !important; }
         .custom-checkbox:checked { background-color: #ef4444; border-color: #ef4444; }
         
-        /* --- CARD NEON HOVER EFFECTS (REINFORCED) --- */
+        /* --- CARD NEON HOVER EFFECTS --- */
         .card-interactive {
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             will-change: transform, box-shadow;
             transform-origin: center center;
         }
 
-        /* Dark Mode Hover */
         .dark .card-interactive:hover {
-            box-shadow: 
-                0 10px 30px -10px rgba(6, 182, 212, 0.5),
-                0 0 20px rgba(6, 182, 212, 0.2),
-                inset 0 0 0 1px rgba(6, 182, 212, 0.5);
+            box-shadow: 0 10px 30px -10px rgba(6, 182, 212, 0.5), 0 0 20px rgba(6, 182, 212, 0.2), inset 0 0 0 1px rgba(6, 182, 212, 0.5);
             border-color: rgba(34, 211, 238, 0.8);
             transform: translateY(-5px) scale(1.03);
             z-index: 20;
         }
 
-        /* Light Mode Hover */
         .light .card-interactive:hover {
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             border-color: #0ea5e9;
@@ -161,76 +159,29 @@
         .sortable-drag { cursor: grabbing; transform: scale(1.05); }
 
         /* --- PROMO POPUP ANIMATIONS --- */
-        #promoContainer { 
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); 
-        }
-        
-        /* BIG MODE */
-        .promo-mode-big {
-            position: fixed; inset: 0; z-index: 100;
-            display: flex; align-items: center; justify-content: center;
-            background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); padding: 1rem;
-            opacity: 1; pointer-events: auto;
-        }
-        .promo-mode-big .promo-card { 
-            width: 100%; max-width: 400px; 
-            transform: scale(1) translateY(0); 
-            opacity: 1;
-            border-radius: 24px;
-        }
-
-        /* MINI MODE */
-        .promo-mode-mini {
-            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-            z-index: 90; width: auto; min-width: 320px; max-width: 90%;
-            pointer-events: none;
-        }
-        .promo-mode-mini .promo-card {
-            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.15); padding: 8px 16px;
-            border-radius: 9999px;
-            display: flex; align-items: center; justify-content: space-between;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-            pointer-events: auto;
-            transform: scale(1) translateY(0);
-        }
-        .light .promo-mode-mini .promo-card { 
-            background: rgba(255, 255, 255, 0.95); 
-            border: 1px solid #cbd5e1; 
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        /* HIDDEN STATE */
-        .promo-hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        .promo-mode-big.promo-hidden .promo-card {
-             transform: scale(0.9) translateY(20px);
-        }
-        .promo-mode-mini.promo-hidden {
-             transform: translateX(-50%) translateY(100px);
-        }
-
+        #promoContainer { transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        .promo-mode-big { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); padding: 1rem; opacity: 1; pointer-events: auto; }
+        .promo-mode-big .promo-card { width: 100%; max-width: 400px; transform: scale(1) translateY(0); opacity: 1; border-radius: 24px; }
+        .promo-mode-mini { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 90; width: auto; min-width: 320px; max-width: 90%; pointer-events: none; }
+        .promo-mode-mini .promo-card { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.15); padding: 8px 16px; border-radius: 9999px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); pointer-events: auto; transform: scale(1) translateY(0); }
+        .light .promo-mode-mini .promo-card { background: rgba(255, 255, 255, 0.95); border: 1px solid #cbd5e1; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); }
+        .promo-hidden { opacity: 0; pointer-events: none; }
+        .promo-mode-big.promo-hidden .promo-card { transform: scale(0.9) translateY(20px); }
+        .promo-mode-mini.promo-hidden { transform: translateX(-50%) translateY(100px); }
         .promo-mode-mini .big-only { display: none; }
         .promo-mode-big .mini-only { display: none; }
 
-        .grid-mobile-80 {
-            grid-template-columns: repeat(auto-fill, 80%);
-            grid-auto-columns: 80%;
-        }
+        .grid-mobile-80 { grid-template-columns: repeat(auto-fill, 80%); grid-auto-columns: 80%; }
         
-        /* Height Transition for Toggle Form */
-        .collapsible-content {
-            transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out;
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-        }
-        .collapsible-content.open {
-            max-height: 500px;
-            opacity: 1;
-        }
+        .collapsible-content { transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out; max-height: 0; opacity: 0; overflow: hidden; }
+        .collapsible-content.open { max-height: 500px; opacity: 1; }
+
+        /* Custom Styles for Epic Description */
+        .epic-desc ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; }
+        .epic-desc li { margin-bottom: 0.5rem; }
+        .epic-desc strong { color: #22d3ee; }
+        .light .epic-desc strong { color: #0284c7; }
+        .epic-desc h1, .epic-desc h2, .epic-desc h3 { font-family: 'Outfit', sans-serif; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.5rem; }
     </style>
 </head>
 <body class="bg-cream text-slate-900 dark:bg-midnight dark:text-slate-200 transition-colors duration-500 font-sans selection:bg-accent-cyan selection:text-white overflow-x-hidden antialiased">
@@ -633,7 +584,7 @@
         </div>
     </div>
 
-    <!-- Edit/Add Modal -->
+    <!-- Edit/Add Modal (Updated for Rich Description) -->
     <div id="editModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-entry">
         <div class="glass dark:bg-midnight bg-white p-6 rounded-2xl w-full max-w-md mx-auto relative shadow-2xl max-h-[90vh] overflow-y-auto border border-white/10">
             <button onclick="window.closeModal('editModal')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500"><i class="ri-close-line text-xl"></i></button>
@@ -664,6 +615,11 @@
                 <div><label class="text-xs text-gray-500 mb-1 block font-bold">Judul Katalog</label><input type="text" id="editTitle" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan" required></div>
                 <div><label class="text-xs text-gray-500 mb-1 block font-bold">Harga</label><input type="text" id="editPrice" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan" required></div>
                 <div>
+                    <label class="text-xs text-gray-500 mb-1 block font-bold">Deskripsi (HTML/CSS Support)</label>
+                    <textarea id="editDesc" rows="8" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan font-mono text-xs" placeholder="<p>Deskripsi...</p>"></textarea>
+                    <p class="text-[10px] text-gray-500">Tips: Gunakan tag HTML seperti &lt;h1&gt;, &lt;ul&gt;, &lt;strong&gt; untuk tampilan epik.</p>
+                </div>
+                <div>
                     <label class="text-xs text-gray-500 mb-1 block font-bold">Link Detail (Opsional)</label>
                     <input type="text" id="editDetailLink" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan" placeholder="https://lynk.id/malikfaza">
                 </div>
@@ -685,33 +641,49 @@
         </div>
     </div>
 
-    <!-- Detail Modal -->
-    <div id="productModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-entry">
-        <div class="glass dark:bg-midnight bg-white p-0 rounded-2xl w-full max-w-sm relative overflow-hidden flex flex-col max-h-[85vh] shadow-2xl border border-white/10">
-            <div class="relative h-56 bg-gray-200">
-                <img id="modalImg" src="" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                <button onclick="window.closeModal('productModal')" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-red-500 transition-colors backdrop-blur"><i class="ri-close-line text-xl"></i></button>
-                <div class="absolute bottom-4 left-4 right-4">
-                    <span id="modalCategory" class="text-[10px] font-bold px-2 py-1 rounded bg-accent-cyan text-white uppercase tracking-wider shadow-lg mb-2 inline-block">APP</span>
-                    <h3 id="modalTitle" class="text-2xl font-bold text-white leading-tight shadow-black drop-shadow-md">Title</h3>
-                </div>
-            </div>
-            <div class="p-6 overflow-y-auto bg-white dark:bg-midnight">
-                <div class="flex justify-between items-center mb-4 border-b border-gray-100 dark:border-white/10 pb-4">
-                    <span class="text-sm text-gray-500">Harga Terbaik</span>
-                    <span id="modalPrice" class="text-xl font-bold text-accent-cyan">Rp 0</span>
-                </div>
-                <p id="modalDesc" class="text-gray-600 dark:text-gray-300 mb-8 text-sm leading-relaxed">Description goes here. Premium quality guaranteed.</p>
+    <!-- Detail Modal (FULL SCREEN EPIC) -->
+    <div id="productModal" class="fixed inset-0 z-[200] hidden bg-white dark:bg-midnight overflow-y-auto animate-entry">
+        <!-- Sticky Close Button -->
+        <button onclick="window.closeModal('productModal')" class="fixed top-6 right-6 z-[210] w-12 h-12 rounded-full bg-gray-100 dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors shadow-lg backdrop-blur">
+            <i class="ri-close-line text-2xl"></i>
+        </button>
+
+        <div class="container mx-auto px-6 py-12 md:py-20 max-w-6xl">
+            <div class="grid md:grid-cols-2 gap-12 items-start">
                 
-                <div class="flex flex-col gap-3">
-                    <a href="#" id="modalDetailLink" target="_blank" class="block w-full text-center py-3 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 dark:text-white text-gray-700 rounded-xl font-bold text-sm hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
-                        Lihat Detail
-                    </a>
-                    <a id="modalWaLink" href="#" target="_blank" class="block w-full text-center py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-green-900/20 flex items-center justify-center gap-2 text-sm hover:-translate-y-1">
-                        <i class="ri-whatsapp-line text-lg"></i> Beli via WhatsApp
-                    </a>
+                <!-- Left: Image Sticky on Desktop -->
+                <div class="sticky top-24">
+                    <div class="aspect-square rounded-3xl overflow-hidden shadow-2xl border border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-black/30 relative group">
+                        <img id="modalImg" src="" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    </div>
+                    
+                    <div class="mt-8 flex flex-col gap-4">
+                        <div class="flex justify-between items-center bg-gray-100 dark:bg-white/5 p-4 rounded-xl border border-gray-200 dark:border-white/10">
+                            <span class="text-sm font-bold text-gray-500 dark:text-gray-400">Harga Spesial</span>
+                            <span id="modalPrice" class="text-2xl font-bold text-accent-cyan">Rp 0</span>
+                        </div>
+                        <a id="modalWaLink" href="#" target="_blank" class="w-full py-4 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-center flex items-center justify-center gap-2 shadow-lg shadow-green-500/30 transform hover:-translate-y-1 transition-all">
+                            <i class="ri-whatsapp-fill text-2xl"></i> Beli Sekarang via WA
+                        </a>
+                        <a href="#" id="modalDetailLink" target="_blank" class="text-center text-sm text-gray-500 hover:text-accent-cyan underline underline-offset-4">Lihat di Link Eksternal</a>
+                    </div>
                 </div>
+
+                <!-- Right: Epic Content -->
+                <div class="relative">
+                    <div class="mb-6">
+                        <span id="modalCategory" class="inline-block px-3 py-1 bg-accent-cyan/10 text-accent-cyan text-xs font-bold uppercase tracking-wider rounded-full border border-accent-cyan/20 mb-3">Category</span>
+                        <h1 id="modalTitle" class="text-4xl md:text-5xl font-heading font-extrabold text-slate-900 dark:text-white leading-tight mb-6">Product Title</h1>
+                        <div class="w-20 h-1.5 bg-gradient-to-r from-accent-cyan to-accent-green rounded-full"></div>
+                    </div>
+
+                    <!-- Description Area (Supports HTML/CSS) -->
+                    <div id="modalDesc" class="prose prose-lg dark:prose-invert max-w-none text-gray-600 dark:text-gray-300 epic-desc">
+                        <!-- Content injected via JS -->
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -744,23 +716,46 @@
         let db, auth;
         // Mock Data Fallback if Firebase fails or for offline demo
         let mockProducts = [
-             ...Array.from({ length: 8 }, (_, i) => ({ 
-                 id: `app-${i}`, 
+             { 
+                 id: `app-0`, 
                  category: 'app', 
-                 title: `Premium App V${i+1} Pro`, 
+                 title: `Premium App V1 Pro`, 
                  price: 'Rp 25.000', 
-                 img: `https://picsum.photos/seed/apk${i}/400/400`, 
-                 desc: 'Full premium features unlocked. Lifetime warranty included.', 
+                 img: `https://picsum.photos/seed/apk0/600/600`, 
+                 // EPIC HTML DESCRIPTION EXAMPLE
+                 desc: `
+                    <h2>Fitur Unggulan 🔥</h2>
+                    <p>Dapatkan pengalaman terbaik dengan versi premium ini. Tidak ada iklan, fitur lengkap terbuka, dan dukungan prioritas.</p>
+                    <ul>
+                        <li><strong>Tanpa Iklan:</strong> Nikmati aplikasi tanpa gangguan.</li>
+                        <li><strong>4K Support:</strong> Kualitas visual tertinggi.</li>
+                        <li><strong>Lifetime Update:</strong> Sekali bayar untuk selamanya.</li>
+                    </ul>
+                    <div class="bg-blue-900/30 p-4 rounded-lg border border-blue-500/30 my-4">
+                        <h3 class="text-blue-400 m-0">Bonus Spesial!</h3>
+                        <p class="m-0 text-sm">Dapatkan akses ke grup VIP kami setiap pembelian hari ini.</p>
+                    </div>
+                 `, 
                  detailLink: 'https://lynk.id/malikfaza', 
-                 order: i 
+                 order: 0 
+             },
+             ...Array.from({ length: 7 }, (_, i) => ({ 
+                 id: `app-${i+1}`, 
+                 category: 'app', 
+                 title: `Premium App V${i+2} Pro`, 
+                 price: 'Rp 25.000', 
+                 img: `https://picsum.photos/seed/apk${i+1}/600/600`, 
+                 desc: '<p>Deskripsi standar produk ini. Edit di mode admin untuk menambahkan detail HTML yang epik.</p>', 
+                 detailLink: 'https://lynk.id/malikfaza', 
+                 order: i+1 
              })),
              ...Array.from({ length: 4 }, (_, i) => ({ 
                  id: `gem-${i}`, 
                  category: 'gem', 
                  title: `Top Up Gem Pack ${i+1}`, 
                  price: 'Rp 50.000', 
-                 img: `https://picsum.photos/seed/gem${i}/400/400`, 
-                 desc: 'Legal dan aman 100%. Proses cepat 5 menit.', 
+                 img: `https://picsum.photos/seed/gem${i}/600/600`, 
+                 desc: '<p>Top up aman, legal, dan cepat. Proses hanya 5 menit via ID.</p>', 
                  detailLink: 'https://lynk.id/malikfaza', 
                  order: i + 10 
              })),
@@ -1419,7 +1414,9 @@
             document.getElementById('modalImg').src = p.img;
             document.getElementById('modalTitle').innerText = p.title;
             document.getElementById('modalPrice').innerText = p.price;
-            document.getElementById('modalDesc').innerText = p.desc;
+            
+            // Allow HTML description rendering
+            document.getElementById('modalDesc').innerHTML = p.desc;
             document.getElementById('modalCategory').innerText = p.category;
             
             const detailBtn = document.getElementById('modalDetailLink');
@@ -1428,7 +1425,7 @@
             const waUrl = `https://wa.me/6285161141114?text=Halo%20Malikfaza,%20saya%20tertarik%20membeli%20${encodeURIComponent(p.title)}`;
             document.getElementById('modalWaLink').href = waUrl;
             document.getElementById('productModal').classList.remove('hidden');
-            document.getElementById('productModal').classList.add('flex');
+            document.getElementById('productModal').classList.add('block');
         };
 
         // --- EDIT ---
@@ -1442,6 +1439,7 @@
             document.getElementById('editPrice').value = p.price;
             document.getElementById('editCategory').value = p.category;
             document.getElementById('editDetailLink').value = p.detailLink || "https://lynk.id/malikfaza";
+            document.getElementById('editDesc').value = p.desc; // Load HTML description
             document.getElementById('modalFormTitle').innerText = "Edit Produk";
             document.getElementById('editPreview').src = p.img;
             document.getElementById('previewPlaceholder').style.display = "none";
@@ -1480,7 +1478,7 @@
                 category: document.getElementById('editCategory').value,
                 detailLink: document.getElementById('editDetailLink').value,
                 img: document.getElementById('editPreview').src || "https://picsum.photos/400/400",
-                desc: 'Deskripsi lengkap produk akan muncul di sini.',
+                desc: document.getElementById('editDesc').value, // Save HTML description
                 order: id ? (products.find(p=>p.id===id)?.order || 0) : products.length
             };
             
@@ -1501,6 +1499,7 @@
         window.closeModal = (id) => {
             document.getElementById(id).classList.add('hidden');
             document.getElementById(id).classList.remove('flex');
+            document.getElementById(id).classList.remove('block');
         };
 
         window.togglePassword = () => {
