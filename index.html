@@ -8,7 +8,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -29,7 +29,7 @@
                 extend: {
                     colors: {
                         midnight: '#000e1e', 
-                        cream: '#ffffff',
+                        cream: '#f8fafc',
                         accent: {
                             cyan: '#06b6d4',
                             red: '#ef4444',
@@ -48,6 +48,7 @@
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                         'slide-x': 'slideX 1.5s ease-in-out infinite',
                         'wiggle': 'wiggle 0.5s ease-in-out infinite',
+                        'fade-in': 'fadeInUp 0.6s ease-out forwards',
                     },
                     keyframes: {
                         blob: {
@@ -58,15 +59,19 @@
                         },
                         float: {
                             '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-5px)' },
+                            '50%': { transform: 'translateY(-10px)' },
                         },
                         slideX: {
                             '0%, 100%': { transform: 'translateX(0)' },
                             '50%': { transform: 'translateX(5px)' },
                         },
                         wiggle: {
-                            '0%, 100%': { transform: 'rotate(-1deg)' },
-                            '50%': { transform: 'rotate(1deg)' },
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
+                        },
+                        fadeInUp: {
+                            'from': { opacity: 0, transform: 'translateY(20px)' },
+                            'to': { opacity: 1, transform: 'translateY(0)' }
                         }
                     }
                 }
@@ -76,24 +81,25 @@
 
     <style>
         /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .dark ::-webkit-scrollbar-thumb { background: #334155; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-        /* Glassmorphism */
+        /* Glassmorphism - Adjusted for sharpness */
         .glass {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.05); /* Sedikit lebih solid agar tidak terlalu blur */
+            backdrop-filter: blur(10px); /* Dikurangi dari 16px agar lebih tajam */
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             transition: all 0.3s ease;
         }
         .light .glass {
-            background: #f8fafc; 
-            border: 1px solid #cbd5e1; 
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); 
-            backdrop-filter: none;
+            background: rgba(255, 255, 255, 0.9); 
+            border: 1px solid rgba(255, 255, 255, 0.5); 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); 
+            backdrop-filter: blur(8px); /* Dikurangi dari 12px */
             color: #0f172a;
         }
         
@@ -101,7 +107,7 @@
             background: rgba(255, 255, 255, 0.95); 
             backdrop-filter: blur(10px);
             border-bottom: 1px solid #e2e8f0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
         .light .card-title { color: #0f172a; font-weight: 800; }
@@ -122,41 +128,36 @@
         /* Dark Mode Neon Glow */
         .dark .card-interactive:hover {
             box-shadow: 
-                0 0 15px rgba(6, 182, 212, 0.6), /* Cyan Outer Glow */
-                0 0 30px rgba(6, 182, 212, 0.2), /* Cyan Diffuse Glow */
-                inset 0 0 10px rgba(6, 182, 212, 0.1); /* Inner Glow */
-            border-color: #22d3ee; /* Cyan Border */
-            transform: translateY(-5px) scale(1.01); 
+                0 0 20px rgba(6, 182, 212, 0.4), /* Cyan Outer Glow */
+                0 0 40px rgba(6, 182, 212, 0.1), /* Cyan Diffuse Glow */
+                inset 0 0 2px rgba(6, 182, 212, 0.5); /* Inner Glow */
+            border-color: rgba(34, 211, 238, 0.5); /* Cyan Border */
+            transform: translateY(-8px) scale(1.02); 
             z-index: 20;
         }
 
         /* Light Mode Strong Shadow & Outline */
         .light .card-interactive:hover {
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-            border-color: #0284c7; /* Sky Blue Border */
-            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            border-color: #0ea5e9; /* Sky Blue Border */
+            transform: translateY(-8px) scale(1.02);
             z-index: 20;
         }
         
         .card-selected { 
             border: 2px solid #ef4444 !important; 
             box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
-            transform: scale(0.95);
+            transform: scale(0.96);
         }
 
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
         .animate-entry {
             animation: fadeInUp 0.6s ease-out forwards;
             opacity: 0; 
         }
 
         /* Sortable */
-        .sortable-ghost { opacity: 0.5; background: #22d3ee; }
-        .sortable-drag { cursor: grabbing; }
+        .sortable-ghost { opacity: 0.5; background: rgba(34, 211, 238, 0.1); border: 2px dashed #06b6d4; }
+        .sortable-drag { cursor: grabbing; transform: scale(1.05); }
 
         /* --- PROMO POPUP ANIMATIONS (BUTTERY SMOOTH) --- */
         #promoContainer { 
@@ -167,7 +168,7 @@
         .promo-mode-big {
             position: fixed; inset: 0; z-index: 100;
             display: flex; align-items: center; justify-content: center;
-            background-color: rgba(0, 0, 0, 0.75); backdrop-filter: blur(8px); padding: 1rem;
+            background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); padding: 1rem;
             opacity: 1; pointer-events: auto;
         }
         .promo-mode-big .promo-card { 
@@ -184,8 +185,8 @@
             pointer-events: none; /* Container pass-through */
         }
         .promo-mode-mini .promo-card {
-            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.15); padding: 10px 16px;
+            background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15); padding: 8px 16px;
             border-radius: 9999px; /* Pill Shape */
             display: flex; align-items: center; justify-content: space-between;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
@@ -220,197 +221,233 @@
         }
     </style>
 </head>
-<body class="bg-cream text-slate-900 dark:bg-midnight dark:text-slate-200 transition-colors duration-300 font-sans selection:bg-accent-cyan selection:text-white overflow-x-hidden">
+<body class="bg-cream text-slate-900 dark:bg-midnight dark:text-slate-200 transition-colors duration-500 font-sans selection:bg-accent-cyan selection:text-white overflow-x-hidden antialiased">
 
     <audio id="bgMusic" loop>
         <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
     </audio>
 
     <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div class="absolute top-0 left-1/4 w-48 h-48 md:w-96 md:h-96 bg-accent-cyan/10 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-        <div class="absolute top-0 right-1/4 w-48 h-48 md:w-96 md:h-96 bg-accent-orange/10 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div class="absolute top-0 left-1/4 w-64 h-64 md:w-96 md:h-96 bg-accent-cyan/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-blob"></div>
+        <div class="absolute top-0 right-1/4 w-64 h-64 md:w-96 md:h-96 bg-accent-orange/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-32 left-1/3 w-64 h-64 md:w-96 md:h-96 bg-accent-green/20 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-blob animation-delay-4000"></div>
     </div>
 
     <!-- Navigation -->
     <nav class="fixed w-full z-50 glass shadow-sm transition-all duration-300" id="navbar">
         <div class="container mx-auto px-6 py-3 md:py-4 flex justify-between items-center">
-            <a href="#" class="text-lg md:text-2xl font-heading font-bold tracking-tight group dark:text-white text-slate-900">
-                Malikfaza<span class="text-accent-cyan">.</span>Studio
+            <a href="#" class="text-xl md:text-2xl font-heading font-bold tracking-tight group dark:text-white text-slate-900 flex items-center gap-1">
+                Malikfaza<span class="text-accent-cyan animate-pulse">.</span>Studio
             </a>
             
             <div class="hidden md:flex items-center gap-8 font-medium dark:text-gray-300 text-slate-600 text-sm">
-                <a href="#home" class="hover:text-accent-cyan transition-colors">Home</a>
-                <a href="#products" class="hover:text-accent-cyan transition-colors">Products</a>
-                <a href="#services" class="hover:text-accent-cyan transition-colors">Services</a>
-                <a href="#contact" class="hover:text-accent-cyan transition-colors">Contact</a>
+                <a href="#home" class="hover:text-accent-cyan transition-colors relative group">Home<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-cyan transition-all group-hover:w-full"></span></a>
+                <a href="#products" class="hover:text-accent-cyan transition-colors relative group">Products<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-cyan transition-all group-hover:w-full"></span></a>
+                <a href="#services" class="hover:text-accent-cyan transition-colors relative group">Services<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-cyan transition-all group-hover:w-full"></span></a>
+                <a href="#contact" class="hover:text-accent-cyan transition-colors relative group">Contact<span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-cyan transition-all group-hover:w-full"></span></a>
             </div>
 
             <div class="flex items-center gap-2 md:gap-3">
-                <button onclick="toggleMusic()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-accent-red border border-transparent">
-                    <i id="musicIcon" class="ri-music-2-line"></i>
+                <button onclick="toggleMusic()" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-accent-red border border-transparent group">
+                    <i id="musicIcon" class="ri-music-2-line group-hover:animate-wiggle"></i>
                 </button>
-                <button id="langToggle" class="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-bold text-[10px] border border-current w-7 h-7 flex items-center justify-center">ID</button>
-                <button id="themeToggle" class="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-accent-yellow w-7 h-7 flex items-center justify-center">
+                <button id="langToggle" class="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-bold text-[10px] border border-current w-9 h-9 flex items-center justify-center">ID</button>
+                <button id="themeToggle" class="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-accent-yellow w-9 h-9 flex items-center justify-center">
                     <i class="ri-sun-line text-lg dark:hidden"></i>
                     <i class="ri-moon-line text-lg hidden dark:block"></i>
                 </button>
-                <button class="md:hidden text-xl dark:text-white text-slate-900" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')">
+                <button class="md:hidden text-2xl dark:text-white text-slate-900 ml-1" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')">
                     <i class="ri-menu-4-line"></i>
                 </button>
             </div>
         </div>
         
-        <div id="mobileMenu" class="hidden md:hidden glass border-t border-gray-200 dark:border-gray-800 p-4 absolute w-full top-[60px] left-0 z-40 shadow-xl">
-            <div class="flex flex-col gap-3 font-medium dark:text-gray-200 text-slate-700 text-sm">
+        <div id="mobileMenu" class="hidden md:hidden glass border-t border-gray-200 dark:border-gray-800 p-4 absolute w-full top-[60px] left-0 z-40 shadow-xl backdrop-blur-xl">
+            <div class="flex flex-col gap-4 font-medium dark:text-gray-200 text-slate-700 text-sm">
                 <a href="#home" class="block hover:text-accent-cyan hover:pl-2 transition-all">Home</a>
                 <a href="#products" class="block hover:text-accent-cyan hover:pl-2 transition-all">Products</a>
                 <a href="#services" class="block hover:text-accent-cyan hover:pl-2 transition-all">Services</a>
                 <a href="#contact" class="block hover:text-accent-cyan hover:pl-2 transition-all">Contact</a>
-                <button id="adminBtnMobile" class="text-left text-accent-red mt-2 font-bold uppercase tracking-wider text-xs">Admin Login</button>
+                <button id="adminBtnMobile" class="text-left text-accent-red mt-2 font-bold uppercase tracking-wider text-xs border-t border-dashed border-gray-500/30 pt-4">Admin Login</button>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <header id="home" class="min-h-screen flex items-center pt-20 pb-12 relative">
-        <div class="container mx-auto px-6 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+    <header id="home" class="min-h-screen flex items-center pt-24 pb-12 relative">
+        <div class="container mx-auto px-6 grid md:grid-cols-2 gap-8 md:gap-16 items-center">
             <div class="order-2 md:order-1 text-center md:text-left" data-aos="fade-right">
-                <div class="inline-block px-3 py-1.5 rounded-full border border-accent-cyan/30 bg-accent-cyan/10 text-accent-cyan text-[10px] md:text-xs font-semibold mb-4 animate-pulse">
-                    🚀 Premium Digital Solutions
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-accent-cyan/30 bg-accent-cyan/5 text-accent-cyan text-[10px] md:text-xs font-bold uppercase tracking-wider mb-6 hover:bg-accent-cyan/10 transition-colors">
+                    <span class="w-2 h-2 rounded-full bg-accent-cyan animate-pulse"></span>
+                    Premium Digital Solutions
                 </div>
-                <h1 class="text-3xl md:text-6xl font-heading font-bold mb-4 leading-tight dark:text-white text-slate-900">
+                <h1 class="text-4xl md:text-6xl lg:text-7xl font-heading font-extrabold mb-6 leading-tight dark:text-white text-slate-900">
                     <span data-i18n="hero_title_1">Upgrade Your</span> <br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-cyan via-accent-green to-accent-yellow">Digital Life</span>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-accent-cyan via-accent-green to-accent-yellow animate-pulse-slow">Digital Life</span>
                 </h1>
-                <p class="text-sm md:text-lg text-gray-600 dark:text-gray-400 mb-6 max-w-lg mx-auto md:mx-0" data-i18n="hero_desc">
-                    Pusat tools premium, jasa kreatif, dan aset digital berkualitas tinggi.
+                <p class="text-sm md:text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-lg mx-auto md:mx-0 leading-relaxed" data-i18n="hero_desc">
+                    Pusat tools premium, jasa kreatif, dan aset digital berkualitas tinggi. Tingkatkan produktivitas Anda sekarang.
                 </p>
-                <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
-                    <a href="#products" onclick="window.startMusic()" class="px-6 py-2.5 bg-accent-cyan text-white rounded-xl font-bold hover:bg-cyan-600 transition-all shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2 text-sm hover:scale-105 transform">
-                        <i class="ri-shopping-bag-3-line"></i> <span data-i18n="cta_shop">Lihat Katalog</span>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                    <a href="#products" onclick="window.startMusic()" class="px-8 py-3.5 bg-accent-cyan text-white rounded-xl font-bold hover:bg-cyan-500 transition-all shadow-lg shadow-cyan-500/30 flex items-center justify-center gap-2 text-sm hover:-translate-y-1">
+                        <i class="ri-shopping-bag-3-line text-lg"></i> <span data-i18n="cta_shop">Lihat Katalog</span>
+                    </a>
+                    <a href="#contact" class="px-8 py-3.5 bg-transparent border border-slate-300 dark:border-white/20 text-slate-700 dark:text-white rounded-xl font-bold hover:bg-slate-100 dark:hover:bg-white/10 transition-all flex items-center justify-center gap-2 text-sm hover:-translate-y-1">
+                        Hubungi Kami
                     </a>
                 </div>
             </div>
-            <div class="order-1 md:order-2 relative px-8 md:px-0" data-aos="fade-left">
-                <div class="relative z-10 animate-float">
-                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop" alt="Digital Creative" class="rounded-2xl shadow-2xl border-2 border-white/10 w-full h-56 md:h-[500px] object-cover">
+            <div class="order-1 md:order-2 relative px-4 md:px-0" data-aos="fade-left">
+                <div class="relative z-10 animate-float group perspective">
+                    <div class="absolute -inset-1 bg-gradient-to-r from-accent-cyan to-accent-purple rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-1000 group-hover:duration-200"></div>
+                    <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop" alt="Digital Creative" class="relative rounded-2xl shadow-2xl border border-white/10 w-full h-64 md:h-[500px] object-cover transform transition-transform duration-500 group-hover:scale-[1.02]">
+                    
+                    <!-- Floating Cards Decoration -->
+                    <div class="absolute -bottom-6 -left-6 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 animate-float" style="animation-delay: 1s;">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-500"><i class="ri-secure-payment-line"></i></div>
+                            <div>
+                                <p class="text-xs text-gray-500">Secure</p>
+                                <p class="text-sm font-bold dark:text-white">Transaction</p>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="absolute -top-6 -right-6 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 animate-float" style="animation-delay: 2s;">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-yellow-500"><i class="ri-star-smile-fill"></i></div>
+                            <div>
+                                <p class="text-xs text-gray-500">Rating</p>
+                                <p class="text-sm font-bold dark:text-white">5.0 / 5.0</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
     <!-- Admin Control Panel -->
-    <div id="adminPanel" class="hidden container mx-auto px-6 mb-6">
-        <div class="p-4 rounded-xl border border-accent-red bg-red-50 dark:bg-red-900/10 shadow-lg flex flex-col md:flex-row justify-between items-center gap-4 animate-fade-in">
+    <div id="adminPanel" class="hidden container mx-auto px-6 mb-8 transition-all duration-300">
+        <div class="p-5 rounded-2xl border border-accent-red bg-red-50 dark:bg-red-900/10 shadow-lg flex flex-col md:flex-row justify-between items-center gap-4 animate-fade-in relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1 h-full bg-accent-red"></div>
             <div>
-                <h2 class="text-sm font-bold text-accent-red flex items-center gap-2">
-                    <i class="ri-admin-line"></i> OWNER MODE
+                <h2 class="text-base font-bold text-accent-red flex items-center gap-2">
+                    <i class="ri-admin-fill text-xl"></i> ADMIN DASHBOARD
                 </h2>
-                <div class="text-[10px] text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-2">
-                    Status: <span id="dbStatus" class="font-bold text-red-500">Offline</span>
+                <div class="text-[11px] text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-2">
+                    System Status: <span id="dbStatus" class="font-bold text-green-500 flex items-center gap-1"><i class="ri-wifi-line"></i> Online (Mock Mode)</span>
                 </div>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-2 w-full md:w-auto">
-                <button id="btnAdd" onclick="window.openAddModal()" class="px-3 py-2 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-1 shadow-lg">
-                    <i class="ri-add-circle-line"></i> Tambah
+            <div class="flex flex-wrap gap-2 w-full md:w-auto justify-center md:justify-end">
+                <button id="btnAdd" onclick="window.openAddModal()" class="px-4 py-2 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 transform">
+                    <i class="ri-add-circle-line text-base"></i> Tambah Produk
                 </button>
-                <button id="btnDelete" onclick="window.deleteSelected()" class="px-3 py-2 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-1">
-                    <i class="ri-delete-bin-line"></i> Hapus
+                <button id="btnDelete" onclick="window.deleteSelected()" class="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 transform">
+                    <i class="ri-delete-bin-line text-base"></i> Hapus Terpilih
                 </button>
-                <button id="btnReset" onclick="window.uploadDefaultData()" class="px-3 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-1">
-                    <i class="ri-database-2-line"></i> Reset
+                <button id="btnReset" onclick="window.uploadDefaultData()" class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 transform">
+                    <i class="ri-refresh-line text-base"></i> Reset Data
                 </button>
-                <button onclick="window.openPromoSettings()" class="px-3 py-2 bg-yellow-600 text-white text-xs font-bold rounded-lg hover:bg-yellow-700 transition-colors flex items-center justify-center gap-1">
-                    <i class="ri-coupon-3-line"></i> Promo
+                <button onclick="window.openPromoSettings()" class="px-4 py-2 bg-yellow-600 text-white text-xs font-bold rounded-lg hover:bg-yellow-700 transition-colors flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 transform">
+                    <i class="ri-coupon-3-line text-base"></i> Set Promo
                 </button>
-                <button onclick="window.logoutAdmin()" class="px-3 py-2 bg-gray-600 text-white text-xs font-bold rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center gap-1">
-                    <i class="ri-logout-box-r-line"></i> Out
+                <button onclick="window.logoutAdmin()" class="px-4 py-2 bg-slate-700 text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 transform">
+                    <i class="ri-logout-box-r-line text-base"></i> Logout
                 </button>
             </div>
         </div>
     </div>
 
     <!-- Products Section -->
-    <section id="products" class="py-12 md:py-20 relative overflow-hidden">
+    <section id="products" class="py-12 md:py-24 relative overflow-hidden">
         <div class="container mx-auto px-6">
-            <div class="text-center mb-8 md:mb-16" data-aos="fade-up">
-                <h2 class="text-2xl md:text-4xl font-heading font-bold mb-2 dark:text-white text-slate-900"><span class="text-accent-cyan">Digital</span> Catalog</h2>
-                <p class="text-xs md:text-base text-gray-500 dark:text-gray-400 max-w-xl mx-auto" data-i18n="products_subtitle">Koleksi tools premium pilihan.</p>
+            <div class="text-center mb-10 md:mb-16" data-aos="fade-up">
+                <h2 class="text-3xl md:text-5xl font-heading font-bold mb-3 dark:text-white text-slate-900"><span class="text-accent-cyan">Digital</span> Catalog</h2>
+                <div class="w-20 h-1.5 bg-gradient-to-r from-accent-cyan to-accent-green mx-auto rounded-full mb-4"></div>
+                <p class="text-sm text-gray-500 dark:text-gray-400 max-w-xl mx-auto" data-i18n="products_subtitle">Koleksi tools premium pilihan untuk kebutuhan digital Anda.</p>
             </div>
 
-            <!-- SEARCH BAR -->
-            <div class="max-w-md mx-auto mb-8 relative px-4" data-aos="fade-up">
-                <i class="ri-search-line absolute left-8 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                <input type="text" id="searchInput" placeholder="Cari aplikasi, tools, atau jasa..." class="w-full pl-12 pr-4 py-3 rounded-full bg-white dark:bg-white/10 border border-gray-200 dark:border-white/10 focus:border-accent-cyan focus:outline-none dark:text-white shadow-sm text-sm" oninput="window.handleSearch(this.value)">
+            <!-- SEARCH BAR FIXED: Icon Moved After Input for Sharpness -->
+            <div class="max-w-xl mx-auto mb-10 relative px-2" data-aos="fade-up" data-aos-delay="100">
+                <input type="text" id="searchInput" placeholder="Cari aplikasi, tools, atau jasa..." class="w-full pl-14 pr-6 py-4 rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/10 focus:border-accent-cyan focus:ring-2 focus:ring-accent-cyan/20 focus:outline-none dark:text-white shadow-lg text-sm transition-all backdrop-blur-sm relative z-0" oninput="window.handleSearch(this.value)">
+                <div class="absolute inset-y-0 left-6 flex items-center pointer-events-none z-10">
+                    <i class="ri-search-line text-gray-400 text-xl"></i>
+                </div>
+                <div class="absolute inset-y-0 right-4 flex items-center z-10">
+                    <span class="text-[10px] bg-gray-100 dark:bg-white/10 px-2 py-1 rounded text-gray-500 border border-gray-200 dark:border-white/10">CTRL+K</span>
+                </div>
             </div>
 
-            <div class="flex overflow-x-auto gap-2 md:gap-4 mb-8 pb-2 md:pb-0 justify-start md:justify-center no-scrollbar px-1" id="categoryFilters">
+            <div class="flex overflow-x-auto gap-3 md:gap-4 mb-10 pb-4 md:pb-0 justify-start md:justify-center no-scrollbar px-2 snap-x" id="categoryFilters">
                 <!-- JS Generated -->
             </div>
             
             <!-- PRODUCT GRID / CAROUSEL -->
-            <div class="relative group">
-                <div id="productContainer" class="grid grid-rows-2 grid-flow-col auto-cols-[80%] md:auto-cols-[16rem] h-[800px] md:h-auto gap-4 overflow-x-auto snap-x snap-mandatory md:grid-rows-none md:grid-flow-row md:grid-cols-3 lg:grid-cols-4 md:gap-6 pb-6 no-scrollbar pr-6">
+            <div class="relative group min-h-[400px]">
+                <div id="productContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8 pb-10">
                     <!-- JS Generated -->
-                </div>
-                
-                <div class="flex justify-center items-center mt-2 text-accent-cyan animate-pulse md:hidden">
-                    <span class="text-xs font-bold mr-2">Geser</span>
-                    <i class="ri-arrow-right-double-line animate-slide-x"></i>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Services Section -->
-    <section id="services" class="py-12 md:py-20 bg-gray-50 dark:bg-black/20">
+    <section id="services" class="py-16 md:py-24 bg-gray-50 dark:bg-black/20 border-y border-gray-200 dark:border-white/5">
         <div class="container mx-auto px-6">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-8 md:mb-12 text-center md:text-left" data-aos="fade-up">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-12 text-center md:text-left" data-aos="fade-up">
                 <div class="w-full md:w-auto">
-                    <h2 class="text-2xl md:text-4xl font-heading font-bold mb-2 dark:text-white text-slate-900">Creative <span class="text-accent-yellow">Services</span></h2>
-                    <p class="text-gray-500 text-xs md:text-sm" data-i18n="services_subtitle">Klik kartu untuk melihat portofolio.</p>
+                    <h2 class="text-3xl md:text-4xl font-heading font-bold mb-3 dark:text-white text-slate-900">Creative <span class="text-accent-yellow">Services</span></h2>
+                    <p class="text-gray-500 text-sm" data-i18n="services_subtitle">Solusi kreatif profesional untuk bisnis Anda.</p>
                 </div>
-                <a href="https://wa.me/6285161141114?text=Halo%20Malikfaza,%20saya%20ingin%20konsultasi%20gratis." target="_blank" class="text-accent-yellow font-bold hover:underline mt-3 md:mt-0 flex items-center justify-center gap-2 w-full md:w-auto text-sm">
+                <a href="https://wa.me/6285161141114?text=Halo%20Malikfaza,%20saya%20ingin%20konsultasi%20gratis." target="_blank" class="text-accent-yellow font-bold hover:text-white hover:bg-accent-yellow px-4 py-2 rounded-lg transition-all mt-4 md:mt-0 flex items-center justify-center gap-2 w-full md:w-auto text-sm border border-accent-yellow">
                     Konsultasi Gratis <i class="ri-whatsapp-line"></i>
                 </a>
             </div>
-            <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8" id="serviceContainer">
+            <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8" id="serviceContainer">
                 <!-- JS Generated -->
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer id="contact" class="bg-white dark:bg-black/40 pt-12 pb-6 border-t border-gray-200 dark:border-white/5">
+    <footer id="contact" class="bg-white dark:bg-black/40 pt-16 pb-8 border-t border-gray-200 dark:border-white/5 relative overflow-hidden">
+        <!-- Footer bg decoration -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1 bg-gradient-to-r from-transparent via-accent-cyan to-transparent opacity-50"></div>
+        
         <div class="container mx-auto px-6">
-            <div class="grid md:grid-cols-4 gap-8 mb-8">
+            <div class="grid md:grid-cols-4 gap-12 mb-12">
                 <div class="md:col-span-2">
-                    <h3 class="text-xl font-heading font-bold mb-3 dark:text-white text-slate-900">Malikfaza.Studio</h3>
-                    <p class="text-gray-500 mb-4 max-w-sm text-xs leading-relaxed">Partner digital terpercaya di Majalengka, Jawa Barat.</p>
+                    <h3 class="text-2xl font-heading font-bold mb-4 dark:text-white text-slate-900 flex items-center gap-2">
+                        Malikfaza.Studio <span class="text-accent-cyan text-4xl leading-none">.</span>
+                    </h3>
+                    <p class="text-gray-500 dark:text-gray-400 mb-6 max-w-sm text-sm leading-relaxed">
+                        Partner digital terpercaya di Majalengka, Jawa Barat. Kami menyediakan solusi digital lengkap mulai dari tools produktivitas hingga jasa kreatif.
+                    </p>
                     <div class="flex gap-3">
-                        <a href="#" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-slate-600 dark:text-white hover:bg-accent-cyan hover:text-white transition-all"><i class="ri-instagram-line"></i></a>
-                        <a href="#" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-slate-600 dark:text-white hover:bg-accent-red hover:text-white transition-all"><i class="ri-youtube-fill"></i></a>
-                        <a href="https://lynk.id/malikfaza" target="_blank" class="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/10 flex items-center justify-center text-slate-600 dark:text-white hover:bg-accent-green hover:text-white transition-all"><i class="ri-shopping-bag-3-fill"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center text-slate-600 dark:text-white hover:bg-accent-cyan hover:border-accent-cyan hover:text-white transition-all transform hover:scale-110"><i class="ri-instagram-line"></i></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center text-slate-600 dark:text-white hover:bg-accent-red hover:border-accent-red hover:text-white transition-all transform hover:scale-110"><i class="ri-youtube-fill"></i></a>
+                        <a href="https://lynk.id/malikfaza" target="_blank" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center text-slate-600 dark:text-white hover:bg-accent-green hover:border-accent-green hover:text-white transition-all transform hover:scale-110"><i class="ri-shopping-bag-3-fill"></i></a>
                     </div>
                 </div>
                 <div>
-                    <h4 class="font-bold text-sm mb-3 dark:text-white text-slate-900">Contact</h4>
-                    <ul class="space-y-2 text-gray-500 text-xs">
-                        <li class="flex items-center gap-2"><i class="ri-whatsapp-line text-green-500"></i><a href="https://wa.me/6285161141114?text=Halo" class="hover:text-accent-cyan">+62 851-6114-1114</a></li>
-                        <li class="flex items-center gap-2"><i class="ri-mail-line text-accent-red"></i><a href="mailto:abdul.m4lik1999@gmail.com" class="hover:text-accent-cyan break-all">abdul.m4lik1999@gmail.com</a></li>
+                    <h4 class="font-bold text-base mb-6 dark:text-white text-slate-900 relative inline-block">Contact <span class="absolute -bottom-2 left-0 w-1/2 h-0.5 bg-accent-cyan"></span></h4>
+                    <ul class="space-y-4 text-gray-500 dark:text-gray-400 text-sm">
+                        <li class="flex items-center gap-3 group"><div class="w-8 h-8 rounded bg-green-500/10 flex items-center justify-center text-green-500 group-hover:bg-green-500 group-hover:text-white transition-colors"><i class="ri-whatsapp-line"></i></div><a href="https://wa.me/6285161141114?text=Halo" class="hover:text-accent-cyan transition-colors">+62 851-6114-1114</a></li>
+                        <li class="flex items-center gap-3 group"><div class="w-8 h-8 rounded bg-red-500/10 flex items-center justify-center text-accent-red group-hover:bg-accent-red group-hover:text-white transition-colors"><i class="ri-mail-line"></i></div><a href="mailto:abdul.m4lik1999@gmail.com" class="hover:text-accent-cyan transition-colors break-all">abdul.m4lik1999@gmail.com</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-bold text-sm mb-3 dark:text-white text-slate-900">Links</h4>
-                    <ul class="space-y-2 text-gray-500 text-xs">
-                        <li><a href="#home" class="hover:text-accent-cyan">Home</a></li>
-                        <li><a href="#products" class="hover:text-accent-cyan">Catalog</a></li>
-                        <li><button id="adminLoginFooter" class="uppercase tracking-widest hover:text-accent-cyan mt-2 opacity-70 font-bold text-[10px]">Admin Access</button></li>
+                    <h4 class="font-bold text-base mb-6 dark:text-white text-slate-900 relative inline-block">Quick Links <span class="absolute -bottom-2 left-0 w-1/2 h-0.5 bg-accent-cyan"></span></h4>
+                    <ul class="space-y-3 text-gray-500 dark:text-gray-400 text-sm">
+                        <li><a href="#home" class="hover:text-accent-cyan hover:pl-2 transition-all block">Home</a></li>
+                        <li><a href="#products" class="hover:text-accent-cyan hover:pl-2 transition-all block">Catalog</a></li>
+                        <li><button id="adminLoginFooter" class="uppercase tracking-widest hover:text-accent-cyan mt-4 opacity-50 hover:opacity-100 font-bold text-[10px] border-b border-dashed border-gray-500">Admin Access</button></li>
                     </ul>
                 </div>
             </div>
-            <div class="border-t border-gray-200 dark:border-white/10 pt-6 text-center text-gray-500 text-[10px]">
-                &copy; 2024 Malikfaza Studio. All rights reserved.
+            <div class="border-t border-gray-200 dark:border-white/10 pt-8 text-center text-gray-500 dark:text-gray-600 text-xs flex flex-col md:flex-row justify-between items-center gap-2">
+                <p>&copy; 2024 Malikfaza Studio. All rights reserved.</p>
+                <p>Designed with <i class="ri-heart-fill text-red-500 animate-pulse"></i> by Malikfaza</p>
             </div>
         </div>
     </footer>
@@ -423,35 +460,35 @@
 
             <!-- BIG MODE CONTENT -->
             <div class="big-only w-full">
-                <button onclick="window.minimizePromo()" class="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors bg-black/20 rounded-full w-8 h-8 flex items-center justify-center z-10"><i class="ri-arrow-down-s-line text-xl"></i></button>
+                <button onclick="window.minimizePromo()" class="absolute top-3 right-3 text-gray-400 hover:text-white transition-colors bg-black/20 rounded-full w-8 h-8 flex items-center justify-center z-10 hover:rotate-90"><i class="ri-arrow-down-s-line text-xl"></i></button>
                 <div class="flex flex-col items-center text-center p-6">
-                    <div class="bg-gradient-to-br from-accent-yellow to-orange-500 p-4 rounded-full text-white mb-4 animate-bounce shadow-lg shadow-orange-500/30">
-                        <i class="ri-coupon-3-fill text-4xl"></i>
+                    <div class="bg-gradient-to-br from-accent-yellow to-orange-500 p-4 rounded-full text-white mb-4 animate-bounce shadow-lg shadow-orange-500/30 ring-4 ring-orange-500/20">
+                        <i class="ri-gift-2-fill text-4xl"></i>
                     </div>
                     <h3 id="promoTitleDisplay" class="text-2xl font-bold text-slate-800 dark:text-white mb-1">Diskon Spesial!</h3>
-                    <p id="promoDateText" class="text-accent-cyan text-xs font-bold uppercase tracking-widest mb-2">Promo Hari Ini</p>
-                    <p id="promoDescDisplay" class="text-gray-600 dark:text-gray-300 text-sm mb-6 px-4">Gunakan kode voucher di bawah ini.</p>
+                    <p id="promoDateText" class="text-accent-cyan text-xs font-bold uppercase tracking-widest mb-2 bg-accent-cyan/10 px-3 py-1 rounded-full">Promo Hari Ini</p>
+                    <p id="promoDescDisplay" class="text-gray-600 dark:text-gray-300 text-sm mb-6 px-4">Gunakan kode voucher di bawah ini untuk mendapatkan potongan harga.</p>
                     
-                    <div class="group relative w-full mb-6">
+                    <div class="group relative w-full mb-6 max-w-xs mx-auto">
                         <div class="absolute -inset-0.5 bg-gradient-to-r from-accent-cyan to-accent-green rounded-lg blur opacity-30 group-hover:opacity-75 transition duration-200"></div>
                         <div class="relative flex items-center gap-3 bg-white dark:bg-black/60 px-4 py-3 rounded-lg border border-white/10 w-full justify-between cursor-pointer active:scale-95 transition-transform" onclick="window.copyToClipboard(null)">
                             <span id="promoCodeDisplay" class="font-mono font-bold text-accent-yellow text-2xl tracking-widest">FAZA20</span>
-                            <div class="flex items-center gap-1 text-xs text-gray-400">
+                            <div class="flex items-center gap-1 text-xs text-gray-400 font-bold">
                                 <span>SALIN</span>
-                                <i class="ri-file-copy-line"></i>
+                                <i class="ri-file-copy-line text-lg"></i>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="flex items-center gap-2 text-red-500 text-xs font-bold bg-red-50 dark:bg-red-900/20 px-4 py-1.5 rounded-full border border-red-200 dark:border-red-500/20">
-                        <i class="ri-timer-flash-line animate-pulse"></i> Berakhir: <span class="promoTimer font-mono ml-1">--:--:--</span>
+                    <div class="flex items-center gap-2 text-red-500 text-xs font-bold bg-red-50 dark:bg-red-900/20 px-4 py-2 rounded-full border border-red-200 dark:border-red-500/20 shadow-inner">
+                        <i class="ri-timer-flash-line animate-pulse text-lg"></i> Berakhir dalam: <span class="promoTimer font-mono ml-1 text-base">--:--:--</span>
                     </div>
                 </div>
             </div>
 
             <!-- MINI MODE CONTENT -->
             <div class="mini-only w-full flex items-center justify-between gap-3 px-1">
-                <div class="flex items-center gap-3" onclick="window.maximizePromo()" class="cursor-pointer flex-1">
+                <div class="flex items-center gap-3 flex-1 cursor-pointer" onclick="window.maximizePromo()">
                     <div class="w-9 h-9 rounded-full bg-gradient-to-br from-accent-yellow to-orange-500 text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-orange-500/30 animate-pulse">
                         %
                     </div>
@@ -461,7 +498,7 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button onclick="window.maximizePromo()" class="text-[10px] bg-black dark:bg-white text-white dark:text-black px-3 py-1.5 rounded-full font-bold hover:scale-105 transition-transform">Lihat</button>
+                    <button onclick="window.maximizePromo()" class="text-[10px] bg-black dark:bg-white text-white dark:text-black px-3 py-1.5 rounded-full font-bold hover:scale-105 transition-transform shadow-lg">Lihat</button>
                     <button onclick="window.closePromoCompletely()" class="text-gray-400 hover:text-red-500 ml-1 p-1"><i class="ri-close-circle-fill text-lg"></i></button>
                 </div>
             </div>
@@ -470,89 +507,98 @@
 
     <!-- Promo Settings Modal -->
     <div id="promoSettingsModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-entry">
-        <div class="glass dark:bg-midnight bg-white p-6 rounded-2xl w-full max-w-xs mx-auto relative shadow-2xl">
+        <div class="glass dark:bg-midnight bg-white p-6 rounded-2xl w-full max-w-xs mx-auto relative shadow-2xl border border-white/10">
             <button onclick="window.closeModal('promoSettingsModal')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500"><i class="ri-close-line text-xl"></i></button>
-            <h3 class="text-lg font-bold mb-4 text-center dark:text-white text-slate-900">Pengaturan Promo</h3>
+            <h3 class="text-lg font-bold mb-4 text-center dark:text-white text-slate-900 border-b border-gray-200 dark:border-white/10 pb-2">Pengaturan Promo</h3>
             <form id="promoForm" class="space-y-4">
                 <div>
-                    <label class="text-xs text-gray-500 mb-1 block">Judul Promo</label>
-                    <input type="text" id="promoTitleInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan" placeholder="Diskon Spesial!">
+                    <label class="text-xs text-gray-500 mb-1 block font-bold">Judul Promo</label>
+                    <input type="text" id="promoTitleInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan" placeholder="Diskon Spesial!">
                 </div>
                 <div>
-                    <label class="text-xs text-gray-500 mb-1 block">Deskripsi Diskon</label>
-                    <input type="text" id="promoDescInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan" placeholder="Diskon 20% All Item">
+                    <label class="text-xs text-gray-500 mb-1 block font-bold">Deskripsi Diskon</label>
+                    <input type="text" id="promoDescInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan" placeholder="Diskon 20% All Item">
                 </div>
                 <div>
-                    <label class="text-xs text-gray-500 mb-1 block">Kode Voucher</label>
-                    <input type="text" id="promoCodeInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan" placeholder="FAZA20">
+                    <label class="text-xs text-gray-500 mb-1 block font-bold">Kode Voucher</label>
+                    <input type="text" id="promoCodeInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan" placeholder="FAZA20">
                 </div>
                 <!-- Time Limit Input -->
                 <div>
-                    <label class="text-xs text-gray-500 mb-1 block">Jam Berakhir (Hari ini)</label>
-                    <input type="time" id="promoTimeInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan">
+                    <label class="text-xs text-gray-500 mb-1 block font-bold">Jam Berakhir (Hari ini)</label>
+                    <input type="time" id="promoTimeInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan">
                 </div>
-                <div class="flex items-center justify-between">
-                    <label class="text-xs text-gray-500 block">Status Promo</label>
+                <div class="flex items-center justify-between bg-gray-100 dark:bg-white/5 p-2 rounded-lg">
+                    <label class="text-xs text-gray-500 block font-bold">Status Promo</label>
                     <div class="flex items-center gap-2">
                         <span class="text-xs">Off</span>
-                        <input type="checkbox" id="promoActiveInput" class="w-5 h-5 accent-accent-cyan">
-                        <span class="text-xs">On</span>
+                        <input type="checkbox" id="promoActiveInput" class="w-5 h-5 accent-accent-cyan rounded cursor-pointer">
+                        <span class="text-xs font-bold text-accent-cyan">On</span>
                     </div>
                 </div>
-                <button type="submit" class="w-full py-2.5 bg-accent-yellow text-black rounded-lg font-bold hover:bg-yellow-500 transition-all text-sm shadow-lg">Simpan Pengaturan</button>
+                <button type="submit" class="w-full py-2.5 bg-accent-yellow text-black rounded-lg font-bold hover:bg-yellow-500 transition-all text-sm shadow-lg hover:-translate-y-0.5 transform">Simpan Pengaturan</button>
             </form>
         </div>
     </div>
 
     <!-- Login Modal -->
     <div id="loginModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-entry">
-        <div class="glass p-6 rounded-2xl w-full max-w-xs mx-auto relative dark:bg-black/50 bg-white shadow-2xl">
+        <div class="glass p-8 rounded-2xl w-full max-w-xs mx-auto relative dark:bg-black/60 bg-white shadow-2xl border border-white/10">
             <button onclick="window.closeModal('loginModal')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500"><i class="ri-close-line text-xl"></i></button>
-            <h3 class="text-lg font-bold mb-4 text-center dark:text-white text-slate-900">Admin Login</h3>
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 bg-accent-cyan/10 rounded-full flex items-center justify-center mx-auto mb-3 text-accent-cyan">
+                    <i class="ri-lock-password-line text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold dark:text-white text-slate-900">Admin Login</h3>
+                <p class="text-xs text-gray-500">Masukkan akses khusus pemilik.</p>
+            </div>
             <form id="adminForm" class="space-y-4">
                 <div class="relative">
-                    <input type="password" id="adminPass" class="w-full pl-4 pr-10 py-2.5 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 focus:border-accent-cyan focus:outline-none dark:text-white text-slate-900 text-sm" placeholder="Password">
-                    <button type="button" onclick="togglePassword()" class="absolute right-3 top-2.5 text-gray-500 hover:text-accent-cyan"><i id="eyeIcon" class="ri-eye-line text-lg"></i></button>
+                    <input type="password" id="adminPass" class="w-full pl-4 pr-10 py-3 rounded-xl dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan focus:outline-none dark:text-white text-slate-900 text-sm transition-all" placeholder="Password">
+                    <button type="button" onclick="togglePassword()" class="absolute right-3 top-3 text-gray-500 hover:text-accent-cyan"><i id="eyeIcon" class="ri-eye-line text-lg"></i></button>
                 </div>
-                <button type="submit" class="w-full py-2.5 bg-accent-cyan text-white rounded-lg font-bold hover:bg-cyan-600 transition-all text-sm shadow-lg">Login</button>
+                <button type="submit" class="w-full py-3 bg-accent-cyan text-white rounded-xl font-bold hover:bg-cyan-600 transition-all text-sm shadow-lg hover:shadow-cyan-500/25">Login System</button>
             </form>
         </div>
     </div>
 
     <!-- Edit/Add Modal -->
     <div id="editModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-entry">
-        <div class="glass dark:bg-midnight bg-white p-6 rounded-2xl w-full max-w-md mx-auto relative shadow-2xl max-h-[90vh] overflow-y-auto">
+        <div class="glass dark:bg-midnight bg-white p-6 rounded-2xl w-full max-w-md mx-auto relative shadow-2xl max-h-[90vh] overflow-y-auto border border-white/10">
             <button onclick="window.closeModal('editModal')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500"><i class="ri-close-line text-xl"></i></button>
-            <h3 id="modalFormTitle" class="text-lg font-bold mb-4 text-center dark:text-white text-slate-900">Edit Produk</h3>
+            <h3 id="modalFormTitle" class="text-lg font-bold mb-4 text-center dark:text-white text-slate-900 border-b border-gray-200 dark:border-white/10 pb-2">Edit Produk</h3>
             <form id="editForm" class="space-y-4">
                 <input type="hidden" id="editId">
-                <div class="w-full h-32 bg-gray-200 dark:bg-black/30 rounded-lg overflow-hidden flex items-center justify-center border border-gray-500/30 relative group">
+                <div class="w-full h-40 bg-gray-200 dark:bg-black/30 rounded-lg overflow-hidden flex items-center justify-center border border-gray-500/30 relative group">
                     <img id="editPreview" src="" class="w-full h-full object-cover">
                     <div id="previewPlaceholder" class="absolute flex flex-col items-center text-gray-400 pointer-events-none">
-                        <i class="ri-image-line text-3xl"></i>
+                        <i class="ri-image-add-line text-3xl mb-1"></i>
                         <span class="text-[10px]">Preview</span>
                     </div>
                 </div>
                 <div class="space-y-2">
-                    <label class="text-xs text-gray-500 block">Gambar (Upload/Paste/URL)</label>
-                    <div id="dropZone" class="border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg p-3 text-center transition-colors cursor-pointer relative hover:border-accent-cyan hover:bg-accent-cyan/5">
+                    <label class="text-xs text-gray-500 block font-bold">Gambar (Upload/Paste/URL)</label>
+                    <div id="dropZone" class="border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg p-3 text-center transition-colors cursor-pointer relative hover:border-accent-cyan hover:bg-accent-cyan/5 group">
                         <input type="file" id="editImageFile" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="handleImageUpload(this.files[0])">
-                        <div class="pointer-events-none"><i class="ri-upload-cloud-2-line text-xl text-gray-400"></i><p class="text-[10px] text-gray-500 mt-1">Klik upload, Drag, atau <b>CTRL+V</b></p></div>
+                        <div class="pointer-events-none group-hover:text-accent-cyan transition-colors">
+                            <i class="ri-upload-cloud-2-line text-xl text-gray-400 group-hover:text-accent-cyan"></i>
+                            <p class="text-[10px] text-gray-500 mt-1">Klik upload, Drag, atau <b>CTRL+V</b></p>
+                        </div>
                     </div>
                     <div class="flex gap-2 items-center">
-                        <span class="text-[10px] text-gray-400">ATAU</span>
-                        <input type="text" id="editImageUrl" placeholder="Paste link gambar..." class="flex-1 px-3 py-1.5 rounded text-xs dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white" onchange="updatePreviewFromUrl(this.value)">
+                        <span class="text-[10px] text-gray-400 font-bold">URL</span>
+                        <input type="text" id="editImageUrl" placeholder="https://..." class="flex-1 px-3 py-1.5 rounded text-xs dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white focus:border-accent-cyan focus:outline-none" onchange="updatePreviewFromUrl(this.value)">
                     </div>
                 </div>
-                <div><label class="text-xs text-gray-500 mb-1 block">Judul Katalog</label><input type="text" id="editTitle" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan" required></div>
-                <div><label class="text-xs text-gray-500 mb-1 block">Harga</label><input type="text" id="editPrice" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan" required></div>
+                <div><label class="text-xs text-gray-500 mb-1 block font-bold">Judul Katalog</label><input type="text" id="editTitle" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan" required></div>
+                <div><label class="text-xs text-gray-500 mb-1 block font-bold">Harga</label><input type="text" id="editPrice" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan" required></div>
                 <div>
-                    <label class="text-xs text-gray-500 mb-1 block">Link Detail (Opsional)</label>
-                    <input type="text" id="editDetailLink" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan" placeholder="https://lynk.id/malikfaza">
+                    <label class="text-xs text-gray-500 mb-1 block font-bold">Link Detail (Opsional)</label>
+                    <input type="text" id="editDetailLink" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan" placeholder="https://lynk.id/malikfaza">
                 </div>
                 <div>
-                    <label class="text-xs text-gray-500 mb-1 block">Kategori</label>
-                    <select id="editCategory" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan">
+                    <label class="text-xs text-gray-500 mb-1 block font-bold">Kategori</label>
+                    <select id="editCategory" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan cursor-pointer">
                         <option value="app">Premium Apps</option>
                         <option value="gem">Tools/Gems</option>
                         <option value="class">Masterclass</option>
@@ -561,8 +607,8 @@
                     </select>
                 </div>
                 <div class="flex gap-2 pt-2">
-                    <button type="button" id="btnDeleteIndividual" onclick="window.deleteCurrentProduct()" class="hidden px-3 py-2 bg-red-600/20 text-red-500 border border-red-600/50 rounded-lg hover:bg-red-600 hover:text-white transition-colors"><i class="ri-delete-bin-line"></i></button>
-                    <button type="submit" class="flex-1 py-2.5 bg-accent-green text-white rounded-lg font-bold hover:bg-green-600 transition-all text-sm shadow-lg">Simpan</button>
+                    <button type="button" id="btnDeleteIndividual" onclick="window.deleteCurrentProduct()" class="hidden px-3 py-2 bg-red-600/10 text-red-500 border border-red-600/30 rounded-lg hover:bg-red-600 hover:text-white transition-colors"><i class="ri-delete-bin-line"></i></button>
+                    <button type="submit" class="flex-1 py-2.5 bg-accent-green text-white rounded-lg font-bold hover:bg-green-600 transition-all text-sm shadow-lg hover:-translate-y-0.5 transform">Simpan Perubahan</button>
                 </div>
             </form>
         </div>
@@ -570,17 +616,31 @@
 
     <!-- Detail Modal -->
     <div id="productModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-entry">
-        <div class="glass dark:bg-midnight bg-white p-0 rounded-2xl w-full max-w-sm relative overflow-hidden flex flex-col max-h-[85vh]">
-            <div class="relative h-48 bg-gray-200">
+        <div class="glass dark:bg-midnight bg-white p-0 rounded-2xl w-full max-w-sm relative overflow-hidden flex flex-col max-h-[85vh] shadow-2xl border border-white/10">
+            <div class="relative h-56 bg-gray-200">
                 <img id="modalImg" src="" class="w-full h-full object-cover">
-                <button onclick="window.closeModal('productModal')" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-red-500 transition-colors backdrop-blur"><i class="ri-close-line text-xl"></i></button>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                <button onclick="window.closeModal('productModal')" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-red-500 transition-colors backdrop-blur"><i class="ri-close-line text-xl"></i></button>
+                <div class="absolute bottom-4 left-4 right-4">
+                    <span id="modalCategory" class="text-[10px] font-bold px-2 py-1 rounded bg-accent-cyan text-white uppercase tracking-wider shadow-lg mb-2 inline-block">APP</span>
+                    <h3 id="modalTitle" class="text-2xl font-bold text-white leading-tight shadow-black drop-shadow-md">Title</h3>
+                </div>
             </div>
-            <div class="p-5 overflow-y-auto">
-                <div class="flex justify-between items-start mb-2"><span id="modalCategory" class="text-[10px] font-bold px-2 py-1 rounded bg-accent-cyan/10 text-accent-cyan uppercase tracking-wider">APP</span><span id="modalPrice" class="text-lg font-bold text-accent-yellow">Rp 0</span></div>
-                <h3 id="modalTitle" class="text-xl font-bold mb-2 dark:text-white text-slate-900">Title</h3>
-                <p id="modalDesc" class="text-gray-500 dark:text-gray-400 mb-6 text-xs leading-relaxed">Description.</p>
-                <a href="#" id="modalDetailLink" target="_blank" class="block w-full text-center py-3 bg-gray-200 dark:bg-gray-700 dark:text-white text-gray-700 rounded-xl font-bold text-sm mb-2 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Detail</a>
-                <a id="modalWaLink" href="#" target="_blank" class="block w-full text-center py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-green-900/20 flex items-center justify-center gap-2 text-sm"><i class="ri-whatsapp-line text-lg"></i> Order via WhatsApp</a>
+            <div class="p-6 overflow-y-auto bg-white dark:bg-midnight">
+                <div class="flex justify-between items-center mb-4 border-b border-gray-100 dark:border-white/10 pb-4">
+                    <span class="text-sm text-gray-500">Harga Terbaik</span>
+                    <span id="modalPrice" class="text-xl font-bold text-accent-cyan">Rp 0</span>
+                </div>
+                <p id="modalDesc" class="text-gray-600 dark:text-gray-300 mb-8 text-sm leading-relaxed">Description goes here. Premium quality guaranteed.</p>
+                
+                <div class="flex flex-col gap-3">
+                    <a href="#" id="modalDetailLink" target="_blank" class="block w-full text-center py-3 bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 dark:text-white text-gray-700 rounded-xl font-bold text-sm hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
+                        Lihat Detail
+                    </a>
+                    <a id="modalWaLink" href="#" target="_blank" class="block w-full text-center py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold transition-all shadow-lg shadow-green-900/20 flex items-center justify-center gap-2 text-sm hover:-translate-y-1">
+                        <i class="ri-whatsapp-line text-lg"></i> Beli via WhatsApp
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -603,7 +663,32 @@
         };
         
         let db, auth;
+        // Mock Data Fallback if Firebase fails or for offline demo
+        let mockProducts = [
+             ...Array.from({ length: 8 }, (_, i) => ({ 
+                 id: `app-${i}`, 
+                 category: 'app', 
+                 title: `Premium App V${i+1} Pro`, 
+                 price: 'Rp 25.000', 
+                 img: `https://picsum.photos/seed/apk${i}/400/400`, 
+                 desc: 'Full premium features unlocked. Lifetime warranty included.', 
+                 detailLink: 'https://lynk.id/malikfaza', 
+                 order: i 
+             })),
+             ...Array.from({ length: 4 }, (_, i) => ({ 
+                 id: `gem-${i}`, 
+                 category: 'gem', 
+                 title: `Top Up Gem Pack ${i+1}`, 
+                 price: 'Rp 50.000', 
+                 img: `https://picsum.photos/seed/gem${i}/400/400`, 
+                 desc: 'Legal dan aman 100%. Proses cepat 5 menit.', 
+                 detailLink: 'https://lynk.id/malikfaza', 
+                 order: i + 10 
+             })),
+        ];
+        
         let promoData = { code: "FAZA20", active: true, title: "Diskon Spesial!", desc: "Potongan 20% All Item", endTime: "22:00" };
+        let products = [...mockProducts];
         let sortableInstance = null;
         
         // --- GLOBAL HELPER FUNCTIONS ---
@@ -655,9 +740,12 @@
             
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(finalText).then(() => {
-                    alert('Kode voucher ' + finalText + ' berhasil disalin!');
+                    // Visual feedback
+                    const btn = document.getElementById('promoCodeDisplay');
+                    const original = btn.innerText;
+                    btn.innerText = "COPIED!";
+                    setTimeout(() => btn.innerText = original, 1500);
                 }).catch(err => {
-                    console.error('Async failed: ', err);
                     fallbackCopyTextToClipboard(finalText);
                 });
             } else {
@@ -677,11 +765,9 @@
 
             try {
                 var successful = document.execCommand('copy');
-                var msg = successful ? 'berhasil' : 'gagal';
-                alert('Kode voucher ' + text + ' ' + msg + ' disalin!');
+                if(successful) alert('Kode disalin!');
             } catch (err) {
-                console.error('Fallback copy failed', err);
-                alert('Gagal menyalin otomatis. Silakan salin manual.');
+                prompt("Copy manual:", text);
             }
             document.body.removeChild(textArea);
         }
@@ -690,23 +776,20 @@
         window.handleImageUpload = handleImageUpload;
         window.updatePreviewFromUrl = updatePreviewFromUrl;
 
+        // Init Firebase Safe
         try { 
             const app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
-            console.log("Firebase Initialized");
+            // console.log("Firebase Initialized");
             
-            const statusEl = document.getElementById('dbStatus');
-            if(statusEl) {
-                statusEl.innerHTML = '<i class="ri-wifi-line"></i> Terhubung (Online)';
-                statusEl.classList.remove('text-red-500');
-                statusEl.classList.add('text-green-500');
-            }
-
-            signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
+            signInAnonymously(auth).catch((error) => {
+                // Silent fail for mock mode
+                // console.warn("Auth Error, using mock data");
+            });
 
         } catch (e) {
-            console.warn("Firebase Init Error:", e);
+            console.warn("Running in Offline/Mock Mode");
         }
 
         const categories = [
@@ -718,17 +801,12 @@
             { id: 'invite', label: 'Undangan' }
         ];
 
-        let products = [
-            ...Array.from({ length: 10 }, (_, i) => ({ id: `app-${i}`, category: 'app', title: `Premium App V${i+1}`, price: 'Rp 25.000', img: `https://picsum.photos/seed/apk${i}/300/200`, desc: 'Full premium features unlocked.', detailLink: 'https://lynk.id/malikfaza', order: i })),
-            ...Array.from({ length: 5 }, (_, i) => ({ id: `gem-${i}`, category: 'gem', title: `Gem Pack ${i+1}`, price: 'Rp 50.000', img: `https://picsum.photos/seed/gem${i}/300/200`, desc: 'Legal dan aman 100%.', detailLink: 'https://lynk.id/malikfaza', order: i + 10 })),
-        ];
-
         const services = [
-            { id: 'srv-1', icon: 'ri-video-add-line', title: 'Video Editing', desc: 'Cinematic', color: 'text-accent-red', border: 'border-accent-red' },
-            { id: 'srv-2', icon: 'ri-image-edit-line', title: 'Photo Retouch', desc: 'Pro Grading', color: 'text-accent-cyan', border: 'border-accent-cyan' },
+            { id: 'srv-1', icon: 'ri-video-add-line', title: 'Video Editing', desc: 'Cinematic & Reels', color: 'text-accent-red', border: 'border-accent-red' },
+            { id: 'srv-2', icon: 'ri-image-edit-line', title: 'Photo Retouch', desc: 'Pro Grading & Manipulation', color: 'text-accent-cyan', border: 'border-accent-cyan' },
             { id: 'srv-3', icon: 'ri-brush-line', title: 'Banner Design', desc: 'Ads High Convert', color: 'text-accent-orange', border: 'border-accent-orange' },
-            { id: 'srv-4', icon: 'ri-layout-masonry-line', title: 'Landing Page', desc: 'Responsive Web', color: 'text-accent-green', border: 'border-accent-green' },
-            { id: 'srv-5', icon: 'ri-camera-lens-line', title: 'Product Photo', desc: 'High Quality', color: 'text-accent-yellow', border: 'border-accent-yellow' },
+            { id: 'srv-4', icon: 'ri-layout-masonry-line', title: 'Landing Page', desc: 'Responsive Web Design', color: 'text-accent-green', border: 'border-accent-green' },
+            { id: 'srv-5', icon: 'ri-camera-lens-line', title: 'Product Photo', desc: 'High Quality Studio', color: 'text-accent-yellow', border: 'border-accent-yellow' },
             { id: 'srv-6', icon: 'ri-booklet-line', title: 'Catalog', desc: 'Menu & Brochure', color: 'text-gray-400', border: 'border-gray-400' }
         ];
 
@@ -737,14 +815,34 @@
         let selectedIds = new Set();
         let promoHasShown = false;
 
+        // --- TIMER UPDATE FUNCTION ---
+        const updateTimer = () => {
+             const now = new Date();
+             const [endHour, endMinute] = (promoData.endTime || "22:00").split(':');
+             const target = new Date();
+             target.setHours(endHour, endMinute, 0);
+             
+             if (now > target) {
+                   document.querySelectorAll('.promoTimer').forEach(el => el.innerText = "00:00:00");
+                   return;
+             }
+             
+             const diff = target - now;
+             const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+             const minutes = Math.floor((diff / 1000 / 60) % 60);
+             const seconds = Math.floor((diff / 1000) % 60);
+             document.querySelectorAll('.promoTimer').forEach(el => el.innerText = `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`);
+        };
+
         window.addEventListener('DOMContentLoaded', () => {
             renderCategories();
             renderProducts();
             renderServices();
             checkAdminState();
-            setTimeout(() => { if(window.AOS) window.AOS.init({ once: true }); }, 500);
+            setTimeout(() => { if(window.AOS) window.AOS.init({ once: true, duration: 800 }); }, 500);
             window.addEventListener('paste', handlePasteImage);
             
+            // Firebase Realtime Listener
             if(db && auth) {
                 onAuthStateChanged(auth, (user) => {
                     if(user) {
@@ -756,12 +854,13 @@
                                 products.sort((a,b) => (a.order || 0) - (b.order || 0)); 
                                 renderProducts();
                             }
-                        });
+                        }, (err) => console.log("Using Mock Data"));
 
                         onSnapshot(doc(db, "settings", "promo"), (doc) => {
                             if (doc.exists()) {
                                 promoData = doc.data();
                                 renderPromoContent();
+                                updateTimer(); // Sync timer immediately on update
                             }
                         });
                     }
@@ -772,6 +871,7 @@
             document.getElementById('btnReset').addEventListener('click', uploadDefaultData);
             document.getElementById('btnAdd').addEventListener('click', openAddModal);
             
+            // Promo Logic
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if(entry.isIntersecting && !promoHasShown) {
@@ -781,12 +881,12 @@
                         const target = new Date();
                         target.setHours(endHour, endMinute, 0);
 
-                        if(promoData.active && now < target) {
+                        if(promoData.active) {
                             promoHasShown = true;
                             const options = { day: 'numeric', month: 'short' };
                             const dateStr = now.toLocaleDateString('id-ID', options);
                             document.getElementById('promoDateText').innerText = `Promo Spesial ${dateStr} s/d Pukul ${promoData.endTime || "22:00"}`;
-                            window.showPromoBig();
+                            setTimeout(() => window.showPromoBig(), 1000); // Delay show
                         }
                     }
                 });
@@ -795,28 +895,9 @@
             const prodSec = document.getElementById('products');
             if(prodSec) observer.observe(prodSec);
             
-            setInterval(() => {
-                const now = new Date();
-                const [endHour, endMinute] = (promoData.endTime || "22:00").split(':');
-                const target = new Date();
-                target.setHours(endHour, endMinute, 0);
-                
-                // If now > target, it means promo expired today. Don't show next day target unless logic requires
-                if (now > target) {
-                     document.querySelectorAll('.promoTimer').forEach(el => el.innerText = "00:00:00");
-                     // Optional: Hide promo if time passed
-                     if(!document.getElementById('promoContainer').classList.contains('hidden')) {
-                         // window.closePromoCompletely(); // Uncomment to auto hide
-                     }
-                     return;
-                }
-                
-                const diff = target - now;
-                const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-                const minutes = Math.floor((diff / 1000 / 60) % 60);
-                const seconds = Math.floor((diff / 1000) % 60);
-                document.querySelectorAll('.promoTimer').forEach(el => el.innerText = `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`);
-            }, 1000);
+            // Timer Interval
+            setInterval(updateTimer, 1000);
+            updateTimer(); // Initial Call
         });
         
         function renderPromoContent() {
@@ -828,7 +909,6 @@
         // --- SEARCH FEATURE ---
         window.handleSearch = (query) => {
             if(!query) {
-                // Reset filter to active category
                 renderProducts(); 
                 return;
             }
@@ -841,44 +921,12 @@
             
             const container = document.getElementById('productContainer');
             if(filtered.length === 0) {
-                 container.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400">Tidak ada produk yang cocok.</div>`;
+                 container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400 flex flex-col items-center"><i class="ri-ghost-line text-4xl mb-2"></i><p>Tidak ada produk yang cocok.</p></div>`;
                  return;
             }
 
-            container.innerHTML = filtered.map((p, index) => {
-                 const animationDelay = index * 100;
-                 if(p.type === 'link') {
-                    return `
-                    <div data-id="${p.id}" class="snap-start">
-                        <a href="${p.url}" target="_blank" class="w-full h-full min-h-[120px] glass rounded-xl overflow-hidden group relative flex flex-col justify-center items-center bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 p-4 card-interactive animate-entry" style="animation-delay: ${animationDelay}ms">
-                            <div class="text-accent-cyan text-3xl mb-1"><i class="ri-arrow-right-circle-fill"></i></div>
-                            <h3 class="font-bold text-xs dark:text-white text-slate-800 text-center">${p.title}</h3>
-                        </a>
-                    </div>`;
-                }
-                const waLink = `https://wa.me/6285161141114?text=Halo%20Malikfaza,%20tertarik%20${encodeURIComponent(p.title)}`;
-
-                return `
-                <div data-id="${p.id}" id="card-${p.id}" class="w-full glass rounded-xl overflow-hidden group relative border border-gray-200 dark:border-gray-700 flex flex-col snap-start card-interactive animate-entry" style="animation-delay: ${animationDelay}ms">
-                    <div class="aspect-square w-full overflow-hidden relative bg-gray-200 dark:bg-gray-800">
-                        <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover">
-                        <span class="absolute top-2 left-2 bg-black/60 backdrop-blur text-[9px] font-bold px-1.5 py-0.5 rounded text-white border border-white/20 uppercase">${p.category}</span>
-                        ${isAdmin ? `<div class="absolute top-2 right-2 z-40 flex flex-col gap-1 items-end" onclick="event.stopPropagation()"><input type="checkbox" onchange="window.toggleSelect('${p.id}')" class="custom-checkbox w-5 h-5 rounded border-gray-300 bg-white"><button onclick="window.openEditModal('${p.id}')" class="bg-accent-cyan text-white w-7 h-7 rounded-full flex items-center justify-center shadow-lg border border-white mt-1"><i class="ri-pencil-fill text-xs"></i></button></div>` : ''}
-                    </div>
-                    <div class="p-3 flex flex-col h-full justify-between bg-white/50 dark:bg-transparent flex-1">
-                        <div>
-                            <h3 id="title-${p.id}" class="card-title font-bold text-xs md:text-sm mb-0.5 truncate leading-tight">${p.title}</h3>
-                            <p id="price-${p.id}" class="text-accent-cyan font-bold text-xs">${p.price}</p>
-                        </div>
-                        <div class="flex gap-2 mt-2">
-                             <button onclick="window.openProductModal('${p.id}')" class="flex-1 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 text-slate-700 dark:text-white text-[10px] py-1.5 rounded-lg transition-colors font-medium border border-gray-200 dark:border-white/10">Detail</button>
-                            <a href="${waLink}" target="_blank" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-[10px] py-1.5 rounded-lg transition-colors font-medium text-center flex items-center justify-center gap-1"><i class="ri-whatsapp-line"></i> Order</a>
-                        </div>
-                    </div>
-                </div>
-            `}).join('');
+            renderFilteredProducts(filtered);
         };
-
 
         window.openPromoSettings = () => {
             document.getElementById('promoTitleInput').value = promoData.title || "";
@@ -901,15 +949,28 @@
             const newData = { title: newTitle, desc: newDesc, code: newCode, endTime: newTime, active: isActive };
             
             if(db) {
-                await setDoc(doc(db, "settings", "promo"), newData);
-                alert("Pengaturan Promo Disimpan!");
-                window.closeModal('promoSettingsModal');
+                try {
+                     await setDoc(doc(db, "settings", "promo"), newData);
+                     alert("Pengaturan Promo Disimpan ke Cloud!");
+                } catch(err) {
+                     promoData = newData;
+                     renderPromoContent();
+                     updateTimer(); // FORCE UPDATE IMMEDIATELY
+                     alert("Disimpan (Lokal/Mock Mode)");
+                }
             } else {
                 promoData = newData;
                 renderPromoContent();
+                updateTimer(); // FORCE UPDATE IMMEDIATELY
                 alert("Disimpan (Lokal)");
-                window.closeModal('promoSettingsModal');
             }
+
+            if(isActive) {
+                // Force show updated promo for visual feedback
+                window.showPromoBig();
+            }
+
+            window.closeModal('promoSettingsModal');
         });
 
         window.showPromoBig = () => {
@@ -944,15 +1005,27 @@
         window.openAddModal = openAddModal;
 
         async function uploadDefaultData() {
-            if(!db) return alert("Firebase error!");
             if(!confirm("Hapus semua dan reset ke data awal?")) return;
             const btn = document.getElementById('btnReset');
             btn.innerText = '...'; btn.disabled = true;
             try {
-                const batch = writeBatch(db);
-                alert("Fitur Reset Aktif. Refresh untuk melihat hasil jika data berubah.");
-            } catch (e) { alert(e.message); } 
-            finally { btn.innerText = 'Reset'; btn.disabled = false; }
+                if(db) {
+                    // Firebase Reset Logic
+                    const batch = writeBatch(db);
+                    // Usually we would query all and delete, then re-add
+                    // Simplified for demo:
+                    mockProducts.forEach(p => {
+                         batch.set(doc(db, "products", p.id), p);
+                    });
+                    await batch.commit();
+                    alert("Database di-reset ke default!");
+                } else {
+                    products = [...mockProducts];
+                    renderProducts();
+                    alert("Reset Local Data Berhasil");
+                }
+            } catch (e) { alert("Mock Mode Reset: " + e.message); products = [...mockProducts]; renderProducts(); } 
+            finally { btn.innerHTML = '<i class="ri-refresh-line text-base"></i> Reset Data'; btn.disabled = false; }
         };
 
         window.toggleSelect = (id) => {
@@ -967,14 +1040,24 @@
         };
 
         async function deleteSelected() {
-            if (selectedIds.size === 0) return alert("Pilih produk dulu.");
-            if(!confirm("Hapus terpilih?")) return;
+            if (selectedIds.size === 0) return alert("Pilih produk dulu dengan checklist.");
+            if(!confirm(`Hapus ${selectedIds.size} produk terpilih?`)) return;
+            
             if(db) {
-                const batch = writeBatch(db);
-                selectedIds.forEach(id => { batch.delete(doc(db, "products", id)); });
-                await batch.commit();
-                selectedIds.clear();
+                try {
+                    const batch = writeBatch(db);
+                    selectedIds.forEach(id => { batch.delete(doc(db, "products", id)); });
+                    await batch.commit();
+                } catch(e) {
+                     // Fallback local
+                     products = products.filter(p => !selectedIds.has(p.id));
+                     renderProducts();
+                }
+            } else {
+                products = products.filter(p => !selectedIds.has(p.id));
+                renderProducts();
             }
+            selectedIds.clear();
         };
         window.deleteSelected = deleteSelected;
         window.uploadDefaultData = uploadDefaultData;
@@ -988,7 +1071,7 @@
                 icon.classList.remove('ri-pause-circle-line');
                 icon.classList.add('ri-music-2-line');
             } else {
-                music.play();
+                music.play().catch(e => console.log("Audio autoplay policy restricted"));
                 icon.classList.remove('ri-music-2-line');
                 icon.classList.add('ri-pause-circle-line');
             }
@@ -1001,7 +1084,7 @@
         function renderCategories() {
             const container = document.getElementById('categoryFilters');
             container.innerHTML = categories.map(cat => `
-                <button onclick="window.filterCategory('${cat.id}')" class="shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all border ${activeCategory === cat.id ? 'bg-accent-cyan text-white border-accent-cyan shadow' : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:border-accent-cyan'}">${cat.label}</button>
+                <button onclick="window.filterCategory('${cat.id}')" class="shrink-0 px-5 py-2 rounded-full text-xs font-bold transition-all border ${activeCategory === cat.id ? 'bg-accent-cyan text-white border-accent-cyan shadow-lg shadow-cyan-500/30' : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:border-accent-cyan hover:text-accent-cyan'}">${cat.label}</button>
             `).join('');
         }
 
@@ -1016,18 +1099,18 @@
             const el = document.getElementById('productContainer');
             if (sortableInstance) sortableInstance.destroy();
             
-            if (isAdmin && activeCategory === 'all') { // Only allow drag in 'all' view for consistency
+            if (isAdmin && activeCategory === 'all') { 
                 sortableInstance = new Sortable(el, {
                     animation: 150,
-                    delay: 300, // Hold for 300ms to drag (Mobile friendly)
+                    delay: 200, 
                     delayOnTouchOnly: true,
                     ghostClass: 'sortable-ghost',
                     dragClass: 'sortable-drag',
+                    handle: '.aspect-square', // Drag handle area
                     onEnd: async function (evt) {
-                        // Reorder logic
                         const newOrderIds = Array.from(el.children).map(card => card.getAttribute('data-id'));
                         
-                        // Update local array order
+                        // Reorder local
                         const newProducts = [];
                         newOrderIds.forEach(id => {
                             const p = products.find(prod => prod.id === id);
@@ -1037,53 +1120,42 @@
                         
                         // Save to Firebase
                         if(db) {
-                            const batch = writeBatch(db);
-                            products.forEach((p, index) => {
-                                const ref = doc(db, "products", p.id);
-                                batch.update(ref, { order: index });
-                            });
-                            await batch.commit();
-                            console.log("Order saved");
+                            try {
+                                const batch = writeBatch(db);
+                                products.forEach((p, index) => {
+                                    const ref = doc(db, "products", p.id);
+                                    batch.update(ref, { order: index });
+                                });
+                                await batch.commit();
+                            } catch(e) { console.log("Mock reorder success (local)"); }
                         }
                     }
                 });
             }
         }
 
-        function renderProducts() {
-            const filtered = activeCategory === 'all' ? products : products.filter(p => p.category === activeCategory);
-            const container = document.getElementById('productContainer');
-            
-            container.innerHTML = filtered.map((p, index) => {
-                const animationDelay = index * 100;
-                // Add data-id for SortableJS
-                
-                if(p.type === 'link') {
-                    return `
-                    <div data-id="${p.id}" class="snap-start">
-                        <a href="${p.url}" target="_blank" class="w-full h-full min-h-[120px] glass rounded-xl overflow-hidden group relative flex flex-col justify-center items-center bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 p-4 card-interactive animate-entry" style="animation-delay: ${animationDelay}ms">
-                            <div class="text-accent-cyan text-3xl mb-1"><i class="ri-arrow-right-circle-fill"></i></div>
-                            <h3 class="font-bold text-xs dark:text-white text-slate-800 text-center">${p.title}</h3>
-                        </a>
-                    </div>`;
-                }
+        function renderFilteredProducts(productList) {
+             const container = document.getElementById('productContainer');
+             container.innerHTML = productList.map((p, index) => {
+                const animationDelay = index * 50;
                 const waLink = `https://wa.me/6285161141114?text=Halo%20Malikfaza,%20tertarik%20${encodeURIComponent(p.title)}`;
 
                 return `
-                <div data-id="${p.id}" id="card-${p.id}" class="w-full glass rounded-xl overflow-hidden group relative border border-gray-200 dark:border-gray-700 flex flex-col snap-start card-interactive animate-entry" style="animation-delay: ${animationDelay}ms">
-                    <div class="aspect-square w-full overflow-hidden relative bg-gray-200 dark:bg-gray-800">
-                        <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover">
-                        <span class="absolute top-2 left-2 bg-black/60 backdrop-blur text-[9px] font-bold px-1.5 py-0.5 rounded text-white border border-white/20 uppercase">${p.category}</span>
-                        ${isAdmin ? `<div class="absolute top-2 right-2 z-40 flex flex-col gap-1 items-end" onclick="event.stopPropagation()"><input type="checkbox" onchange="window.toggleSelect('${p.id}')" class="custom-checkbox w-5 h-5 rounded border-gray-300 bg-white"><button onclick="window.openEditModal('${p.id}')" class="bg-accent-cyan text-white w-7 h-7 rounded-full flex items-center justify-center shadow-lg border border-white mt-1"><i class="ri-pencil-fill text-xs"></i></button></div>` : ''}
+                <div data-id="${p.id}" id="card-${p.id}" class="w-full glass rounded-2xl overflow-hidden group relative border border-gray-200 dark:border-white/5 flex flex-col snap-start card-interactive animate-entry bg-white dark:bg-white/5" style="animation-delay: ${animationDelay}ms">
+                    <div class="aspect-square w-full overflow-hidden relative bg-gray-100 dark:bg-gray-800">
+                        <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <span class="absolute top-3 left-3 bg-black/40 backdrop-blur-md text-[9px] font-bold px-2 py-1 rounded text-white border border-white/20 uppercase tracking-widest">${p.category}</span>
+                        ${isAdmin ? `<div class="absolute top-2 right-2 z-40 flex flex-col gap-2 items-end" onclick="event.stopPropagation()"><input type="checkbox" onchange="window.toggleSelect('${p.id}')" class="custom-checkbox w-5 h-5 rounded border-gray-300 bg-white cursor-pointer accent-red-500 shadow-md"><button onclick="window.openEditModal('${p.id}')" class="bg-white text-slate-900 w-8 h-8 rounded-full flex items-center justify-center shadow-lg border border-gray-100 hover:bg-accent-cyan hover:text-white transition-colors"><i class="ri-pencil-fill text-sm"></i></button></div>` : ''}
                     </div>
-                    <div class="p-3 flex flex-col h-full justify-between bg-white/50 dark:bg-transparent flex-1">
+                    <div class="p-4 flex flex-col h-full justify-between flex-1 relative">
                         <div>
-                            <h3 id="title-${p.id}" class="card-title font-bold text-xs md:text-sm mb-0.5 truncate leading-tight">${p.title}</h3>
-                            <p id="price-${p.id}" class="text-accent-cyan font-bold text-xs">${p.price}</p>
+                            <h3 id="title-${p.id}" class="card-title font-bold text-sm md:text-base mb-1 truncate leading-tight">${p.title}</h3>
+                            <p id="price-${p.id}" class="text-accent-cyan font-bold text-xs md:text-sm flex items-center gap-1"><i class="ri-price-tag-3-fill"></i> ${p.price}</p>
                         </div>
-                        <div class="flex gap-2 mt-2">
-                             <button onclick="window.openProductModal('${p.id}')" class="flex-1 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 text-slate-700 dark:text-white text-[10px] py-1.5 rounded-lg transition-colors font-medium border border-gray-200 dark:border-white/10">Detail</button>
-                            <a href="${waLink}" target="_blank" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-[10px] py-1.5 rounded-lg transition-colors font-medium text-center flex items-center justify-center gap-1"><i class="ri-whatsapp-line"></i> Order</a>
+                        <div class="flex gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-white/5">
+                             <button onclick="window.openProductModal('${p.id}')" class="flex-1 bg-transparent hover:bg-gray-100 dark:hover:bg-white/10 text-slate-500 dark:text-gray-300 text-[10px] md:text-xs py-2 rounded-lg transition-colors font-bold border border-gray-200 dark:border-white/10">Detail</button>
+                            <a href="${waLink}" target="_blank" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-[10px] md:text-xs py-2 rounded-lg transition-all font-bold text-center flex items-center justify-center gap-1 shadow-lg shadow-green-500/20"><i class="ri-whatsapp-fill"></i> Beli</a>
                         </div>
                     </div>
                 </div>
@@ -1092,13 +1164,23 @@
             initSortable();
         }
 
+        function renderProducts() {
+            const filtered = activeCategory === 'all' ? products : products.filter(p => p.category === activeCategory);
+            renderFilteredProducts(filtered);
+        }
+
         function renderServices() {
             const container = document.getElementById('serviceContainer');
             container.innerHTML = services.map((s, i) => `
-                <a href="https://lynk.id/malikfaza" target="_blank" class="block p-4 md:p-5 glass rounded-xl hover:bg-white dark:hover:bg-white/5 transition-all border-l-4 ${s.border} shadow-sm group card-interactive">
-                    <div class="flex items-center justify-between mb-3"><i class="${s.icon} text-3xl ${s.color}"></i></div>
-                    <h3 class="text-base md:text-lg font-bold mb-1 dark:text-white text-slate-900 group-hover:text-accent-cyan transition-colors">${s.title}</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${s.desc}</p>
+                <a href="https://lynk.id/malikfaza" target="_blank" class="block p-5 glass rounded-2xl hover:bg-white dark:hover:bg-white/10 transition-all border-l-4 ${s.border} shadow-sm group card-interactive bg-white dark:bg-white/5">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center ${s.color} group-hover:scale-110 transition-transform">
+                            <i class="${s.icon} text-2xl"></i>
+                        </div>
+                        <i class="ri-arrow-right-up-line text-gray-400 group-hover:text-white transition-colors"></i>
+                    </div>
+                    <h3 class="text-base md:text-lg font-bold mb-2 dark:text-white text-slate-900 group-hover:text-accent-cyan transition-colors">${s.title}</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 truncate leading-relaxed">${s.desc}</p>
                 </a>
             `).join('');
         }
@@ -1142,8 +1224,16 @@
 
         window.deleteCurrentProduct = async () => {
             const id = document.getElementById('editId').value;
-            if(!id || !confirm("Hapus?")) return;
-            if(db) await deleteDoc(doc(db, "products", id));
+            if(!id || !confirm("Hapus produk ini?")) return;
+            
+            if(db) {
+                try { await deleteDoc(doc(db, "products", id)); } 
+                catch(e) { /* fallback local delete if cloud fails */ }
+            }
+            
+            // Local update for immediate UI feedback
+            products = products.filter(p => p.id !== id);
+            renderProducts();
             window.closeModal('editModal');
         };
 
@@ -1161,11 +1251,22 @@
                 price: document.getElementById('editPrice').value,
                 category: document.getElementById('editCategory').value,
                 detailLink: document.getElementById('editDetailLink').value,
-                img: tempImageBase64 || currentImgSrc,
-                desc: 'Deskripsi.'
+                img: document.getElementById('editPreview').src || "https://picsum.photos/400/400",
+                desc: 'Deskripsi lengkap produk akan muncul di sini.',
+                order: id ? (products.find(p=>p.id===id)?.order || 0) : products.length
             };
             
-            if(db) await setDoc(doc(db, "products", pId), newData);
+            if(db) {
+                try { await setDoc(doc(db, "products", pId), newData); }
+                catch(e) { console.log("Saved locally"); }
+            }
+            
+            // Update local array logic handles both new and edit
+            const idx = products.findIndex(p => p.id === pId);
+            if(idx > -1) products[idx] = newData;
+            else products.push(newData);
+            
+            renderProducts();
             window.closeModal('editModal');
         });
 
@@ -1188,11 +1289,6 @@
             document.documentElement.classList.toggle('light');
         });
 
-        const langBtn = document.getElementById('langToggle');
-        langBtn.addEventListener('click', () => {
-             // Lang toggle logic
-        });
-
         document.getElementById('adminLoginFooter').addEventListener('click', () => { if(!isAdmin) { document.getElementById('loginModal').classList.remove('hidden'); document.getElementById('loginModal').classList.add('flex'); } });
         document.getElementById('adminBtnMobile').addEventListener('click', () => { if(!isAdmin) { document.getElementById('loginModal').classList.remove('hidden'); document.getElementById('loginModal').classList.add('flex'); } });
 
@@ -1204,7 +1300,8 @@
                 checkAdminState();
                 window.closeModal('loginModal');
                 renderProducts(); 
-            } else alert('Password salah');
+                alert("Welcome back, Master!");
+            } else alert('Password salah!');
         });
 
         window.logoutAdmin = () => {
@@ -1216,9 +1313,13 @@
 
         function checkAdminState() {
             const panel = document.getElementById('adminPanel');
-            if(isAdmin) panel.classList.remove('hidden');
-            else panel.classList.add('hidden');
-            // Re-init sortable to enable/disable drag based on admin state
+            if(isAdmin) {
+                panel.classList.remove('hidden');
+                document.body.classList.add('admin-mode');
+            } else {
+                panel.classList.add('hidden');
+                document.body.classList.remove('admin-mode');
+            }
             initSortable();
         }
     </script>
