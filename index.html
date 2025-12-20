@@ -403,6 +403,7 @@
 
     <!-- Testimonials Section (INFINITE LOOP) -->
     <section id="testimonials" class="py-24 relative overflow-hidden bg-white/50 dark:bg-black/20">
+        <!-- Background Elements -->
         <div class="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
             <div class="absolute top-1/4 -right-20 w-72 h-72 bg-accent-cyan/5 rounded-full blur-3xl"></div>
             <div class="absolute bottom-1/4 -left-20 w-72 h-72 bg-accent-yellow/5 rounded-full blur-3xl"></div>
@@ -775,11 +776,11 @@
         </div>
     </div>
 
-    <!-- Toast Notification -->
+    <!-- Toast Notification (UPDATED with Error State) -->
     <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] opacity-0 pointer-events-none transition-all duration-300 transform translate-y-10">
-        <div class="glass bg-slate-900/90 text-white px-6 py-3 rounded-full shadow-2xl border border-white/10 flex items-center gap-3 backdrop-blur-md">
-            <i class="ri-checkbox-circle-line text-green-400 text-xl"></i>
-            <span id="toastMessage" class="font-bold text-sm tracking-wide">Berhasil disalin!</span>
+        <div id="toastContent" class="glass bg-slate-900/90 text-white px-6 py-3 rounded-full shadow-2xl border border-white/10 flex items-center gap-3 backdrop-blur-md">
+            <i id="toastIcon" class="ri-checkbox-circle-line text-green-400 text-xl"></i>
+            <span id="toastMessage" class="font-bold text-sm tracking-wide">Berhasil!</span>
         </div>
     </div>
 
@@ -803,7 +804,6 @@
         let db, auth;
         // Mock Data Fallback if Firebase fails or for offline demo
         let mockProducts = [
-             // ADDED: Produk Gratis di Katalog (Urutan -1 supaya paling depan)
              { 
                  id: `free-prod-lynk`, 
                  category: 'app', 
@@ -924,79 +924,74 @@
         };
 
         // --- PURCHASE NOTIFICATION DATA ---
-        const purchaseNames = ["Budi dari Jakarta", "Siti dari Surabaya", "Andi dari Bandung", "Dewi dari Medan", "Eko dari Semarang", "Fajar dari Makassar", "Gita dari Jogja", "Hadi dari Balikpapan", "Indah dari Denpasar", "Joko dari Malang"];
-        // HAPUS purchaseProductsList karena kita akan pakai data 'products' asli
+        // UPDATED: 20 Nama Acak dengan Lokasi
+        const purchaseNames = [
+            "Budi dari Jakarta", "Siti dari Surabaya", "Andi dari Bandung", "Dewi dari Medan", "Eko dari Semarang", 
+            "Fajar dari Makassar", "Gita dari Jogja", "Hadi dari Balikpapan", "Indah dari Denpasar", "Joko dari Malang",
+            "Rina dari Bogor", "Dedi dari Tangerang", "Maya dari Bekasi", "Reza dari Depok", "Sari dari Solo",
+            "Bayu dari Palembang", "Nina dari Padang", "Rudi dari Lampung", "Tari dari Lombok", "Agus dari Papua"
+        ];
         const purchaseTimes = ["Baru saja", "1 menit yang lalu", "2 menit yang lalu", "Baru saja", "5 menit yang lalu"];
 
-        // --- TESTIMONIAL DATA (UPDATED 10 ITEMS) ---
+        // --- TESTIMONIAL DATA (UPDATED: Avatars removed) ---
         const testimonials = [
             {
                 name: "Rian Photography",
                 role: "User AI Studio",
-                avatar: "https://i.pravatar.cc/150?u=a042581f4e29026024d",
                 text: "Fitur edit foto All-in-One di AI Studio gokil abis! Sekali klik foto klien langsung jadi pro. Hemat waktu banget.",
                 stars: 5
             },
             {
                 name: "Sarah Amalia",
                 role: "Content Creator",
-                avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
                 text: "Beli Bundling Fotoin ga nyesel. Aplikasi edit fotonya komplit, preset-nya estetik parah. Wajib punya buat stok konten.",
                 stars: 5
             },
             {
                 name: "Bunda Rajut",
                 role: "Crafter",
-                avatar: "https://i.pravatar.cc/150?u=a04258114e29026302d",
                 text: "Tools Gem Rajut bikin semangat berkarya lagi. Pola-polanya gampang diikutin, ngebantu banget buat pemula kayak saya.",
                 stars: 5
             },
             {
                 name: "Dimas Entrepreneur",
                 role: "Alumni Kelas Lynk.id",
-                avatar: "https://i.pravatar.cc/150?u=a048581f4e29026701d",
                 text: "Abis ikut kelas Lynk.id, sekarang punya mini website sendiri yang keren. Traffic jualan langsung naik drastis!",
                 stars: 5
             },
             {
                 name: "Kiki Gamer",
                 role: "Game Developer",
-                avatar: "https://i.pravatar.cc/150?u=a042581f4e29026024e",
                 text: "Kelas bikin Custom Gem isinya 'daging' semua. Sekarang udah bisa bikin aset custom gem sendiri buat kerjaan.",
                 stars: 5
             },
             {
                 name: "Toko Hijab Clara",
                 role: "User Tools Si Koces",
-                avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704f",
                 text: "Tools Si Koces ajaib! Kode CSS-nya bikin tampilan Lynk.id olshop aku jadi cantik banget, beda dari yang lain.",
                 stars: 5
             },
             {
                 name: "Bayu Desain",
                 role: "Freelancer",
-                avatar: "https://i.pravatar.cc/150?u=a042581f4e29026024g",
                 text: "Tools Gem Si Jadit emang ahlinya bikin banner. Template-nya jago ngedit banget, klien aku suka semua hasilnya.",
                 stars: 5
             },
             {
                 name: "Rara & Tio",
                 role: "Customer Undangan",
-                avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704h",
                 text: "Pesen Undangan Digital di sini hasilnya elegan & mewah. Tamu-tamu banyak yang muji desainnya.",
                 stars: 5
             },
             {
                 name: "UMKM Berkah",
                 role: "User Fotoin Produk",
-                avatar: "https://i.pravatar.cc/150?u=a042581f4e29026024i",
                 text: "Layanan 'Sulap Foto Produk'-nya beneran sihir! Foto produk rumahan jadi kayak hasil studio profesional.",
                 stars: 5
             },
             {
                 name: "Affiliate Juara",
                 role: "User Fotoin Try On",
-                avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704j",
                 text: "Fotoin Try On cocok banget buat affiliate. try on-nya realistis, jagonya bikin try on yang konversinya tinggi!",
                 stars: 5
             }
@@ -1045,12 +1040,26 @@
             }
         };
         
-        // --- TOAST FUNCTION (New Notification) ---
-        window.showToast = (message) => {
+        // --- TOAST FUNCTION (UPDATED: Support Error Color) ---
+        window.showToast = (message, isError = false) => {
             const toast = document.getElementById('toast');
+            const toastContent = document.getElementById('toastContent');
+            const icon = document.getElementById('toastIcon');
             const msgEl = document.getElementById('toastMessage');
             
             msgEl.innerText = message;
+            
+            // Ubah warna berdasarkan tipe pesan
+            if (isError) {
+                toastContent.classList.remove('bg-slate-900/90');
+                toastContent.classList.add('bg-red-600/90'); // Merah untuk error
+                icon.className = 'ri-error-warning-line text-white text-xl';
+            } else {
+                toastContent.classList.remove('bg-red-600/90');
+                toastContent.classList.add('bg-slate-900/90'); // Hitam/Slate untuk sukses
+                icon.className = 'ri-checkbox-circle-line text-green-400 text-xl';
+            }
+
             toast.classList.remove('opacity-0', 'translate-y-10');
             
             // Auto hide after 2.5 seconds
@@ -1071,21 +1080,35 @@
             const randomName = purchaseNames[Math.floor(Math.random() * purchaseNames.length)];
             
             // UPDATED: Ambil produk acak dari katalog asli
-            let randomProduct = "Premium App Bundle"; // Fallback jika katalog kosong
-            if (products.length > 0) {
-                const product = products[Math.floor(Math.random() * products.length)];
-                randomProduct = product.title;
+            let randomProductTitle = "Premium Digital Product"; // Default jika kosong
+            let randomProductImg = ""; // Optional: Jika ingin menampilkan gambar produk
+
+            // Gunakan data 'products' yang aktif (dari Firebase atau Mock)
+            const sourceProducts = (products && products.length > 0) ? products : mockProducts;
+            
+            if (sourceProducts.length > 0) {
+                // Filter agar tidak mengambil produk dengan harga "GRATIS" jika ingin terlihat seperti pembelian berbayar
+                // const paidProducts = sourceProducts.filter(p => p.price !== 'GRATIS');
+                // const pool = paidProducts.length > 0 ? paidProducts : sourceProducts;
+                
+                const product = sourceProducts[Math.floor(Math.random() * sourceProducts.length)];
+                randomProductTitle = product.title;
             }
 
+            // 3. Ambil Waktu (Acak)
             const randomTime = purchaseTimes[Math.floor(Math.random() * purchaseTimes.length)];
             
-            // Set Content
-            nameEl.innerText = randomName.split(" ")[0]; // Ambil nama depan saja biar singkat
-            productEl.innerText = randomProduct;
+            // --- SET KONTEN ---
+            
+            // Tampilkan nama lengkap (misal: "Budi dari Jakarta") agar lebih variatif
+            // Sebelumnya: randomName.split(" ")[0] -> hanya "Budi"
+            nameEl.innerText = randomName; 
+            
+            productEl.innerText = randomProductTitle;
             timeEl.innerText = randomTime;
-            avatarEl.innerText = randomName.charAt(0); // Inisial nama
+            avatarEl.innerText = randomName.charAt(0); // Inisial dari nama depan
 
-            // Show
+            // Show Animation
             toast.classList.remove('opacity-0', 'translate-y-[200%]', 'pointer-events-none');
             
             // Hide after 5 seconds
@@ -1100,16 +1123,20 @@
         };
 
         function scheduleNextNotification() {
-            // First run quickly to show user (5s), then random interval (30s-60s)
+            // First run quickly (5s)
             setTimeout(() => {
                 showPurchaseNotification();
-                
-                // Start regular loop
-                setInterval(() => {
-                     const interval = Math.floor(Math.random() * (60000 - 30000 + 1) + 30000);
-                     setTimeout(showPurchaseNotification, interval); 
-                }, 45000); // Base interval
+                scheduleRecursiveNotification();
             }, 5000);
+        }
+
+        function scheduleRecursiveNotification() {
+             // Random interval between 30s (30000ms) and 80s (80000ms)
+             const interval = Math.floor(Math.random() * (80000 - 30000 + 1) + 30000);
+             setTimeout(() => {
+                 showPurchaseNotification();
+                 scheduleRecursiveNotification();
+             }, interval);
         }
 
         // --- COPY FUNCTION (UPDATED) ---
@@ -1417,22 +1444,29 @@
             
             const newData = { title: newTitle, desc: newDesc, code: newCode, endTime: newTime, active: isActive };
             
+            // Update Local Data Immediately for Feedback
+            promoData = newData;
+
             if(db) {
                 try {
                      await setDoc(doc(db, "settings", "promo"), newData);
                      window.showToast("Pengaturan Promo Disimpan ke Cloud!");
                 } catch(err) {
-                     promoData = newData;
                      renderPromoContent();
-                     updateTimer(); // FORCE UPDATE IMMEDIATELY
+                     updateTimer(); 
                      window.showToast("Disimpan (Lokal/Mock Mode)");
                 }
             } else {
-                promoData = newData;
                 renderPromoContent();
-                updateTimer(); // FORCE UPDATE IMMEDIATELY
+                updateTimer(); 
                 window.showToast("Disimpan (Lokal)");
             }
+
+            // FIX: Update Teks Tanggal & Jam Secara Langsung
+            const now = new Date();
+            const options = { day: 'numeric', month: 'short' };
+            const dateStr = now.toLocaleDateString('id-ID', options);
+            document.getElementById('promoDateText').innerText = `Promo Spesial ${dateStr} s/d Pukul ${promoData.endTime}`;
 
             if(isActive) {
                 // Force show updated promo for visual feedback
@@ -1612,11 +1646,17 @@
             }
         }
 
+        // --- RENDER PRODUCTS IN GRID (UPDATED WA LINK LOGIC) ---
         function renderFilteredProducts(productList) {
              const container = document.getElementById('productContainer');
              container.innerHTML = productList.map((p, index) => {
                 const animationDelay = index * 50;
-                const waLink = `https://wa.me/6285161141114?text=Halo%20Malikfaza,%20tertarik%20${encodeURIComponent(p.title)}`;
+                
+                // FIX: Menambahkan Link Detail ke Pesan WA di Tombol Grid (Depan)
+                // Sebelumnya hanya judul, sekarang lengkap dengan link
+                const linkUrl = p.detailLink && p.detailLink.trim() !== "" ? p.detailLink : "https://lynk.id/malikfaza";
+                const waText = `Halo Malikfaza, saya tertarik membeli produk ini:\n\n*${p.title}*\n\nLink Produk: ${linkUrl}`;
+                const waLink = `https://wa.me/6285161141114?text=${encodeURIComponent(waText)}`;
 
                 return `
                 <div data-id="${p.id}" id="card-${p.id}" class="w-full glass rounded-2xl overflow-hidden group relative border border-gray-200 dark:border-white/5 flex flex-col snap-start card-interactive animate-entry bg-white dark:bg-white/5" style="animation-delay: ${animationDelay}ms">
@@ -1669,11 +1709,14 @@
             
             // Generate HTML for one set of cards
             const cardsHtml = testimonials.map((t) => {
-                // Stars removed
+                // Stars removed, Avatar changed to Initials
+                const initial = t.name.charAt(0);
                 return `
                 <div class="glass p-5 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 hover:border-accent-cyan/50 transition-colors shadow-lg relative min-w-[300px] max-w-[300px] flex-shrink-0 cursor-pointer">
                     <div class="flex items-center gap-3 mb-3">
-                        <img src="${t.avatar}" alt="${t.name}" class="w-10 h-10 rounded-full border border-accent-cyan p-0.5 object-cover">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-accent-cyan to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-md border border-white/20">
+                            ${initial}
+                        </div>
                         <div>
                             <h4 class="font-bold text-slate-900 dark:text-white text-sm truncate w-40">${t.name}</h4>
                             <p class="text-[10px] text-accent-cyan font-bold uppercase tracking-wider">${t.role}</p>
@@ -1703,12 +1746,13 @@
             document.getElementById('modalCategory').innerText = p.category;
             
             const detailBtn = document.getElementById('modalDetailLink');
-            const linkUrl = p.detailLink || "https://lynk.id/malikfaza";
+            // Gunakan link spesifik jika ada, jika kosong pakai link default
+            const linkUrl = p.detailLink && p.detailLink.trim() !== "" ? p.detailLink : "https://lynk.id/malikfaza";
             detailBtn.href = linkUrl;
             
             // UPDATED WA MESSAGE LOGIC
-            // Includes Product Title AND Link automatically
-            const waText = `Halo Malikfaza, saya tertarik membeli produk ini:\n\n*${p.title}*\n\nLink Katalog: ${linkUrl}`;
+            // Sekarang menyertakan Link Spesifik yang diinput di menu edit
+            const waText = `Halo Malikfaza, saya tertarik membeli produk ini:\n\n*${p.title}*\n\nLink Produk: ${linkUrl}`;
             const waUrl = `https://wa.me/6285161141114?text=${encodeURIComponent(waText)}`;
             
             document.getElementById('modalWaLink').href = waUrl;
@@ -1816,7 +1860,10 @@
                 window.closeModal('loginModal');
                 renderProducts(); 
                 window.showToast("Welcome back, Master!");
-            } else alert('Password salah!');
+            } else {
+                // UPDATE: Menggunakan Toast Merah untuk Password Salah
+                window.showToast("Password salah! Akses ditolak.", true);
+            }
         });
 
         window.logoutAdmin = () => {
