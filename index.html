@@ -25,9 +25,6 @@
     <!-- Typography Plugin for Epic Descriptions -->
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
 
-    <!-- SUPABASE JS SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -330,7 +327,7 @@
                     <i class="ri-admin-fill text-xl"></i> ADMIN DASHBOARD
                 </h2>
                 <div class="text-[11px] text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-2">
-                    System Status: <span id="dbStatus" class="font-bold text-gray-500 flex items-center gap-1"><i class="ri-cloud-line"></i> Connecting...</span>
+                    System Status: <span id="dbStatus" class="font-bold text-green-500 flex items-center gap-1"><i class="ri-wifi-line"></i> Online (Firebase)</span>
                 </div>
             </div>
             <div class="flex flex-wrap gap-2 w-full md:w-auto justify-center md:justify-end">
@@ -346,20 +343,6 @@
                 <button onclick="window.openPromoSettings()" class="px-4 py-2 bg-yellow-600 text-white text-xs font-bold rounded-lg hover:bg-yellow-700 transition-colors flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 transform">
                     <i class="ri-coupon-3-line text-base"></i> Set Promo
                 </button>
-                
-                <!-- NEW: Import & Export Group -->
-                <div class="flex gap-2">
-                    <!-- Import Button & Hidden Input -->
-                    <input type="file" id="importFileInput" class="hidden" accept=".json" onchange="window.importData(this)">
-                    <button onclick="document.getElementById('importFileInput').click()" class="px-4 py-2 bg-purple-600 text-white text-xs font-bold rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 transform">
-                        <i class="ri-upload-cloud-2-line text-base"></i> Import JSON
-                    </button>
-                    
-                    <button onclick="window.exportData()" class="px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 transform">
-                        <i class="ri-download-cloud-2-line text-base"></i> Export
-                    </button>
-                </div>
-
                 <button onclick="window.logoutAdmin()" class="px-4 py-2 bg-slate-700 text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 transform">
                     <i class="ri-logout-box-r-line text-base"></i> Logout
                 </button>
@@ -642,31 +625,11 @@
                     <label class="text-xs text-gray-500 mb-1 block font-bold">Kode Voucher</label>
                     <input type="text" id="promoCodeInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan" placeholder="FAZA20">
                 </div>
-
-                <!-- ADDED: RADIO BUTTONS FOR DATE SELECTION -->
-                <div class="flex gap-4 mb-2">
-                    <label class="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
-                        <input type="radio" name="promoType" value="today" class="accent-accent-cyan" checked onchange="toggleDateInput(this.value)">
-                        <span id="todayLabelText">Hari Ini</span>
-                    </label>
-                    <label class="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
-                        <input type="radio" name="promoType" value="custom" class="accent-accent-cyan" onchange="toggleDateInput(this.value)">
-                        Pilih Tanggal
-                    </label>
-                </div>
-
-                <!-- DATE INPUT (Initially Hidden) -->
-                <div id="dateInputWrapper" class="hidden">
-                    <label class="text-xs text-gray-500 mb-1 block font-bold">Tanggal Berakhir</label>
-                    <input type="date" id="promoDateInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan">
-                </div>
-
                 <!-- Time Limit Input -->
                 <div>
-                    <label class="text-xs text-gray-500 mb-1 block font-bold">Jam Berakhir</label>
+                    <label class="text-xs text-gray-500 mb-1 block font-bold">Jam Berakhir (Hari ini)</label>
                     <input type="time" id="promoTimeInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan">
                 </div>
-
                 <div class="flex items-center justify-between bg-gray-100 dark:bg-white/5 p-2 rounded-lg">
                     <label class="text-xs text-gray-500 block font-bold">Status Promo</label>
                     <div class="flex items-center gap-2">
@@ -824,22 +787,22 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
     <script type="module">
-        // SUPABASE CONFIGURATION
-        const supabaseUrl = 'https://alckihxwgcjhzxhiyehr.supabase.co';
-        // Note: This is the publishable key provided by the user. 
-        // In a real production app with sensitive data, ensure strict RLS policies.
-        const supabaseKey = 'sb_publishable_RhLlXfR1XmKVpxW5LF_lvw_7-AMCCA_'; 
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, deleteDoc, writeBatch, onSnapshot } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
         
-        let supabase = null;
-        try {
-            supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-            document.getElementById('dbStatus').innerHTML = '<span class="text-green-500 flex items-center gap-1"><i class="ri-cloud-fill"></i> Online (Supabase)</span>';
-        } catch(e) {
-            console.error("Supabase Init Error:", e);
-            document.getElementById('dbStatus').innerText = 'Connection Failed';
-        }
-
-        // Mock Data Fallback / Initial Data (Jika DB Kosong/Error)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCqKtipFHufA_VxMdnb5tOCYuiZqCRpR4w",
+            authDomain: "malikfazaweb.firebaseapp.com",
+            projectId: "malikfazaweb",
+            storageBucket: "malikfazaweb.firebasestorage.app",
+            messagingSenderId: "979422666312",
+            appId: "1:979422666312:web:5213b3d745a2d82c4cc27d",
+            measurementId: "G-HXGQGRWLMN"
+        };
+        
+        let db, auth;
+        // Mock Data Fallback if Firebase fails or for offline demo
         let mockProducts = [
              { 
                  id: `free-prod-lynk`, 
@@ -860,88 +823,65 @@
                  detailLink: 'https://lynk.id/malikfaza', 
                  order: -1 
              },
-             // ... more items can be added here as default fallback
+             { 
+                 id: `app-0`, 
+                 category: 'app', 
+                 title: `Premium App V1 Pro`, 
+                 price: 'Rp 25.000', 
+                 img: "", 
+                 // EPIC HTML DESCRIPTION EXAMPLE
+                 desc: `
+                    <h2>Fitur Unggulan 🔥</h2>
+                    <p>Dapatkan pengalaman terbaik dengan versi premium ini. Tidak ada iklan, fitur lengkap terbuka, dan dukungan prioritas.</p>
+                    <ul>
+                        <li><strong>Tanpa Iklan:</strong> Nikmati aplikasi tanpa gangguan.</li>
+                        <li><strong>4K Support:</strong> Kualitas visual tertinggi.</li>
+                        <li><strong>Lifetime Update:</strong> Sekali bayar untuk selamanya.</li>
+                    </ul>
+                    <div class="bg-blue-900/30 p-4 rounded-lg border border-blue-500/30 my-4">
+                        <h3 class="text-blue-400 m-0">Bonus Spesial!</h3>
+                        <p class="m-0 text-sm">Dapatkan akses ke grup VIP kami setiap pembelian hari ini.</p>
+                    </div>
+                 `, 
+                 detailLink: 'https://lynk.id/malikfaza', 
+                 order: 0 
+             },
+             ...Array.from({ length: 7 }, (_, i) => ({ 
+                 id: `app-${i+1}`, 
+                 category: 'app', 
+                 title: `Premium App V${i+2} Pro`, 
+                 price: 'Rp 25.000', 
+                 img: "", 
+                 desc: '<p>Deskripsi standar produk ini. Edit di mode admin untuk menambahkan detail HTML yang epik.</p>', 
+                 detailLink: 'https://lynk.id/malikfaza', 
+                 order: i+1 
+             })),
+             ...Array.from({ length: 4 }, (_, i) => ({ 
+                 id: `gem-${i}`, 
+                 category: 'gem', 
+                 title: `Top Up Gem Pack ${i+1}`, 
+                 price: 'Rp 50.000', 
+                 img: "", 
+                 desc: '<p>Top up aman, legal, dan cepat. Proses hanya 5 menit via ID.</p>', 
+                 detailLink: 'https://lynk.id/malikfaza', 
+                 order: i + 10 
+             })),
         ];
         
+        // Use an ISO string for initial data to be unambiguous
+        // e.g. Today at 23:59
         const today = new Date();
         today.setHours(23, 59, 0, 0);
-        
-        // GLOBAL STATE
-        let products = [];
         let promoData = { 
             code: "FAZA20", 
-            active: false, 
+            active: false, // Default Inactive per request
             title: "Diskon Spesial!", 
             desc: "Potongan 20% All Item", 
-            endTime: today.toISOString()
+            endTime: today.toISOString() // Store full ISO string
         };
-
+        let products = [...mockProducts];
         let sortableInstance = null;
         
-        // --- DATA FETCHING FUNCTIONS ---
-        async function fetchProducts() {
-            if(!supabase) return;
-            try {
-                const { data, error } = await supabase.from('products').select('*').order('order', { ascending: true });
-                if(error) throw error;
-                if(data && data.length > 0) {
-                    products = data;
-                } else {
-                    products = [...mockProducts]; // Fallback if empty
-                }
-                renderProducts();
-            } catch(e) {
-                console.warn("Fetch Products Error (Using Mock):", e.message);
-                // Don't overwrite local changes immediately on fetch error if we have data
-                if(products.length === 0) {
-                    products = [...mockProducts];
-                    renderProducts();
-                }
-            }
-        }
-
-        async function fetchPromo() {
-            if(!supabase) return;
-            try {
-                // Assuming we store promo settings in a 'settings' table with id='promo' and value=json
-                const { data, error } = await supabase.from('settings').select('value').eq('id', 'promo').single();
-                if(error && error.code !== 'PGRST116') throw error; // PGRST116 is Row not found
-                
-                if(data && data.value) {
-                    promoData = data.value;
-                }
-                renderPromoContent();
-                updateTimer();
-                if(promoData.active) setTimeout(window.showPromoBig, 1000);
-            } catch(e) {
-                console.warn("Fetch Promo Error:", e.message);
-            }
-        }
-
-        // --- HELPER TO SAVE PRODUCTS ---
-        async function saveProductToDB(product) {
-            if(!supabase) return;
-            // Ensure product object matches table columns
-            const payload = {
-                id: product.id,
-                title: product.title,
-                price: product.price,
-                category: product.category,
-                detailLink: product.detailLink || "",
-                img: product.img || "",
-                desc: product.desc || "",
-                order: product.order || 0
-            };
-            const { error } = await supabase.from('products').upsert(payload);
-            if(error) throw error;
-        }
-
-        async function savePromoToDB(data) {
-            if(!supabase) return;
-            const { error } = await supabase.from('settings').upsert({ id: 'promo', value: data });
-            if(error) throw error;
-        }
-
         // --- TRANSLATION DICTIONARY ---
         const translations = {
             id: {
@@ -1277,6 +1217,16 @@
         window.handleImageUpload = handleImageUpload;
         window.updatePreviewFromUrl = updatePreviewFromUrl;
 
+        // Init Firebase Safe
+        try { 
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+            signInAnonymously(auth).catch((error) => {});
+        } catch (e) {
+            console.warn("Running in Offline/Mock Mode");
+        }
+
         const categories = [
             { id: 'all', label: 'All' },
             { id: 'app', label: 'Apps' },
@@ -1339,22 +1289,41 @@
              document.querySelectorAll('.promoTimer').forEach(el => el.innerText = `${totalHours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`);
         };
 
-        window.addEventListener('DOMContentLoaded', async () => {
+        window.addEventListener('DOMContentLoaded', () => {
             renderCategories();
-            renderProducts(); // Initially render mock if any
+            renderProducts();
             renderServices();
             renderTestimonials();
-            renderPromoContent();
             checkAdminState();
             updateLanguage(currentLang);
             scheduleNextNotification(); 
             
-            // Fetch real data
-            await fetchProducts();
-            await fetchPromo();
-
             setTimeout(() => { if(window.AOS) window.AOS.init({ once: true, duration: 800 }); }, 500);
             window.addEventListener('paste', handlePasteImage);
+            
+            if(db && auth) {
+                onAuthStateChanged(auth, (user) => {
+                    if(user) {
+                        onSnapshot(collection(db, "products"), (snapshot) => {
+                            if (!snapshot.empty) {
+                                const cloudProducts = [];
+                                snapshot.forEach((doc) => { cloudProducts.push(doc.data()); });
+                                products = cloudProducts;
+                                products.sort((a,b) => (a.order || 0) - (b.order || 0)); 
+                                renderProducts();
+                            }
+                        });
+
+                        onSnapshot(doc(db, "settings", "promo"), (doc) => {
+                            if (doc.exists()) {
+                                promoData = doc.data();
+                                renderPromoContent();
+                                updateTimer(); 
+                            }
+                        });
+                    }
+                });
+            }
             
             document.getElementById('btnDelete').addEventListener('click', deleteSelected);
             document.getElementById('btnReset').addEventListener('click', uploadDefaultData);
@@ -1585,20 +1554,28 @@
             
             promoData = newData;
 
-            // OPTIMISTIC UI: Render immediately
-            renderPromoContent();
-            updateTimer();
-            if(isActive) window.showPromoBig(); else window.closePromoCompletely();
-            window.closeModal('promoSettingsModal');
-
-            // SYNC
-            try {
-                await savePromoToDB(newData);
-                window.showToast("Promo Tersimpan (Publik)");
-            } catch(e) {
-                console.error(e);
-                window.showToast("Tersimpan Lokal (Gagal Sync Publik)", true);
+            if(db) {
+                try {
+                     await setDoc(doc(db, "settings", "promo"), newData);
+                     window.showToast("Pengaturan Promo Disimpan ke Cloud!");
+                } catch(err) {
+                     renderPromoContent();
+                     updateTimer(); 
+                     window.showToast("Disimpan (Lokal/Mock Mode)");
+                }
+            } else {
+                renderPromoContent();
+                updateTimer(); 
+                window.showToast("Disimpan (Lokal)");
             }
+
+            if(isActive) {
+                window.showPromoBig();
+            } else {
+                window.closePromoCompletely();
+            }
+
+            window.closeModal('promoSettingsModal');
         });
 
         // FIXED: Using 'promo-hidden' instead of 'hidden' to match CSS transitions
@@ -1627,7 +1604,7 @@
             document.getElementById('editForm').reset();
             document.getElementById('editId').value = "";
             document.getElementById('modalFormTitle').innerText = "Tambah Produk Baru";
-            document.getElementById('editPreviewContainer').innerHTML = ""; // Clear preview
+            document.getElementById('editPreview').src = "";
             document.getElementById('previewPlaceholder').style.display = "flex";
             document.getElementById('editImageFile').value = "";
             document.getElementById('btnDeleteIndividual').classList.add('hidden');
@@ -1638,35 +1615,23 @@
 
         async function uploadDefaultData() {
             if(!confirm("Hapus semua dan reset ke data awal?")) return;
-            // Since we are connected to Supabase, "Reset" might be dangerous.
-            // Let's just reload mocked data into local state OR push mock data to DB?
-            // Safer to just reload UI with mock for now, but user asked for DB connection.
-            // Let's implement a 'Reseed DB' logic.
-            
-            if(!supabase) {
-                products = [...mockProducts];
-                renderProducts();
-                window.showToast("Reset Data Lokal Berhasil");
-                return;
-            }
-
             const btn = document.getElementById('btnReset');
             btn.innerText = '...'; btn.disabled = true;
-
             try {
-                // Delete all rows (danger!)
-                // In real app, maybe just upsert defaults.
-                for(const p of mockProducts) {
-                    await saveProductToDB(p);
+                if(db) {
+                    const batch = writeBatch(db);
+                    mockProducts.forEach(p => {
+                         batch.set(doc(db, "products", p.id), p);
+                    });
+                    await batch.commit();
+                    window.showToast("Database di-reset ke default!");
+                } else {
+                    products = [...mockProducts];
+                    renderProducts();
+                    window.showToast("Reset Local Data Berhasil");
                 }
-                await fetchProducts();
-                window.showToast("Database seeded with default data!");
-            } catch(e) {
-                console.error(e);
-                window.showToast("Error Seeding DB", true);
-            } finally {
-                btn.innerHTML = '<i class="ri-refresh-line text-base"></i> Reset Data'; btn.disabled = false; 
-            }
+            } catch (e) { alert("Mock Mode Reset: " + e.message); products = [...mockProducts]; renderProducts(); } 
+            finally { btn.innerHTML = '<i class="ri-refresh-line text-base"></i> Reset Data'; btn.disabled = false; }
         };
 
         window.toggleSelect = (id) => {
@@ -1684,29 +1649,23 @@
             if (selectedIds.size === 0) return alert("Pilih produk dulu dengan checklist.");
             if(!confirm(`Hapus ${selectedIds.size} produk terpilih?`)) return;
             
-            // 1. OPTIMISTIC UI: Remove locally first
-            products = products.filter(p => !selectedIds.has(p.id));
-            renderProducts();
-            
-            if(!supabase) {
+            if(db) {
+                try {
+                    const batch = writeBatch(db);
+                    selectedIds.forEach(id => { batch.delete(doc(db, "products", id)); });
+                    await batch.commit();
+                    window.showToast("Produk dihapus (Cloud)");
+                } catch(e) {
+                     products = products.filter(p => !selectedIds.has(p.id));
+                     renderProducts();
+                     window.showToast("Produk dihapus (Lokal)");
+                }
+            } else {
+                products = products.filter(p => !selectedIds.has(p.id));
+                renderProducts();
                 window.showToast("Produk dihapus (Lokal)");
-                selectedIds.clear();
-                return;
             }
-
-            try {
-                const idsToDelete = Array.from(selectedIds);
-                const { error } = await supabase.from('products').delete().in('id', idsToDelete);
-                if(error) throw error;
-                
-                // No need to fetch again if optimistic update matches
-                window.showToast("Produk dihapus dari Supabase");
-                selectedIds.clear();
-            } catch(e) {
-                console.error(e);
-                // In a perfect world, we would revert the deletion here
-                window.showToast("Tersimpan Lokal (Gagal Hapus Publik)", true);
-            }
+            selectedIds.clear();
         };
         window.deleteSelected = deleteSelected;
         window.uploadDefaultData = uploadDefaultData;
@@ -1743,7 +1702,6 @@
             renderProducts();
         };
 
-        // --- SORTABLE INIT LOGIC ---
         function initSortable() {
             const el = document.getElementById('productContainer');
             if (sortableInstance) sortableInstance.destroy();
@@ -1755,41 +1713,37 @@
                     delayOnTouchOnly: true,
                     ghostClass: 'sortable-ghost',
                     dragClass: 'sortable-drag',
-                    handle: '.aspect-square', // Drag handle area
+                    handle: '.aspect-square', 
                     onEnd: async function (evt) {
                         const newOrderIds = Array.from(el.children).map(card => card.getAttribute('data-id'));
                         
-                        // Reorder locally first
                         const newProducts = [];
                         newOrderIds.forEach(id => {
                             const p = products.find(prod => prod.id === id);
                             if(p) newProducts.push(p);
                         });
                         products = newProducts;
-                        products.forEach((p, idx) => p.order = idx);
-
-                        // Sync to Supabase
-                        if(supabase) {
-                            // Supabase doesn't have a bulk update in one go easily without loop or custom function
-                            // For UI responsiveness, we assume success. 
-                            // For robustness, we loop.
-                            for(let i=0; i<products.length; i++) {
-                                await supabase.from('products').update({ order: i }).eq('id', products[i].id);
-                            }
+                        
+                        if(db) {
+                            try {
+                                const batch = writeBatch(db);
+                                products.forEach((p, index) => {
+                                    const ref = doc(db, "products", p.id);
+                                    batch.update(ref, { order: index });
+                                });
+                                await batch.commit();
+                            } catch(e) { console.log("Mock reorder success (local)"); }
                         }
                     }
                 });
             }
         }
 
-        // --- RENDER PRODUCTS IN GRID (UPDATED WA LINK LOGIC) ---
         function renderFilteredProducts(productList) {
              const container = document.getElementById('productContainer');
              container.innerHTML = productList.map((p, index) => {
                 const animationDelay = index * 50;
                 
-                // FIX: Menambahkan Link Detail ke Pesan WA di Tombol Grid (Depan)
-                // Sebelumnya hanya judul, sekarang lengkap dengan link
                 const linkUrl = p.detailLink && p.detailLink.trim() !== "" ? p.detailLink : "https://lynk.id/malikfaza";
                 const waText = `Halo Malikfaza, saya tertarik membeli produk ini:\n\n*${p.title}*\n\nLink Produk: ${linkUrl}`;
                 const waLink = `https://wa.me/6285161141114?text=${encodeURIComponent(waText)}`;
@@ -1938,22 +1892,14 @@
             const id = document.getElementById('editId').value;
             if(!id || !confirm("Hapus produk ini?")) return;
             
-            // 1. OPTIMISTIC UI
+            if(db) {
+                try { await deleteDoc(doc(db, "products", id)); window.showToast("Produk dihapus (Cloud)"); } 
+                catch(e) { window.showToast("Gagal menghapus"); }
+            }
+            
+            // Local update for immediate UI feedback
             products = products.filter(p => p.id !== id);
             renderProducts();
-            
-            if(supabase) {
-                try {
-                    const { error } = await supabase.from('products').delete().eq('id', id);
-                    if(error) throw error;
-                    // await fetchProducts(); // No need
-                    window.showToast("Produk dihapus (Supabase)");
-                } catch(e) {
-                    window.showToast("Tersimpan Lokal (Gagal Hapus Publik)", true);
-                }
-            } else {
-                window.showToast("Produk dihapus (Lokal)");
-            }
             window.closeModal('editModal');
         };
 
@@ -1963,6 +1909,7 @@
             const pId = id ? id : 'prod-' + Date.now();
             
             // Get current image logic
+            // If temp uploaded, use it. If not, check input url. If empty, check original product image. If still empty, use empty string (for initials).
             let finalImg = "";
             const urlVal = document.getElementById('editImageUrl').value;
             
@@ -1971,9 +1918,18 @@
             } else if (urlVal) {
                 finalImg = urlVal;
             } else {
+                // If existing product, keep old img unless explicitly cleared? 
+                // For simplicity, if we didn't touch upload/url, we keep old img.
+                // But the preview logic is tricky. 
+                // Let's rely on the preview state? No, safer to rely on original object if no new input.
                 const original = products.find(p => p.id === id);
                 if(original) finalImg = original.img;
             }
+            
+            // If user wants to clear image to use initials, we might need a "Clear Image" button.
+            // For now, if they enter empty string in URL and no file, it keeps original. 
+            // If they want initials, they can't easily "remove" image in this simple UI without a clear button.
+            // Let's assume standard flow: upload overrides everything.
             
             const newData = {
                 id: pId,
@@ -1986,7 +1942,12 @@
                 order: id ? (products.find(p=>p.id===id)?.order || 0) : products.length
             };
             
-            // 1. OPTIMISTIC UI: UPDATE LOCAL STATE IMMEDIATELY
+            if(db) {
+                try { await setDoc(doc(db, "products", pId), newData); window.showToast("Produk Disimpan (Cloud)"); }
+                catch(e) { console.log("Saved locally"); }
+            }
+            
+            // Update local array logic handles both new and edit
             const idx = products.findIndex(p => p.id === pId);
             if(idx > -1) products[idx] = newData;
             else products.push(newData);
@@ -1994,20 +1955,6 @@
             renderProducts();
             window.closeModal('editModal');
             window.tempUploadedImage = null; // Reset temp
-
-            // 2. TRY SYNC TO SUPABASE
-            if(supabase) {
-                try {
-                    await saveProductToDB(newData);
-                    window.showToast("Berhasil Disimpan & Publik!");
-                } catch(e) {
-                    console.error("Sync Error:", e);
-                    // Don't revert UI, just warn
-                    window.showToast("Tersimpan di Perangkat (Gagal Upload ke Publik)", true);
-                }
-            } else {
-                window.showToast("Tersimpan Offline");
-            }
         });
 
         window.closeModal = (id) => {
@@ -2066,90 +2013,7 @@
             }
             initSortable();
         }
-        
-        // NEW EXPORT FUNCTION
-        window.exportData = () => {
-            const data = {
-                products: products,
-                promoSettings: promoData,
-                exportedAt: new Date().toISOString(),
-                note: "Import this JSON to restore data"
-            };
-            
-            const dataStr = JSON.stringify(data, null, 2);
-            const blob = new Blob([dataStr], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `malikfaza_backup_${new Date().toISOString().slice(0,10)}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            window.showToast("Data berhasil diexport (JSON)!");
-        };
-
-        // NEW IMPORT FUNCTION (With Supabase Sync)
-        window.importData = (inputElement) => {
-            const file = inputElement.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const data = JSON.parse(e.target.result);
-
-                    if (!data.products && !data.promoSettings) {
-                        throw new Error("Format JSON tidak dikenali");
-                    }
-
-                    // Update Supabase
-                    if (supabase) {
-                        const batchPromises = [];
-                        
-                        if (data.products && Array.isArray(data.products)) {
-                            // Supabase upsert expects columns to match exactly.
-                            const formattedProducts = data.products.map(p => ({
-                                id: p.id,
-                                title: p.title,
-                                price: p.price,
-                                category: p.category,
-                                detailLink: p.detailLink || "",
-                                img: p.img || "",
-                                desc: p.desc || "",
-                                order: p.order || 0
-                            }));
-                            batchPromises.push(supabase.from('products').upsert(formattedProducts));
-                        }
-
-                        if (data.promoSettings) {
-                             batchPromises.push(savePromoToDB(data.promoSettings));
-                        }
-
-                        await Promise.all(batchPromises);
-                        await fetchProducts();
-                        await fetchPromo();
-                        window.showToast(`Import Berhasil! Database Diperbarui.`);
-                    } else {
-                        // Local Fallback
-                        if(data.products) products = data.products;
-                        if(data.promoSettings) promoData = data.promoSettings;
-                        renderProducts();
-                        renderPromoContent();
-                        window.showToast("Import Berhasil (Lokal)");
-                    }
-
-                } catch (err) {
-                    console.error(err);
-                    window.showToast("Gagal Import: " + err.message, true);
-                } finally {
-                    inputElement.value = '';
-                }
-            };
-            reader.readAsText(file);
-        };
     </script>
 </body>
 </html>
+
