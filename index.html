@@ -1363,6 +1363,15 @@
         }
 
         function renderPromoContent() {
+            // Update Teks Tanggal & Jam (Penting agar tidak stale)
+            const now = new Date();
+            const options = { day: 'numeric', month: 'short' };
+            const dateStr = now.toLocaleDateString('id-ID', options);
+            const endTime = promoData.endTime || "23:59";
+            
+            const dateTextEl = document.getElementById('promoDateText');
+            if(dateTextEl) dateTextEl.innerText = `Promo Spesial ${dateStr} s/d Pukul ${endTime}`;
+            
             document.getElementById('promoCodeDisplay').innerText = promoData.code;
             document.getElementById('promoTitleDisplay').innerText = promoData.title || "Diskon Spesial!";
             document.getElementById('promoDescDisplay').innerText = promoData.desc || "Potongan 20% All Item";
