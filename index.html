@@ -96,17 +96,31 @@
         /* Glassmorphism */
         .glass {
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(16px); /* Increased blur */
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             transition: all 0.3s ease;
         }
         .light .glass {
-            background: rgba(255, 255, 255, 0.9); 
-            border: 1px solid rgba(255, 255, 255, 0.5); 
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); 
-            backdrop-filter: blur(8px);
+            background: rgba(255, 255, 255, 0.85); /* More transparent for glass effect */
+            border: 1px solid rgba(255, 255, 255, 0.6); 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05); 
+            backdrop-filter: blur(16px);
             color: #0f172a;
+        }
+        
+        /* Specific Glass for Admin Panel */
+        .admin-glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .light .admin-glass {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
         }
         
         .light nav.glass {
@@ -331,24 +345,36 @@
         </div>
     </header>
 
-    <!-- NEW: FLOATING LEFT ADMIN DASHBOARD -->
-    <div id="adminPanel" class="hidden fixed left-4 top-24 z-40 w-64 transition-all duration-500 transform -translate-x-full opacity-0">
-        <div class="group relative p-4 rounded-2xl glass border border-accent-red/30 bg-white/90 dark:bg-slate-900/90 shadow-2xl flex flex-col gap-4 animate-fade-in backdrop-blur-xl">
+    <!-- NEW: COLLAPSIBLE & RESPONSIVE ADMIN DASHBOARD -->
+    
+    <!-- Trigger Button (Visible when Panel is Closed) -->
+    <button id="adminTrigger" onclick="toggleAdminPanel(true)" class="hidden fixed left-0 top-32 z-50 bg-gradient-to-r from-accent-red to-red-600 text-white p-2.5 rounded-r-xl shadow-2xl transition-all duration-300 transform hover:pl-4 group hover:scale-110">
+        <i class="ri-shield-star-fill text-xl animate-pulse"></i>
+        <div class="absolute left-full top-1/2 -translate-y-1/2 ml-2 bg-black/80 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+            Open Admin
+        </div>
+    </button>
+
+    <!-- Admin Panel (Floating Left - Responsive Glass) -->
+    <div id="adminPanel" class="fixed left-4 top-24 z-50 w-64 transition-all duration-500 transform -translate-x-[200%] md:w-64 max-w-[calc(100vw-32px)]">
+        <div class="group relative p-4 rounded-2xl admin-glass shadow-2xl flex flex-col gap-4 animate-fade-in">
             <!-- Decorative Line -->
-            <div class="absolute top-0 left-0 w-1 h-full bg-accent-red"></div>
+            <div class="absolute top-0 left-0 w-1.5 h-full bg-accent-red/80 rounded-l-2xl"></div>
             
             <!-- Header & Minimize -->
-            <div class="flex justify-between items-center pl-2 border-b border-gray-200 dark:border-white/10 pb-2">
+            <div class="flex justify-between items-center pl-2 border-b border-gray-200/20 dark:border-white/10 pb-2">
                 <div>
-                    <h2 class="text-sm font-bold text-accent-red flex items-center gap-2">
-                        <i class="ri-shield-star-line text-lg"></i> ADMIN PANEL
+                    <h2 class="text-sm font-bold text-accent-red flex items-center gap-2 drop-shadow-md">
+                        <i class="ri-shield-check-fill text-lg"></i> ADMIN PANEL
                     </h2>
-                    <div class="text-[10px] text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1 overflow-hidden whitespace-nowrap text-ellipsis">
+                    <div class="text-[10px] text-gray-600 dark:text-gray-300 mt-1 flex items-center gap-1 overflow-hidden whitespace-nowrap text-ellipsis">
                         <i class="ri-wifi-line text-green-500"></i> <span id="dbStatus">Checking...</span>
                     </div>
                 </div>
-                <button onclick="window.logoutAdmin()" class="text-gray-400 hover:text-red-500 transition-colors" title="Logout">
-                    <i class="ri-logout-box-r-line text-lg"></i>
+                
+                <!-- Minimize Button -->
+                <button onclick="toggleAdminPanel(false)" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/20 text-gray-500 dark:text-gray-300 hover:text-accent-cyan transition-colors" title="Minimize">
+                    <i class="ri-arrow-left-s-line text-xl"></i>
                 </button>
             </div>
 
@@ -359,33 +385,38 @@
 
             <!-- Buttons Vertical Stack -->
             <div class="flex flex-col gap-2">
-                <button id="btnAdd" onclick="window.openAddModal()" class="w-full py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-start px-3 gap-2 shadow-sm hover:translate-x-1">
+                <button id="btnAdd" onclick="window.openAddModal()" class="w-full py-2.5 bg-green-600/90 hover:bg-green-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-start px-3 gap-2 shadow-sm hover:translate-x-1 backdrop-blur-sm">
                     <i class="ri-add-circle-line text-lg"></i> Tambah Produk
                 </button>
                 
-                <button id="btnDelete" onclick="window.deleteSelected()" class="w-full py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-start px-3 gap-2 shadow-sm hover:translate-x-1">
+                <button id="btnDelete" onclick="window.deleteSelected()" class="w-full py-2.5 bg-red-600/90 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-start px-3 gap-2 shadow-sm hover:translate-x-1 backdrop-blur-sm">
                     <i class="ri-delete-bin-line text-lg"></i> Hapus (Select)
                 </button>
                 
-                <button onclick="window.openPromoSettings()" class="w-full py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-start px-3 gap-2 shadow-sm hover:translate-x-1">
+                <button onclick="window.openPromoSettings()" class="w-full py-2.5 bg-yellow-600/90 hover:bg-yellow-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-start px-3 gap-2 shadow-sm hover:translate-x-1 backdrop-blur-sm">
                     <i class="ri-coupon-3-line text-lg"></i> Set Promo
                 </button>
                 
                 <div class="grid grid-cols-2 gap-2 mt-1">
                     <!-- Reset -->
-                    <button id="btnReset" onclick="window.uploadDefaultData()" class="py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1 shadow-sm hover:-translate-y-0.5">
+                    <button id="btnReset" onclick="window.uploadDefaultData()" class="py-2 bg-blue-600/90 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1 shadow-sm hover:-translate-y-0.5 backdrop-blur-sm">
                         <i class="ri-refresh-line"></i> Reset
                     </button>
                     <!-- Export -->
-                    <button onclick="window.exportData()" class="py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1 shadow-sm hover:-translate-y-0.5">
+                    <button onclick="window.exportData()" class="py-2 bg-indigo-600/90 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1 shadow-sm hover:-translate-y-0.5 backdrop-blur-sm">
                         <i class="ri-download-cloud-2-line"></i> Export
                     </button>
                 </div>
                 
                  <!-- Import -->
                  <input type="file" id="importFileInput" class="hidden" accept=".json" onchange="window.importData(this)">
-                 <button onclick="document.getElementById('importFileInput').click()" class="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm hover:-translate-y-0.5 mt-1">
+                 <button onclick="document.getElementById('importFileInput').click()" class="w-full py-2 bg-purple-600/90 hover:bg-purple-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm hover:-translate-y-0.5 mt-1 backdrop-blur-sm">
                     <i class="ri-upload-cloud-2-line"></i> Import JSON
+                </button>
+                
+                <!-- Logout Button at bottom of stack -->
+                <button onclick="window.logoutAdmin()" class="w-full py-2 mt-2 border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm">
+                    <i class="ri-logout-box-r-line"></i> Logout
                 </button>
             </div>
         </div>
@@ -1340,6 +1371,7 @@
 
         let activeCategory = 'all';
         let isAdmin = localStorage.getItem('malikAdmin') === 'true';
+        let isPanelOpen = true; // State for panel toggle
         let selectedIds = new Set();
         let promoHasShown = false;
         let currentLang = 'id'; 
@@ -2105,23 +2137,39 @@
             renderProducts();
         };
 
+        // --- NEW: TOGGLE ADMIN PANEL LOGIC ---
+        window.toggleAdminPanel = (show) => {
+            const panel = document.getElementById('adminPanel');
+            const trigger = document.getElementById('adminTrigger');
+            
+            isPanelOpen = show;
+            
+            if(show) {
+                // Show Panel, Hide Trigger
+                panel.classList.remove('-translate-x-[200%]');
+                trigger.classList.add('hidden');
+            } else {
+                // Hide Panel, Show Trigger
+                panel.classList.add('-translate-x-[200%]');
+                trigger.classList.remove('hidden');
+            }
+        };
+
         function checkAdminState() {
             const panel = document.getElementById('adminPanel');
+            const trigger = document.getElementById('adminTrigger');
+            
             if(isAdmin) {
-                panel.classList.remove('hidden');
-                // Small delay to ensure transition triggers after display block
-                requestAnimationFrame(() => {
-                    panel.classList.remove('-translate-x-full');
-                    panel.classList.remove('opacity-0');
-                });
+                // Show dashboard elements
                 document.body.classList.add('admin-mode');
+                
+                // Default: Open panel
+                toggleAdminPanel(true);
             } else {
-                panel.classList.add('-translate-x-full');
-                panel.classList.add('opacity-0');
-                setTimeout(() => {
-                    if(!isAdmin) panel.classList.add('hidden');
-                }, 500);
+                // Hide dashboard elements completely
                 document.body.classList.remove('admin-mode');
+                panel.classList.add('-translate-x-[200%]');
+                trigger.classList.add('hidden');
             }
             initSortable();
         }
