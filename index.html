@@ -630,7 +630,7 @@
                 <div class="flex gap-4 mb-2">
                     <label class="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
                         <input type="radio" name="promoType" value="today" class="accent-accent-cyan" checked onchange="toggleDateInput(this.value)">
-                        Hari Ini
+                        <span id="todayLabelText">Hari Ini</span>
                     </label>
                     <label class="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
                         <input type="radio" name="promoType" value="custom" class="accent-accent-cyan" onchange="toggleDateInput(this.value)">
@@ -1386,7 +1386,7 @@
                 tomorrow.setDate(tomorrow.getDate() + 1);
                 
                 if (targetDate.toDateString() === now.toDateString()) {
-                    displayDate = todayStr; // Or "Hari Ini"
+                    displayDate = targetDateStr; 
                 } else if (targetDate.toDateString() === tomorrow.toDateString()) {
                     displayDate = "Besok " + targetDateStr;
                 } else {
@@ -1447,6 +1447,13 @@
             document.getElementById('promoCodeInput').value = promoData.code;
             document.getElementById('promoActiveInput').checked = promoData.active;
             
+            // Add date to "Hari Ini" label
+            const todayLabel = document.getElementById('todayLabelText');
+            if(todayLabel) {
+                const d = new Date();
+                todayLabel.innerText = `Hari Ini (${d.toLocaleDateString('id-ID', {day: 'numeric', month: 'short'})})`;
+            }
+            
             // Handle Date/Time Inputs based on current promoData
             let currentEnd = promoData.endTime;
             if(!currentEnd) currentEnd = new Date().toISOString(); // Default to now if missing
@@ -1454,13 +1461,17 @@
             // Check if it's a full ISO string
             if(currentEnd.includes("T")) {
                  const dateObj = new Date(currentEnd);
-                 const dateStr = dateObj.toISOString().split('T')[0];
+                 // Adjust for timezone offset for input value
+                 // Input type="date" expects YYYY-MM-DD in local time usually, but Date object is UTC based or local based depending on construction
+                 // Simple approach: Use local string split
+                 const dateStr = dateObj.toLocaleDateString('en-CA'); // YYYY-MM-DD
                  const timeStr = dateObj.toTimeString().slice(0,5);
                  
                  // Check if date is today
-                 const today = new Date().toISOString().split('T')[0];
+                 const now = new Date();
+                 const todayStr = now.toLocaleDateString('en-CA');
                  
-                 if(dateStr === today) {
+                 if(dateStr === todayStr) {
                      // Set to Today mode
                      document.querySelector('input[name="promoType"][value="today"]').checked = true;
                      toggleDateInput('today');
@@ -1495,10 +1506,11 @@
             let dateVal = "";
             
             if(type === 'today') {
-                dateVal = new Date().toISOString().split('T')[0];
+                // Use local date YYYY-MM-DD
+                dateVal = new Date().toLocaleDateString('en-CA');
             } else {
                 dateVal = document.getElementById('promoDateInput').value;
-                if(!dateVal) dateVal = new Date().toISOString().split('T')[0]; // Fallback to today if empty
+                if(!dateVal) dateVal = new Date().toLocaleDateString('en-CA'); 
             }
             
             // Combine to ISO String
