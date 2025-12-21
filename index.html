@@ -625,31 +625,11 @@
                     <label class="text-xs text-gray-500 mb-1 block font-bold">Kode Voucher</label>
                     <input type="text" id="promoCodeInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan" placeholder="FAZA20">
                 </div>
-
-                <!-- ADDED: RADIO BUTTONS FOR DATE SELECTION -->
-                <div class="flex gap-4 mb-2">
-                    <label class="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
-                        <input type="radio" name="promoType" value="today" class="accent-accent-cyan" checked onchange="toggleDateInput(this.value)">
-                        <span id="todayLabelText">Hari Ini</span>
-                    </label>
-                    <label class="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
-                        <input type="radio" name="promoType" value="custom" class="accent-accent-cyan" onchange="toggleDateInput(this.value)">
-                        Pilih Tanggal
-                    </label>
-                </div>
-
-                <!-- DATE INPUT (Initially Hidden) -->
-                <div id="dateInputWrapper" class="hidden">
-                    <label class="text-xs text-gray-500 mb-1 block font-bold">Tanggal Berakhir</label>
-                    <input type="date" id="promoDateInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan">
-                </div>
-
                 <!-- Time Limit Input -->
                 <div>
-                    <label class="text-xs text-gray-500 mb-1 block font-bold">Jam Berakhir</label>
+                    <label class="text-xs text-gray-500 mb-1 block font-bold">Jam Berakhir (Hari ini)</label>
                     <input type="time" id="promoTimeInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan">
                 </div>
-
                 <div class="flex items-center justify-between bg-gray-100 dark:bg-white/5 p-2 rounded-lg">
                     <label class="text-xs text-gray-500 block font-bold">Status Promo</label>
                     <div class="flex items-center gap-2">
@@ -692,7 +672,9 @@
             <form id="editForm" class="space-y-4">
                 <input type="hidden" id="editId">
                 <div class="w-full h-40 bg-gray-200 dark:bg-black/30 rounded-lg overflow-hidden flex items-center justify-center border border-gray-500/30 relative group">
-                    <img id="editPreview" src="" class="w-full h-full object-cover">
+                    <div id="editPreviewContainer" class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-900">
+                        <!-- Preview content injected via JS -->
+                    </div>
                     <div id="previewPlaceholder" class="absolute flex flex-col items-center text-gray-400 pointer-events-none">
                         <i class="ri-image-add-line text-3xl mb-1"></i>
                         <span class="text-[10px]">Preview</span>
@@ -712,7 +694,7 @@
                         <input type="text" id="editImageUrl" placeholder="https://..." class="flex-1 px-3 py-1.5 rounded text-xs dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white focus:border-accent-cyan focus:outline-none" onchange="updatePreviewFromUrl(this.value)">
                     </div>
                 </div>
-                <div><label class="text-xs text-gray-500 mb-1 block font-bold">Judul Katalog</label><input type="text" id="editTitle" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan" required></div>
+                <div><label class="text-xs text-gray-500 mb-1 block font-bold">Judul Katalog</label><input type="text" id="editTitle" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan" required oninput="updatePreviewFromTitle(this.value)"></div>
                 <div><label class="text-xs text-gray-500 mb-1 block font-bold">Harga</label><input type="text" id="editPrice" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan" required></div>
                 <div>
                     <label class="text-xs text-gray-500 mb-1 block font-bold">Deskripsi (HTML/CSS Support)</label>
@@ -753,9 +735,8 @@
                 
                 <!-- Left: Image Sticky on Desktop -->
                 <div class="sticky top-24">
-                    <div class="aspect-square rounded-3xl overflow-hidden shadow-2xl border border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-black/30 relative group">
-                        <img id="modalImg" src="" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div id="modalVisualContainer" class="aspect-square rounded-3xl overflow-hidden shadow-2xl border border-gray-200 dark:border-white/10 bg-gray-100 dark:bg-black/30 relative group">
+                        <!-- Content injected via JS -->
                     </div>
                     
                     <div class="mt-8 flex flex-col gap-4">
@@ -828,7 +809,7 @@
                  category: 'app', 
                  title: `FREE DIGITAL PRODUCT`, 
                  price: 'GRATIS', 
-                 img: `https://picsum.photos/seed/freebie/600/600`, 
+                 img: "", // Empty for Initials
                  desc: `
                     <h2>🎁 Spesial Untukmu!</h2>
                     <p>Dapatkan akses ke produk digital eksklusif ini secara <strong>GRATIS</strong>. Cocok untuk menunjang produktivitasmu.</p>
@@ -847,7 +828,7 @@
                  category: 'app', 
                  title: `Premium App V1 Pro`, 
                  price: 'Rp 25.000', 
-                 img: `https://picsum.photos/seed/apk0/600/600`, 
+                 img: "", 
                  // EPIC HTML DESCRIPTION EXAMPLE
                  desc: `
                     <h2>Fitur Unggulan 🔥</h2>
@@ -870,7 +851,7 @@
                  category: 'app', 
                  title: `Premium App V${i+2} Pro`, 
                  price: 'Rp 25.000', 
-                 img: `https://picsum.photos/seed/apk${i+1}/600/600`, 
+                 img: "", 
                  desc: '<p>Deskripsi standar produk ini. Edit di mode admin untuk menambahkan detail HTML yang epik.</p>', 
                  detailLink: 'https://lynk.id/malikfaza', 
                  order: i+1 
@@ -880,7 +861,7 @@
                  category: 'gem', 
                  title: `Top Up Gem Pack ${i+1}`, 
                  price: 'Rp 50.000', 
-                 img: `https://picsum.photos/seed/gem${i}/600/600`, 
+                 img: "", 
                  desc: '<p>Top up aman, legal, dan cepat. Proses hanya 5 menit via ID.</p>', 
                  detailLink: 'https://lynk.id/malikfaza', 
                  order: i + 10 
@@ -893,7 +874,7 @@
         today.setHours(23, 59, 0, 0);
         let promoData = { 
             code: "FAZA20", 
-            active: true, 
+            active: false, // Default Inactive per request
             title: "Diskon Spesial!", 
             desc: "Potongan 20% All Item", 
             endTime: today.toISOString() // Store full ISO string
@@ -1025,6 +1006,35 @@
         ];
 
         // --- GLOBAL HELPER FUNCTIONS ---
+        const gradients = [
+            "from-blue-400 to-indigo-600",
+            "from-emerald-400 to-cyan-600",
+            "from-orange-400 to-pink-600",
+            "from-purple-400 to-blue-600",
+            "from-pink-400 to-rose-600",
+            "from-yellow-400 to-orange-600",
+            "from-teal-400 to-green-600",
+            "from-cyan-400 to-blue-600"
+        ];
+
+        function getProductVisualHtml(product) {
+            if (product.img && product.img.startsWith('data:image')) {
+                 return `<img src="${product.img}" alt="${product.title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">`;
+            } else if (product.img && product.img.startsWith('http')) {
+                 return `<img src="${product.img}" alt="${product.title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">`;
+            } else {
+                // Initials fallback
+                const initial = product.title.charAt(0).toUpperCase();
+                const gradIndex = product.title.length % gradients.length;
+                const gradClass = gradients[gradIndex];
+                
+                return `
+                <div class="w-full h-full bg-gradient-to-br ${gradClass} flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
+                    <span class="text-6xl font-heading font-bold text-white/90 drop-shadow-lg">${initial}</span>
+                </div>
+                `;
+            }
+        }
         
         const handleImageUpload = (file) => {
             if (file && file.size < 5*1024*1024) {
@@ -1039,8 +1049,14 @@
                         canvas.width = width; canvas.height = height;
                         canvas.getContext('2d').drawImage(img, 0, 0, width, height);
                         const data = canvas.toDataURL('image/jpeg', 0.7);
-                        document.getElementById('editPreview').src = data;
+                        
+                        // Update preview container
+                        const previewContainer = document.getElementById('editPreviewContainer');
+                        previewContainer.innerHTML = `<img src="${data}" class="w-full h-full object-cover">`;
                         document.getElementById('previewPlaceholder').style.display = "none";
+                        
+                        // Store temp
+                        window.tempUploadedImage = data;
                     };
                     img.src = e.target.result;
                 };
@@ -1050,10 +1066,28 @@
 
         const updatePreviewFromUrl = (v) => { 
             if(v) { 
-                document.getElementById('editPreview').src = v; 
+                const previewContainer = document.getElementById('editPreviewContainer');
+                previewContainer.innerHTML = `<img src="${v}" class="w-full h-full object-cover">`;
                 document.getElementById('previewPlaceholder').style.display = "none";
             } 
         };
+
+        // Used for live typing title update to initials
+        window.updatePreviewFromTitle = (val) => {
+            const currentImg = document.getElementById('editImageUrl').value;
+            if(!currentImg && !window.tempUploadedImage) {
+                 const initial = val.charAt(0).toUpperCase();
+                 const gradIndex = val.length % gradients.length;
+                 const gradClass = gradients[gradIndex];
+                 const previewContainer = document.getElementById('editPreviewContainer');
+                 previewContainer.innerHTML = `
+                    <div class="w-full h-full bg-gradient-to-br ${gradClass} flex items-center justify-center">
+                        <span class="text-6xl font-heading font-bold text-white/90 drop-shadow-lg">${initial}</span>
+                    </div>
+                 `;
+                 document.getElementById('previewPlaceholder').style.display = "none";
+            }
+        }
 
         const handlePasteImage = (e) => {
             if(document.getElementById('editModal').classList.contains('hidden')) return;
@@ -1714,10 +1748,12 @@
                 const waText = `Halo Malikfaza, saya tertarik membeli produk ini:\n\n*${p.title}*\n\nLink Produk: ${linkUrl}`;
                 const waLink = `https://wa.me/6285161141114?text=${encodeURIComponent(waText)}`;
 
+                const visualContent = getProductVisualHtml(p);
+
                 return `
                 <div data-id="${p.id}" id="card-${p.id}" class="w-full glass rounded-2xl overflow-hidden group relative border border-gray-200 dark:border-white/5 flex flex-col snap-start card-interactive animate-entry bg-white dark:bg-white/5" style="animation-delay: ${animationDelay}ms">
                     <div class="aspect-square w-full overflow-hidden relative bg-gray-100 dark:bg-gray-800">
-                        <img src="${p.img}" alt="${p.title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        ${visualContent}
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         <span class="absolute top-3 left-3 bg-black/40 backdrop-blur-md text-[9px] font-bold px-2 py-1 rounded text-white border border-white/20 uppercase tracking-widest">${p.category}</span>
                         ${isAdmin ? `<div class="absolute top-2 right-2 z-40 flex flex-col gap-2 items-end" onclick="event.stopPropagation()"><input type="checkbox" onchange="window.toggleSelect('${p.id}')" class="custom-checkbox w-5 h-5 rounded border-gray-300 bg-white cursor-pointer accent-red-500 shadow-md"><button onclick="window.openEditModal('${p.id}')" class="bg-white text-slate-900 w-8 h-8 rounded-full flex items-center justify-center shadow-lg border border-gray-100 hover:bg-accent-cyan hover:text-white transition-colors"><i class="ri-pencil-fill text-sm"></i></button></div>` : ''}
@@ -1793,7 +1829,14 @@
         window.openProductModal = (id) => {
             const p = products.find(x => x.id === id);
             if(!p) return;
-            document.getElementById('modalImg').src = p.img;
+            
+            // Handle Visual Content in Modal
+            const visualHtml = getProductVisualHtml(p);
+            const container = document.getElementById('modalVisualContainer');
+            container.innerHTML = visualHtml;
+            // Re-add gradient overlay which is lost when setting innerHTML
+            container.insertAdjacentHTML('beforeend', '<div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>');
+
             document.getElementById('modalTitle').innerText = p.title;
             document.getElementById('modalPrice').innerText = p.price;
             
@@ -1829,8 +1872,17 @@
             document.getElementById('editDetailLink').value = p.detailLink || "https://lynk.id/malikfaza";
             document.getElementById('editDesc').value = p.desc; // Load HTML description
             document.getElementById('modalFormTitle').innerText = "Edit Produk";
-            document.getElementById('editPreview').src = p.img;
-            document.getElementById('previewPlaceholder').style.display = "none";
+            
+            // Set Preview
+            if(p.img) {
+                 const previewContainer = document.getElementById('editPreviewContainer');
+                 previewContainer.innerHTML = `<img src="${p.img}" class="w-full h-full object-cover">`;
+                 document.getElementById('previewPlaceholder').style.display = "none";
+            } else {
+                 // Trigger title based preview
+                 window.updatePreviewFromTitle(p.title);
+            }
+
             document.getElementById('btnDeleteIndividual').classList.remove('hidden');
             document.getElementById('editModal').classList.remove('hidden');
             document.getElementById('editModal').classList.add('flex');
@@ -1856,8 +1908,28 @@
             const id = document.getElementById('editId').value;
             const pId = id ? id : 'prod-' + Date.now();
             
-            // Get current image from preview as fallback if not changed
-            const currentImgSrc = document.getElementById('editPreview').src;
+            // Get current image logic
+            // If temp uploaded, use it. If not, check input url. If empty, check original product image. If still empty, use empty string (for initials).
+            let finalImg = "";
+            const urlVal = document.getElementById('editImageUrl').value;
+            
+            if (window.tempUploadedImage) {
+                finalImg = window.tempUploadedImage;
+            } else if (urlVal) {
+                finalImg = urlVal;
+            } else {
+                // If existing product, keep old img unless explicitly cleared? 
+                // For simplicity, if we didn't touch upload/url, we keep old img.
+                // But the preview logic is tricky. 
+                // Let's rely on the preview state? No, safer to rely on original object if no new input.
+                const original = products.find(p => p.id === id);
+                if(original) finalImg = original.img;
+            }
+            
+            // If user wants to clear image to use initials, we might need a "Clear Image" button.
+            // For now, if they enter empty string in URL and no file, it keeps original. 
+            // If they want initials, they can't easily "remove" image in this simple UI without a clear button.
+            // Let's assume standard flow: upload overrides everything.
             
             const newData = {
                 id: pId,
@@ -1865,7 +1937,7 @@
                 price: document.getElementById('editPrice').value,
                 category: document.getElementById('editCategory').value,
                 detailLink: document.getElementById('editDetailLink').value,
-                img: document.getElementById('editPreview').src || "https://picsum.photos/400/400",
+                img: finalImg,
                 desc: document.getElementById('editDesc').value, // Save HTML description
                 order: id ? (products.find(p=>p.id===id)?.order || 0) : products.length
             };
@@ -1882,6 +1954,7 @@
             
             renderProducts();
             window.closeModal('editModal');
+            window.tempUploadedImage = null; // Reset temp
         });
 
         window.closeModal = (id) => {
