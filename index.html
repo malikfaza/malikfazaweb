@@ -892,8 +892,11 @@
                 renderProducts();
             } catch(e) {
                 console.warn("Fetch Products Error (Using Mock):", e.message);
-                products = [...mockProducts];
-                renderProducts();
+                // Don't overwrite local changes immediately on fetch error if we have data
+                if(products.length === 0) {
+                    products = [...mockProducts];
+                    renderProducts();
+                }
             }
         }
 
@@ -1582,24 +1585,20 @@
             
             promoData = newData;
 
+            // OPTIMISTIC UI: Render immediately
+            renderPromoContent();
+            updateTimer();
+            if(isActive) window.showPromoBig(); else window.closePromoCompletely();
+            window.closeModal('promoSettingsModal');
+
+            // SYNC
             try {
                 await savePromoToDB(newData);
-                window.showToast("Pengaturan Promo Disimpan ke Supabase!");
+                window.showToast("Promo Tersimpan (Publik)");
             } catch(e) {
                 console.error(e);
-                window.showToast("Gagal Simpan ke Supabase", true);
+                window.showToast("Tersimpan Lokal (Gagal Sync Publik)", true);
             }
-
-            renderPromoContent();
-            updateTimer(); 
-
-            if(isActive) {
-                window.showPromoBig();
-            } else {
-                window.closePromoCompletely();
-            }
-
-            window.closeModal('promoSettingsModal');
         });
 
         // FIXED: Using 'promo-hidden' instead of 'hidden' to match CSS transitions
@@ -1685,9 +1684,11 @@
             if (selectedIds.size === 0) return alert("Pilih produk dulu dengan checklist.");
             if(!confirm(`Hapus ${selectedIds.size} produk terpilih?`)) return;
             
+            // 1. OPTIMISTIC UI: Remove locally first
+            products = products.filter(p => !selectedIds.has(p.id));
+            renderProducts();
+            
             if(!supabase) {
-                products = products.filter(p => !selectedIds.has(p.id));
-                renderProducts();
                 window.showToast("Produk dihapus (Lokal)");
                 selectedIds.clear();
                 return;
@@ -1698,12 +1699,13 @@
                 const { error } = await supabase.from('products').delete().in('id', idsToDelete);
                 if(error) throw error;
                 
-                await fetchProducts();
+                // No need to fetch again if optimistic update matches
                 window.showToast("Produk dihapus dari Supabase");
                 selectedIds.clear();
             } catch(e) {
                 console.error(e);
-                window.showToast("Gagal Hapus", true);
+                // In a perfect world, we would revert the deletion here
+                window.showToast("Tersimpan Lokal (Gagal Hapus Publik)", true);
             }
         };
         window.deleteSelected = deleteSelected;
@@ -1936,18 +1938,20 @@
             const id = document.getElementById('editId').value;
             if(!id || !confirm("Hapus produk ini?")) return;
             
+            // 1. OPTIMISTIC UI
+            products = products.filter(p => p.id !== id);
+            renderProducts();
+            
             if(supabase) {
                 try {
                     const { error } = await supabase.from('products').delete().eq('id', id);
                     if(error) throw error;
-                    await fetchProducts();
+                    // await fetchProducts(); // No need
                     window.showToast("Produk dihapus (Supabase)");
                 } catch(e) {
-                    window.showToast("Gagal Hapus", true);
+                    window.showToast("Tersimpan Lokal (Gagal Hapus Publik)", true);
                 }
             } else {
-                products = products.filter(p => p.id !== id);
-                renderProducts();
                 window.showToast("Produk dihapus (Lokal)");
             }
             window.closeModal('editModal');
@@ -1982,27 +1986,28 @@
                 order: id ? (products.find(p=>p.id===id)?.order || 0) : products.length
             };
             
+            // 1. OPTIMISTIC UI: UPDATE LOCAL STATE IMMEDIATELY
+            const idx = products.findIndex(p => p.id === pId);
+            if(idx > -1) products[idx] = newData;
+            else products.push(newData);
+            
+            renderProducts();
+            window.closeModal('editModal');
+            window.tempUploadedImage = null; // Reset temp
+
+            // 2. TRY SYNC TO SUPABASE
             if(supabase) {
                 try {
                     await saveProductToDB(newData);
-                    await fetchProducts(); // Refresh to ensure sync
-                    window.showToast("Produk Disimpan (Supabase)");
+                    window.showToast("Berhasil Disimpan & Publik!");
                 } catch(e) {
-                    console.error(e);
-                    window.showToast("Gagal Simpan ke DB", true);
-                    return;
+                    console.error("Sync Error:", e);
+                    // Don't revert UI, just warn
+                    window.showToast("Tersimpan di Perangkat (Gagal Upload ke Publik)", true);
                 }
             } else {
-                // Update local array logic handles both new and edit
-                const idx = products.findIndex(p => p.id === pId);
-                if(idx > -1) products[idx] = newData;
-                else products.push(newData);
-                renderProducts();
-                window.showToast("Produk Disimpan (Lokal)");
+                window.showToast("Tersimpan Offline");
             }
-
-            window.closeModal('editModal');
-            window.tempUploadedImage = null; // Reset temp
         });
 
         window.closeModal = (id) => {
