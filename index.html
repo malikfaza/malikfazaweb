@@ -246,6 +246,12 @@
                     <i class="ri-sun-line text-lg dark:hidden"></i>
                     <i class="ri-moon-line text-lg hidden dark:block"></i>
                 </button>
+                
+                <!-- NEW DESKTOP LOGIN BUTTON -->
+                <button onclick="document.getElementById('loginModal').classList.remove('hidden'); document.getElementById('loginModal').classList.add('flex');" class="hidden md:flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent-cyan/10 hover:bg-accent-cyan text-accent-cyan hover:text-white transition-all text-xs font-bold border border-accent-cyan/20 ml-2 group">
+                    <i class="ri-user-line group-hover:scale-110 transition-transform"></i> Login
+                </button>
+
                 <button class="md:hidden text-2xl dark:text-white text-slate-900 ml-1" onclick="document.getElementById('mobileMenu').classList.toggle('hidden')">
                     <i class="ri-menu-4-line"></i>
                 </button>
@@ -258,7 +264,11 @@
                 <a href="#products" class="block hover:text-accent-cyan hover:pl-2 transition-all" data-i18n="nav_products">Products</a>
                 <a href="#services" class="block hover:text-accent-cyan hover:pl-2 transition-all" data-i18n="nav_services">Services</a>
                 <a href="#contact" class="block hover:text-accent-cyan hover:pl-2 transition-all" data-i18n="nav_contact">Contact</a>
-                <button id="adminBtnMobile" class="text-left text-accent-red mt-2 font-bold uppercase tracking-wider text-xs border-t border-dashed border-gray-500/30 pt-4">Admin Login</button>
+                
+                <!-- NEW MOBILE LOGIN BUTTON -->
+                <button onclick="document.getElementById('loginModal').classList.remove('hidden'); document.getElementById('loginModal').classList.add('flex'); document.getElementById('mobileMenu').classList.add('hidden');" class="flex items-center gap-2 w-full text-left bg-accent-cyan/10 p-3 rounded-lg text-accent-cyan hover:bg-accent-cyan hover:text-white transition-all font-bold">
+                    <i class="ri-login-circle-line text-lg"></i> Login Member
+                </button>
             </div>
         </div>
     </nav>
@@ -1568,14 +1578,14 @@
                  const todayStr = now.toLocaleDateString('en-CA');
                  
                  if(dateStr === todayStr) {
-                     // Set to Today mode
-                     document.querySelector('input[name="promoType"][value="today"]').checked = true;
-                     toggleDateInput('today');
+                      // Set to Today mode
+                      document.querySelector('input[name="promoType"][value="today"]').checked = true;
+                      toggleDateInput('today');
                  } else {
-                     // Set to Custom mode
-                     document.querySelector('input[name="promoType"][value="custom"]').checked = true;
-                     toggleDateInput('custom');
-                     document.getElementById('promoDateInput').value = dateStr;
+                      // Set to Custom mode
+                      document.querySelector('input[name="promoType"][value="custom"]').checked = true;
+                      toggleDateInput('custom');
+                      document.getElementById('promoDateInput').value = dateStr;
                  }
                  document.getElementById('promoTimeInput').value = timeStr;
             } else {
@@ -2066,7 +2076,9 @@
         });
 
         document.getElementById('adminLoginFooter').addEventListener('click', () => { if(!isAdmin) { document.getElementById('loginModal').classList.remove('hidden'); document.getElementById('loginModal').classList.add('flex'); } });
-        document.getElementById('adminBtnMobile').addEventListener('click', () => { if(!isAdmin) { document.getElementById('loginModal').classList.remove('hidden'); document.getElementById('loginModal').classList.add('flex'); } });
+        
+        // Remove old mobile logic and use the new button's onclick
+        // document.getElementById('adminBtnMobile').addEventListener('click', ... ); // Logic now in HTML button
 
         document.getElementById('adminForm').addEventListener('submit', (e) => {
             e.preventDefault();
