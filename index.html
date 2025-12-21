@@ -331,59 +331,62 @@
         </div>
     </header>
 
-    <!-- Admin Control Panel -->
-    <div id="adminPanel" class="hidden container mx-auto px-6 mb-8 transition-all duration-300">
-        <div class="p-5 rounded-2xl border border-accent-red bg-red-50 dark:bg-red-900/10 shadow-lg flex flex-col md:flex-row justify-between items-center gap-4 animate-fade-in relative overflow-hidden">
+    <!-- NEW: FLOATING LEFT ADMIN DASHBOARD -->
+    <div id="adminPanel" class="hidden fixed left-4 top-24 z-40 w-64 transition-all duration-500 transform -translate-x-full opacity-0">
+        <div class="group relative p-4 rounded-2xl glass border border-accent-red/30 bg-white/90 dark:bg-slate-900/90 shadow-2xl flex flex-col gap-4 animate-fade-in backdrop-blur-xl">
+            <!-- Decorative Line -->
             <div class="absolute top-0 left-0 w-1 h-full bg-accent-red"></div>
-            <div class="w-full">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h2 class="text-base font-bold text-accent-red flex items-center gap-2">
-                            <i class="ri-admin-fill text-xl"></i> ADMIN DASHBOARD
-                        </h2>
-                        <div class="text-[11px] text-gray-600 dark:text-gray-400 mt-1 flex items-center gap-2">
-                            System Status: <span id="dbStatus" class="font-bold text-gray-500 flex items-center gap-1"><i class="ri-cloud-line"></i> Connecting...</span>
-                        </div>
-                    </div>
-                    
-                    <!-- DB Warning Alert -->
-                    <div id="dbWarning" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-2 rounded text-[10px] max-w-md">
-                        <p class="font-bold">⚠️ Tabel Settings Error/Hilang!</p>
-                        <p>Fitur Voucher Gagal Sync. Harap jalankan script SQL di Supabase Editor.</p>
+            
+            <!-- Header & Minimize -->
+            <div class="flex justify-between items-center pl-2 border-b border-gray-200 dark:border-white/10 pb-2">
+                <div>
+                    <h2 class="text-sm font-bold text-accent-red flex items-center gap-2">
+                        <i class="ri-shield-star-line text-lg"></i> ADMIN PANEL
+                    </h2>
+                    <div class="text-[10px] text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1 overflow-hidden whitespace-nowrap text-ellipsis">
+                        <i class="ri-wifi-line text-green-500"></i> <span id="dbStatus">Checking...</span>
                     </div>
                 </div>
+                <button onclick="window.logoutAdmin()" class="text-gray-400 hover:text-red-500 transition-colors" title="Logout">
+                    <i class="ri-logout-box-r-line text-lg"></i>
+                </button>
+            </div>
 
-                <div class="flex flex-wrap gap-2 w-full justify-center md:justify-end">
-                    <button id="btnAdd" onclick="window.openAddModal()" class="px-4 py-2 bg-green-600 text-white text-xs font-bold rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 transform">
-                        <i class="ri-add-circle-line text-base"></i> Tambah Produk
-                    </button>
-                    <button id="btnDelete" onclick="window.deleteSelected()" class="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 transform">
-                        <i class="ri-delete-bin-line text-base"></i> Hapus Terpilih
-                    </button>
-                    <button id="btnReset" onclick="window.uploadDefaultData()" class="px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 transform">
-                        <i class="ri-refresh-line text-base"></i> Reset Data
-                    </button>
-                    <button onclick="window.openPromoSettings()" class="px-4 py-2 bg-yellow-600 text-white text-xs font-bold rounded-lg hover:bg-yellow-700 transition-colors flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 transform">
-                        <i class="ri-coupon-3-line text-base"></i> Set Promo
-                    </button>
-                    
-                    <!-- NEW: Import & Export Group -->
-                    <div class="flex gap-2">
-                        <!-- Import Button & Hidden Input -->
-                        <input type="file" id="importFileInput" class="hidden" accept=".json" onchange="window.importData(this)">
-                        <button onclick="document.getElementById('importFileInput').click()" class="px-4 py-2 bg-purple-600 text-white text-xs font-bold rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 transform">
-                            <i class="ri-upload-cloud-2-line text-base"></i> Import JSON
-                        </button>
-                        
-                        <button onclick="window.exportData()" class="px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 transform">
-                            <i class="ri-download-cloud-2-line text-base"></i> Export
-                        </button>
-                    </div>
+            <!-- DB Warning -->
+            <div id="dbWarning" class="hidden bg-red-100 text-red-600 p-2 rounded text-[9px] leading-tight border-l-2 border-red-500">
+                ⚠️ Settings Table Missing!
+            </div>
 
-                    <button onclick="window.logoutAdmin()" class="px-4 py-2 bg-slate-700 text-white text-xs font-bold rounded-lg hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 shadow-lg hover:-translate-y-0.5 transform">
-                        <i class="ri-logout-box-r-line text-base"></i> Logout
+            <!-- Buttons Vertical Stack -->
+            <div class="flex flex-col gap-2">
+                <button id="btnAdd" onclick="window.openAddModal()" class="w-full py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-start px-3 gap-2 shadow-sm hover:translate-x-1">
+                    <i class="ri-add-circle-line text-lg"></i> Tambah Produk
+                </button>
+                
+                <button id="btnDelete" onclick="window.deleteSelected()" class="w-full py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-start px-3 gap-2 shadow-sm hover:translate-x-1">
+                    <i class="ri-delete-bin-line text-lg"></i> Hapus (Select)
+                </button>
+                
+                <button onclick="window.openPromoSettings()" class="w-full py-2 bg-yellow-600 hover:bg-yellow-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-start px-3 gap-2 shadow-sm hover:translate-x-1">
+                    <i class="ri-coupon-3-line text-lg"></i> Set Promo
+                </button>
+                
+                <div class="grid grid-cols-2 gap-2 mt-1">
+                    <!-- Reset -->
+                    <button id="btnReset" onclick="window.uploadDefaultData()" class="py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1 shadow-sm hover:-translate-y-0.5">
+                        <i class="ri-refresh-line"></i> Reset
+                    </button>
+                    <!-- Export -->
+                    <button onclick="window.exportData()" class="py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1 shadow-sm hover:-translate-y-0.5">
+                        <i class="ri-download-cloud-2-line"></i> Export
                     </button>
                 </div>
+                
+                 <!-- Import -->
+                 <input type="file" id="importFileInput" class="hidden" accept=".json" onchange="window.importData(this)">
+                 <button onclick="document.getElementById('importFileInput').click()" class="w-full py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2 shadow-sm hover:-translate-y-0.5 mt-1">
+                    <i class="ri-upload-cloud-2-line"></i> Import JSON
+                </button>
             </div>
         </div>
     </div>
@@ -2106,9 +2109,18 @@
             const panel = document.getElementById('adminPanel');
             if(isAdmin) {
                 panel.classList.remove('hidden');
+                // Small delay to ensure transition triggers after display block
+                requestAnimationFrame(() => {
+                    panel.classList.remove('-translate-x-full');
+                    panel.classList.remove('opacity-0');
+                });
                 document.body.classList.add('admin-mode');
             } else {
-                panel.classList.add('hidden');
+                panel.classList.add('-translate-x-full');
+                panel.classList.add('opacity-0');
+                setTimeout(() => {
+                    if(!isAdmin) panel.classList.add('hidden');
+                }, 500);
                 document.body.classList.remove('admin-mode');
             }
             initSortable();
