@@ -304,7 +304,7 @@
                             </div>
                         </div>
                     </div>
-                     <div class="absolute -top-6 -right-6 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 animate-float" style="animation-delay: 2s;">
+                     <div class="absolute -top-6 -right-6 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 animate-delay-2s">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-yellow-500"><i class="ri-star-smile-fill"></i></div>
                             <div>
@@ -625,11 +625,31 @@
                     <label class="text-xs text-gray-500 mb-1 block font-bold">Kode Voucher</label>
                     <input type="text" id="promoCodeInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan" placeholder="FAZA20">
                 </div>
+
+                <!-- ADDED: RADIO BUTTONS FOR DATE SELECTION -->
+                <div class="flex gap-4 mb-2">
+                    <label class="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
+                        <input type="radio" name="promoType" value="today" class="accent-accent-cyan" checked onchange="toggleDateInput(this.value)">
+                        Hari Ini
+                    </label>
+                    <label class="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
+                        <input type="radio" name="promoType" value="custom" class="accent-accent-cyan" onchange="toggleDateInput(this.value)">
+                        Pilih Tanggal
+                    </label>
+                </div>
+
+                <!-- DATE INPUT (Initially Hidden) -->
+                <div id="dateInputWrapper" class="hidden">
+                    <label class="text-xs text-gray-500 mb-1 block font-bold">Tanggal Berakhir</label>
+                    <input type="date" id="promoDateInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan">
+                </div>
+
                 <!-- Time Limit Input -->
                 <div>
-                    <label class="text-xs text-gray-500 mb-1 block font-bold">Jam Berakhir (Hari ini)</label>
+                    <label class="text-xs text-gray-500 mb-1 block font-bold">Jam Berakhir</label>
                     <input type="time" id="promoTimeInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan focus:ring-1 focus:ring-accent-cyan">
                 </div>
+
                 <div class="flex items-center justify-between bg-gray-100 dark:bg-white/5 p-2 rounded-lg">
                     <label class="text-xs text-gray-500 block font-bold">Status Promo</label>
                     <div class="flex items-center gap-2">
@@ -867,8 +887,17 @@
              })),
         ];
         
-        // Set default timer to 23:59 to ensure it runs for first demo
-        let promoData = { code: "FAZA20", active: true, title: "Diskon Spesial!", desc: "Potongan 20% All Item", endTime: "23:59" };
+        // Use an ISO string for initial data to be unambiguous
+        // e.g. Today at 23:59
+        const today = new Date();
+        today.setHours(23, 59, 0, 0);
+        let promoData = { 
+            code: "FAZA20", 
+            active: true, 
+            title: "Diskon Spesial!", 
+            desc: "Potongan 20% All Item", 
+            endTime: today.toISOString() // Store full ISO string
+        };
         let products = [...mockProducts];
         let sortableInstance = null;
         
@@ -923,7 +952,6 @@
         };
 
         // --- PURCHASE NOTIFICATION DATA ---
-        // UPDATED: 20 Nama Acak dengan Lokasi
         const purchaseNames = [
             "Budi dari Jakarta", "Siti dari Surabaya", "Andi dari Bandung", "Dewi dari Medan", "Eko dari Semarang", 
             "Fajar dari Makassar", "Gita dari Jogja", "Hadi dari Balikpapan", "Indah dari Denpasar", "Joko dari Malang",
@@ -932,7 +960,7 @@
         ];
         const purchaseTimes = ["Baru saja", "1 menit yang lalu", "2 menit yang lalu", "Baru saja", "5 menit yang lalu"];
 
-        // --- TESTIMONIAL DATA (UPDATED: Avatars removed) ---
+        // --- TESTIMONIAL DATA ---
         const testimonials = [
             {
                 name: "Rian Photography",
@@ -1039,7 +1067,7 @@
             }
         };
         
-        // --- TOAST FUNCTION (UPDATED: Support Error Color) ---
+        // --- TOAST FUNCTION ---
         window.showToast = (message, isError = false) => {
             const toast = document.getElementById('toast');
             const toastContent = document.getElementById('toastContent');
@@ -1048,20 +1076,17 @@
             
             msgEl.innerText = message;
             
-            // Ubah warna berdasarkan tipe pesan
             if (isError) {
                 toastContent.classList.remove('bg-slate-900/90');
-                toastContent.classList.add('bg-red-600/90'); // Merah untuk error
+                toastContent.classList.add('bg-red-600/90'); 
                 icon.className = 'ri-error-warning-line text-white text-xl';
             } else {
                 toastContent.classList.remove('bg-red-600/90');
-                toastContent.classList.add('bg-slate-900/90'); // Hitam/Slate untuk sukses
+                toastContent.classList.add('bg-slate-900/90'); 
                 icon.className = 'ri-checkbox-circle-line text-green-400 text-xl';
             }
 
             toast.classList.remove('opacity-0', 'translate-y-10');
-            
-            // Auto hide after 2.5 seconds
             setTimeout(() => {
                 toast.classList.add('opacity-0', 'translate-y-10');
             }, 2500);
@@ -1075,42 +1100,25 @@
             const timeEl = document.getElementById('purchaseTime');
             const avatarEl = document.getElementById('purchaseAvatar');
 
-            // Random Data
             const randomName = purchaseNames[Math.floor(Math.random() * purchaseNames.length)];
             
-            // UPDATED: Ambil produk acak dari katalog asli
-            let randomProductTitle = "Premium Digital Product"; // Default jika kosong
-            let randomProductImg = ""; // Optional: Jika ingin menampilkan gambar produk
-
-            // Gunakan data 'products' yang aktif (dari Firebase atau Mock)
+            let randomProductTitle = "Premium Digital Product"; 
             const sourceProducts = (products && products.length > 0) ? products : mockProducts;
             
             if (sourceProducts.length > 0) {
-                // Filter agar tidak mengambil produk dengan harga "GRATIS" jika ingin terlihat seperti pembelian berbayar
-                // const paidProducts = sourceProducts.filter(p => p.price !== 'GRATIS');
-                // const pool = paidProducts.length > 0 ? paidProducts : sourceProducts;
-                
                 const product = sourceProducts[Math.floor(Math.random() * sourceProducts.length)];
                 randomProductTitle = product.title;
             }
 
-            // 3. Ambil Waktu (Acak)
             const randomTime = purchaseTimes[Math.floor(Math.random() * purchaseTimes.length)];
             
-            // --- SET KONTEN ---
-            
-            // Tampilkan nama lengkap (misal: "Budi dari Jakarta") agar lebih variatif
-            // Sebelumnya: randomName.split(" ")[0] -> hanya "Budi"
             nameEl.innerText = randomName; 
-            
             productEl.innerText = randomProductTitle;
             timeEl.innerText = randomTime;
-            avatarEl.innerText = randomName.charAt(0); // Inisial dari nama depan
+            avatarEl.innerText = randomName.charAt(0); 
 
-            // Show Animation
             toast.classList.remove('opacity-0', 'translate-y-[200%]', 'pointer-events-none');
             
-            // Hide after 5 seconds
             setTimeout(() => {
                 hidePurchaseNotification();
             }, 5000);
@@ -1122,7 +1130,6 @@
         };
 
         function scheduleNextNotification() {
-            // First run quickly (5s)
             setTimeout(() => {
                 showPurchaseNotification();
                 scheduleRecursiveNotification();
@@ -1130,7 +1137,6 @@
         }
 
         function scheduleRecursiveNotification() {
-             // Random interval between 30s (30000ms) and 80s (80000ms)
              const interval = Math.floor(Math.random() * (80000 - 30000 + 1) + 30000);
              setTimeout(() => {
                  showPurchaseNotification();
@@ -1138,7 +1144,7 @@
              }, interval);
         }
 
-        // --- COPY FUNCTION (UPDATED) ---
+        // --- COPY FUNCTION ---
         window.copyToClipboard = (text) => {
             const finalText = text || document.getElementById('promoCodeDisplay').innerText;
             
@@ -1182,13 +1188,7 @@
             const app = initializeApp(firebaseConfig);
             auth = getAuth(app);
             db = getFirestore(app);
-            // console.log("Firebase Initialized");
-            
-            signInAnonymously(auth).catch((error) => {
-                // Silent fail for mock mode
-                // console.warn("Auth Error, using mock data");
-            });
-
+            signInAnonymously(auth).catch((error) => {});
         } catch (e) {
             console.warn("Running in Offline/Mock Mode");
         }
@@ -1215,26 +1215,31 @@
         let isAdmin = localStorage.getItem('malikAdmin') === 'true';
         let selectedIds = new Set();
         let promoHasShown = false;
-        let currentLang = 'id'; // Default Language
+        let currentLang = 'id'; 
 
-        // --- TIMER UPDATE FUNCTION (UPDATED: AUTO KILL) ---
+        // --- TIMER UPDATE FUNCTION (UPDATED) ---
         const updateTimer = () => {
              const now = new Date();
-             const [endHour, endMinute] = (promoData.endTime || "23:59").split(':');
-             const target = new Date();
-             target.setHours(endHour, endMinute, 0);
+             
+             // Parse ISO String from promoData.endTime
+             let target;
+             if (promoData.endTime && promoData.endTime.includes("T")) {
+                 // Full ISO string
+                 target = new Date(promoData.endTime);
+             } else {
+                 // Fallback for old "HH:mm" format (treat as today)
+                 const [endHour, endMinute] = (promoData.endTime || "23:59").split(':');
+                 target = new Date();
+                 target.setHours(endHour, endMinute, 0);
+             }
              target.setSeconds(0);
              
-             // Jika waktu sekarang SUDAH MELEWATI target
              if (now > target) {
                    document.querySelectorAll('.promoTimer').forEach(el => el.innerText = "00:00:00");
                    
-                   // AUTO KILL: Jika popup sedang terbuka, paksa tutup
                    const container = document.getElementById('promoContainer');
                    if (!container.classList.contains('promo-hidden')) {
                        window.closePromoCompletely();
-                       // Opsional: Beri info di console
-                       console.log("Waktu promo habis. Popup dimatikan otomatis.");
                    }
                    return;
              }
@@ -1243,7 +1248,11 @@
              const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
              const minutes = Math.floor((diff / 1000 / 60) % 60);
              const seconds = Math.floor((diff / 1000) % 60);
-             document.querySelectorAll('.promoTimer').forEach(el => el.innerText = `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`);
+             
+             // Total hours calculation for display (e.g. 48:00:00 if > 1 day)
+             const totalHours = Math.floor(diff / (1000 * 60 * 60));
+             
+             document.querySelectorAll('.promoTimer').forEach(el => el.innerText = `${totalHours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`);
         };
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -1258,7 +1267,6 @@
             setTimeout(() => { if(window.AOS) window.AOS.init({ once: true, duration: 800 }); }, 500);
             window.addEventListener('paste', handlePasteImage);
             
-            // Firebase Realtime Listener
             if(db && auth) {
                 onAuthStateChanged(auth, (user) => {
                     if(user) {
@@ -1270,7 +1278,7 @@
                                 products.sort((a,b) => (a.order || 0) - (b.order || 0)); 
                                 renderProducts();
                             }
-                        }, (err) => console.log("Using Mock Data"));
+                        });
 
                         onSnapshot(doc(db, "settings", "promo"), (doc) => {
                             if (doc.exists()) {
@@ -1287,16 +1295,15 @@
             document.getElementById('btnReset').addEventListener('click', uploadDefaultData);
             document.getElementById('btnAdd').addEventListener('click', openAddModal);
             
-            // Language Toggle Logic
             document.getElementById('langToggle').addEventListener('click', () => {
                 currentLang = currentLang === 'id' ? 'en' : 'id';
                 document.getElementById('langToggle').innerText = currentLang.toUpperCase();
                 updateLanguage(currentLang);
             });
 
-            // Promo Logic with Strict "Time Check" & "Once per Session"
+            // Promo Logic
             const observerOptions = {
-                root: null, // viewport
+                root: null,
                 rootMargin: '0px',
                 threshold: 0.1 
             };
@@ -1304,31 +1311,21 @@
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if(entry.isIntersecting && !promoHasShown) {
-                        // Cek Waktu Sebelum Muncul
                         const now = new Date();
-                        const [endHour, endMinute] = (promoData.endTime || "23:59").split(':');
-                        const target = new Date();
-                        target.setHours(endHour, endMinute, 0);
+                        let target;
+                        if (promoData.endTime && promoData.endTime.includes("T")) {
+                            target = new Date(promoData.endTime);
+                        } else {
+                            const [endHour, endMinute] = (promoData.endTime || "23:59").split(':');
+                            target = new Date();
+                            target.setHours(endHour, endMinute, 0);
+                        }
                         target.setSeconds(0);
 
-                        // Syarat Muncul: Status AKTIF DAN Waktu BELUM HABIS (now <= target)
                         if(promoData.active && now <= target) {
                             promoHasShown = true; 
-                            
-                            const options = { day: 'numeric', month: 'short' };
-                            const dateStr = now.toLocaleDateString('id-ID', options);
-                            document.getElementById('promoDateText').innerText = `Promo Spesial ${dateStr} s/d Pukul ${promoData.endTime || "23:59"}`;
-                            
-                            setTimeout(() => {
-                                window.showPromoBig();
-                            }, 800); 
-                            
+                            setTimeout(() => { window.showPromoBig(); }, 800); 
                             observer.disconnect(); 
-                        } else {
-                            // Jika waktu habis atau tidak aktif, jangan munculkan, tapi disconnect agar tidak cek terus
-                             if(!promoData.active || now > target) {
-                                 // console.log("Promo skipped: Inactive or Expired");
-                             }
                         }
                     }
                 });
@@ -1337,23 +1334,16 @@
             const prodSec = document.getElementById('products');
             if(prodSec) observer.observe(prodSec);
             
-            // Timer Interval
             setInterval(updateTimer, 1000);
-            updateTimer(); // Initial Call
+            updateTimer();
         });
         
         function updateLanguage(lang) {
             const t = translations[lang];
-            
-            // Loop through all elements with data-i18n attribute
             document.querySelectorAll('[data-i18n]').forEach(el => {
                 const key = el.getAttribute('data-i18n');
-                if (t[key]) {
-                    el.innerText = t[key];
-                }
+                if (t[key]) el.innerText = t[key];
             });
-
-            // Specific updates for toggle button text depending on state
             const toggleText = document.querySelector('#toggleFormBtn span');
             if(toggleText) {
                 const formWrapper = document.getElementById('formWrapper');
@@ -1362,30 +1352,66 @@
             }
         }
 
+        // --- TOGGLE DATE INPUT ---
+        window.toggleDateInput = (val) => {
+            const dateWrapper = document.getElementById('dateInputWrapper');
+            if(val === 'custom') {
+                dateWrapper.classList.remove('hidden');
+            } else {
+                dateWrapper.classList.add('hidden');
+            }
+        }
+
         function renderPromoContent() {
-            // Update Teks Tanggal & Jam (Penting agar tidak stale)
+            let endTimeStr = promoData.endTime || "23:59";
+            let displayDate = "";
+            let displayTime = "";
+            
             const now = new Date();
             const options = { day: 'numeric', month: 'short' };
-            const dateStr = now.toLocaleDateString('id-ID', options);
-            const endTime = promoData.endTime || "23:59";
+            const todayStr = now.toLocaleDateString('id-ID', options);
+
+            // Check if ISO string
+            if(endTimeStr.includes("T")) {
+                const targetDate = new Date(endTimeStr);
+                const targetDateStr = targetDate.toLocaleDateString('id-ID', options);
+                
+                // Format Time
+                const hours = targetDate.getHours().toString().padStart(2, '0');
+                const minutes = targetDate.getMinutes().toString().padStart(2, '0');
+                displayTime = `${hours}:${minutes}`;
+
+                // Determine Date Label
+                const tomorrow = new Date(now);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                
+                if (targetDate.toDateString() === now.toDateString()) {
+                    displayDate = todayStr; // Or "Hari Ini"
+                } else if (targetDate.toDateString() === tomorrow.toDateString()) {
+                    displayDate = "Besok " + targetDateStr;
+                } else {
+                    displayDate = targetDateStr;
+                }
+            } else {
+                // Fallback for simple time string
+                displayDate = todayStr;
+                displayTime = endTimeStr;
+            }
             
             const dateTextEl = document.getElementById('promoDateText');
-            if(dateTextEl) dateTextEl.innerText = `Promo Spesial ${dateStr} s/d Pukul ${endTime}`;
+            if(dateTextEl) dateTextEl.innerText = `Promo Spesial ${displayDate} s/d Pukul ${displayTime}`;
             
             document.getElementById('promoCodeDisplay').innerText = promoData.code;
             document.getElementById('promoTitleDisplay').innerText = promoData.title || "Diskon Spesial!";
             document.getElementById('promoDescDisplay').innerText = promoData.desc || "Potongan 20% All Item";
         }
 
-        // --- CONTACT FORM TOGGLE ---
         window.toggleContactForm = () => {
             const formWrapper = document.getElementById('formWrapper');
             const icon = document.getElementById('toggleIcon');
             const btnText = document.querySelector('#toggleFormBtn span');
             const t = translations[currentLang];
-
             formWrapper.classList.toggle('open');
-            
             if (formWrapper.classList.contains('open')) {
                 icon.style.transform = 'rotate(180deg)';
                 btnText.innerText = t.toggle_form_close;
@@ -1395,40 +1421,23 @@
             }
         };
 
-        // --- SEARCH FEATURE ---
         window.handleSearch = (query) => {
-            if(!query) {
-                renderProducts(); 
-                return;
-            }
-            
+            if(!query) { renderProducts(); return; }
             const lowerQuery = query.toLowerCase();
             const filtered = products.filter(p => 
                 p.title.toLowerCase().includes(lowerQuery) || 
                 p.category.toLowerCase().includes(lowerQuery)
             );
-            
-            const container = document.getElementById('productContainer');
-            if(filtered.length === 0) {
-                 container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400 flex flex-col items-center"><i class="ri-ghost-line text-4xl mb-2"></i><p>Tidak ada produk yang cocok.</p></div>`;
-                 return;
-            }
-
             renderFilteredProducts(filtered);
         };
 
-        // --- WHATSAPP FORM HANDLER (NEW) ---
         window.sendToWhatsapp = (e) => {
             e.preventDefault();
             const name = document.getElementById('contactName').value;
             const message = document.getElementById('contactMessage').value;
-
             const waNumber = "6285161141114";
-            
-            // Format pesan rapi dengan %0A untuk baris baru (Encoding URL)
             const text = `*Halo Malikfaza Studio,*%0A%0ASaya ingin menghubungi Anda.%0A%0A*Detail Pengirim:*%0ANama: ${name}%0A%0A*Pesan:*%0A${message}`;
-
-            const url = `https://wa.me/${waNumber}?text=${text}`; // Tidak perlu encodeURIComponent lagi karena manual %0A
+            const url = `https://wa.me/${waNumber}?text=${text}`; 
             window.open(url, '_blank');
         };
 
@@ -1436,8 +1445,39 @@
             document.getElementById('promoTitleInput').value = promoData.title || "";
             document.getElementById('promoDescInput').value = promoData.desc || "";
             document.getElementById('promoCodeInput').value = promoData.code;
-            document.getElementById('promoTimeInput').value = promoData.endTime || "23:59";
             document.getElementById('promoActiveInput').checked = promoData.active;
+            
+            // Handle Date/Time Inputs based on current promoData
+            let currentEnd = promoData.endTime;
+            if(!currentEnd) currentEnd = new Date().toISOString(); // Default to now if missing
+            
+            // Check if it's a full ISO string
+            if(currentEnd.includes("T")) {
+                 const dateObj = new Date(currentEnd);
+                 const dateStr = dateObj.toISOString().split('T')[0];
+                 const timeStr = dateObj.toTimeString().slice(0,5);
+                 
+                 // Check if date is today
+                 const today = new Date().toISOString().split('T')[0];
+                 
+                 if(dateStr === today) {
+                     // Set to Today mode
+                     document.querySelector('input[name="promoType"][value="today"]').checked = true;
+                     toggleDateInput('today');
+                 } else {
+                     // Set to Custom mode
+                     document.querySelector('input[name="promoType"][value="custom"]').checked = true;
+                     toggleDateInput('custom');
+                     document.getElementById('promoDateInput').value = dateStr;
+                 }
+                 document.getElementById('promoTimeInput').value = timeStr;
+            } else {
+                 // Fallback old format (only time)
+                 document.querySelector('input[name="promoType"][value="today"]').checked = true;
+                 toggleDateInput('today');
+                 document.getElementById('promoTimeInput').value = currentEnd;
+            }
+
             document.getElementById('promoSettingsModal').classList.remove('hidden');
             document.getElementById('promoSettingsModal').classList.add('flex');
         };
@@ -1447,12 +1487,25 @@
             const newTitle = document.getElementById('promoTitleInput').value;
             const newDesc = document.getElementById('promoDescInput').value;
             const newCode = document.getElementById('promoCodeInput').value;
-            const newTime = document.getElementById('promoTimeInput').value || "23:59";
             const isActive = document.getElementById('promoActiveInput').checked;
             
-            const newData = { title: newTitle, desc: newDesc, code: newCode, endTime: newTime, active: isActive };
+            // Construct Date Time
+            const type = document.querySelector('input[name="promoType"]:checked').value;
+            const timeVal = document.getElementById('promoTimeInput').value || "23:59";
+            let dateVal = "";
             
-            // Update Local Data Immediately for Feedback
+            if(type === 'today') {
+                dateVal = new Date().toISOString().split('T')[0];
+            } else {
+                dateVal = document.getElementById('promoDateInput').value;
+                if(!dateVal) dateVal = new Date().toISOString().split('T')[0]; // Fallback to today if empty
+            }
+            
+            // Combine to ISO String
+            const fullDateTime = `${dateVal}T${timeVal}:00`;
+            
+            const newData = { title: newTitle, desc: newDesc, code: newCode, endTime: fullDateTime, active: isActive };
+            
             promoData = newData;
 
             if(db) {
@@ -1470,14 +1523,7 @@
                 window.showToast("Disimpan (Lokal)");
             }
 
-            // FIX: Update Teks Tanggal & Jam Secara Langsung
-            const now = new Date();
-            const options = { day: 'numeric', month: 'short' };
-            const dateStr = now.toLocaleDateString('id-ID', options);
-            document.getElementById('promoDateText').innerText = `Promo Spesial ${dateStr} s/d Pukul ${promoData.endTime}`;
-
             if(isActive) {
-                // Force show updated promo for visual feedback
                 window.showPromoBig();
             } else {
                 window.closePromoCompletely();
@@ -1527,10 +1573,7 @@
             btn.innerText = '...'; btn.disabled = true;
             try {
                 if(db) {
-                    // Firebase Reset Logic
                     const batch = writeBatch(db);
-                    // Usually we would query all and delete, then re-add
-                    // Simplified for demo:
                     mockProducts.forEach(p => {
                          batch.set(doc(db, "products", p.id), p);
                     });
@@ -1567,7 +1610,6 @@
                     await batch.commit();
                     window.showToast("Produk dihapus (Cloud)");
                 } catch(e) {
-                     // Fallback local
                      products = products.filter(p => !selectedIds.has(p.id));
                      renderProducts();
                      window.showToast("Produk dihapus (Lokal)");
@@ -1614,7 +1656,6 @@
             renderProducts();
         };
 
-        // --- SORTABLE INIT LOGIC ---
         function initSortable() {
             const el = document.getElementById('productContainer');
             if (sortableInstance) sortableInstance.destroy();
@@ -1626,11 +1667,10 @@
                     delayOnTouchOnly: true,
                     ghostClass: 'sortable-ghost',
                     dragClass: 'sortable-drag',
-                    handle: '.aspect-square', // Drag handle area
+                    handle: '.aspect-square', 
                     onEnd: async function (evt) {
                         const newOrderIds = Array.from(el.children).map(card => card.getAttribute('data-id'));
                         
-                        // Reorder local
                         const newProducts = [];
                         newOrderIds.forEach(id => {
                             const p = products.find(prod => prod.id === id);
@@ -1638,7 +1678,6 @@
                         });
                         products = newProducts;
                         
-                        // Save to Firebase
                         if(db) {
                             try {
                                 const batch = writeBatch(db);
@@ -1654,14 +1693,11 @@
             }
         }
 
-        // --- RENDER PRODUCTS IN GRID (UPDATED WA LINK LOGIC) ---
         function renderFilteredProducts(productList) {
              const container = document.getElementById('productContainer');
              container.innerHTML = productList.map((p, index) => {
                 const animationDelay = index * 50;
                 
-                // FIX: Menambahkan Link Detail ke Pesan WA di Tombol Grid (Depan)
-                // Sebelumnya hanya judul, sekarang lengkap dengan link
                 const linkUrl = p.detailLink && p.detailLink.trim() !== "" ? p.detailLink : "https://lynk.id/malikfaza";
                 const waText = `Halo Malikfaza, saya tertarik membeli produk ini:\n\n*${p.title}*\n\nLink Produk: ${linkUrl}`;
                 const waLink = `https://wa.me/6285161141114?text=${encodeURIComponent(waText)}`;
