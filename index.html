@@ -817,8 +817,8 @@
 
     <!-- Detail Modal (FULL SCREEN EPIC) -->
     <div id="productModal" class="fixed inset-0 z-[200] hidden bg-white dark:bg-midnight overflow-y-auto animate-entry">
-        <!-- Sticky Close Button -->
-        <button onclick="window.closeModal('productModal')" class="fixed top-6 right-6 z-[210] w-12 h-12 rounded-full bg-gray-100 dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors shadow-lg backdrop-blur">
+        <!-- Sticky Close Button (MODIFIED TO USE HISTORY BACK) -->
+        <button onclick="window.closeProductDetail()" class="fixed top-6 right-6 z-[210] w-12 h-12 rounded-full bg-gray-100 dark:bg-white/10 text-slate-800 dark:text-white flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors shadow-lg backdrop-blur">
             <i class="ri-close-line text-2xl"></i>
         </button>
 
@@ -962,6 +962,22 @@
                     products = [...mockProducts]; // Fallback if empty
                 }
                 renderProducts();
+                
+                // --- CHECK HASH FOR DIRECT LINK (HUB AND SPOKE) ---
+                const hash = window.location.hash;
+                if(hash && hash.startsWith('#product-')) {
+                    const id = hash.replace('#product-', '');
+                    const p = products.find(x => x.id === id);
+                    if(p) {
+                         // Open immediately without pushState (already in URL)
+                         populateProductModal(p);
+                         const modal = document.getElementById('productModal');
+                         modal.classList.remove('hidden');
+                         modal.classList.add('block');
+                         document.body.style.overflow = 'hidden'; 
+                    }
+                }
+                
             } catch(e) {
                 console.warn("Fetch Products Error (Using Mock):", e.message);
                 // Don't overwrite local changes immediately on fetch error if we have data
@@ -1955,38 +1971,81 @@
             container.innerHTML = cardsHtml + cardsHtml;
         }
 
+        // --- POPULATE MODAL HELPER (NEW REFACTOR) ---
+        function populateProductModal(p) {
+             const visualHtml = getProductVisualHtml(p);
+             const container = document.getElementById('modalVisualContainer');
+             container.innerHTML = visualHtml;
+             // Re-add gradient overlay which is lost when setting innerHTML
+             container.insertAdjacentHTML('beforeend', '<div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>');
+
+             document.getElementById('modalTitle').innerText = p.title;
+             document.getElementById('modalPrice').innerText = p.price;
+             document.getElementById('modalDesc').innerHTML = p.desc;
+             document.getElementById('modalCategory').innerText = p.category;
+             
+             const linkUrl = p.detailLink && p.detailLink.trim() !== "" ? p.detailLink : "https://lynk.id/malikfaza";
+             document.getElementById('modalDetailLink').href = linkUrl;
+             
+             const waText = `Halo Malikfaza, saya tertarik membeli produk ini:\n\n*${p.title}*\n\nLink Produk: ${linkUrl}`;
+             const waUrl = `https://wa.me/6285161141114?text=${encodeURIComponent(waText)}`;
+             document.getElementById('modalWaLink').href = waUrl;
+        }
+
+        // --- HUB AND SPOKE: OPEN DETAIL (MODIFIED) ---
         window.openProductModal = (id) => {
             const p = products.find(x => x.id === id);
             if(!p) return;
             
-            // Handle Visual Content in Modal
-            const visualHtml = getProductVisualHtml(p);
-            const container = document.getElementById('modalVisualContainer');
-            container.innerHTML = visualHtml;
-            // Re-add gradient overlay which is lost when setting innerHTML
-            container.insertAdjacentHTML('beforeend', '<div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>');
-
-            document.getElementById('modalTitle').innerText = p.title;
-            document.getElementById('modalPrice').innerText = p.price;
+            populateProductModal(p);
             
-            // Allow HTML description rendering
-            document.getElementById('modalDesc').innerHTML = p.desc;
-            document.getElementById('modalCategory').innerText = p.category;
+            // Push State Logic for Hub-and-Spoke
+            history.pushState({ view: 'product', id: id }, "", `#product-${id}`);
             
-            const detailBtn = document.getElementById('modalDetailLink');
-            // Gunakan link spesifik jika ada, jika kosong pakai link default
-            const linkUrl = p.detailLink && p.detailLink.trim() !== "" ? p.detailLink : "https://lynk.id/malikfaza";
-            detailBtn.href = linkUrl;
-            
-            // UPDATED WA MESSAGE LOGIC
-            // Sekarang menyertakan Link Spesifik yang diinput di menu edit
-            const waText = `Halo Malikfaza, saya tertarik membeli produk ini:\n\n*${p.title}*\n\nLink Produk: ${linkUrl}`;
-            const waUrl = `https://wa.me/6285161141114?text=${encodeURIComponent(waText)}`;
-            
-            document.getElementById('modalWaLink').href = waUrl;
-            document.getElementById('productModal').classList.remove('hidden');
-            document.getElementById('productModal').classList.add('block');
+            const modal = document.getElementById('productModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('block');
+            document.body.style.overflow = 'hidden'; // Lock scrolling behind modal
         };
+
+        // --- HUB AND SPOKE: CLOSE DETAIL (NEW) ---
+        window.closeProductDetail = () => {
+             // Cek jika history state ada (berarti kita membuka lewat klik)
+             if (history.state && history.state.view === 'product') {
+                 history.back(); // Ini akan memicu popstate listener
+             } else {
+                 // Fallback: Jika dibuka langsung lewat URL dan user klik X, 
+                 // kita bersihkan hash dan sembunyikan modal
+                 const modal = document.getElementById('productModal');
+                 modal.classList.add('hidden');
+                 modal.classList.remove('block');
+                 document.body.style.overflow = '';
+                 history.replaceState(null, "", " "); // Clear hash silently
+             }
+        };
+
+        // --- HUB AND SPOKE: HISTORY LISTENER (NEW) ---
+        window.addEventListener('popstate', (event) => {
+             const modal = document.getElementById('productModal');
+             
+             if (event.state && event.state.view === 'product') {
+                 // Navigasi Maju (Forward) ke halaman produk
+                 const pId = event.state.id;
+                 const p = products.find(x => x.id === pId);
+                 if(p) {
+                      populateProductModal(p);
+                      modal.classList.remove('hidden');
+                      modal.classList.add('block');
+                      document.body.style.overflow = 'hidden';
+                 }
+             } else {
+                 // Navigasi Mundur (Back) ke halaman utama
+                 // Atau state null (awal)
+                 modal.classList.add('hidden');
+                 modal.classList.remove('block');
+                 document.body.style.overflow = ''; // Unlock scrolling
+             }
+        });
 
         // --- EDIT ---
         let tempImageBase64 = null;
