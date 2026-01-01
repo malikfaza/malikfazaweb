@@ -1868,7 +1868,19 @@
         }
 
         window.visitCampaign = () => {
-            if(campaignData.link && campaignData.link.trim() !== "#") window.open(campaignData.link, '_blank');
+            let link = campaignData.link;
+            if(link && link.trim() !== "#" && link.trim() !== "") {
+                // Fix for relative URLs
+                if (!link.startsWith('http://') && !link.startsWith('https://') && !link.startsWith('#')) {
+                    link = 'https://' + link;
+                }
+                
+                if (link.startsWith('#')) {
+                    window.location.href = link;
+                } else {
+                    window.open(link, '_blank');
+                }
+            }
             window.closeCampaign();
         }
 
