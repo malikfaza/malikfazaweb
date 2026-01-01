@@ -397,6 +397,11 @@
                     <i class="ri-coupon-3-line text-lg"></i> Set Promo
                 </button>
                 
+                <!-- NEW CAMPAIGN SETTING BUTTON -->
+                <button onclick="window.openCampaignSettings()" class="w-full py-2.5 bg-orange-600/90 hover:bg-orange-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-start px-3 gap-2 shadow-sm hover:translate-x-1 backdrop-blur-sm">
+                    <i class="ri-image-edit-line text-lg"></i> Set Banner Popup
+                </button>
+                
                 <div class="grid grid-cols-2 gap-2 mt-1">
                     <!-- Reset -->
                     <button id="btnReset" onclick="window.uploadDefaultData()" class="py-2 bg-blue-600/90 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1 shadow-sm hover:-translate-y-0.5 backdrop-blur-sm">
@@ -652,9 +657,22 @@
             </div>
         </div>
     </div>
+    
+    <!-- NEW CAMPAIGN POPUP MODAL -->
+    <div id="campaignModal" class="fixed inset-0 z-[150] hidden items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-300 opacity-0 pointer-events-none">
+        <div class="relative w-full max-w-md p-4 transform scale-90 transition-transform duration-300" id="campaignContent">
+            <button onclick="window.closeCampaign()" class="absolute -top-2 -right-2 z-10 w-8 h-8 rounded-full bg-white text-black flex items-center justify-center font-bold shadow-lg hover:bg-red-500 hover:text-white transition-colors border border-gray-200">&times;</button>
+            <div class="rounded-2xl overflow-hidden shadow-2xl relative group cursor-pointer border-2 border-white/20" onclick="window.visitCampaign()">
+                <img id="campaignImageDisplay" src="" alt="Campaign" class="w-full h-auto object-cover">
+                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                    <span class="bg-white text-black text-xs font-bold px-4 py-2 rounded-full shadow-lg transform scale-90 group-hover:scale-100 transition-transform">Lihat Promo <i class="ri-arrow-right-line"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Live Purchase Notification -->
-    <div id="purchaseToast" class="fixed bottom-6 left-6 z-[150] translate-y-[200%] opacity-0 pointer-events-none">
+    <div id="purchaseToast" class="fixed bottom-6 left-6 z-[160] translate-y-[200%] opacity-0 pointer-events-none">
         <div class="glass p-3 pr-5 rounded-2xl border border-white/20 bg-slate-900/80 backdrop-blur-lg flex items-center gap-3 shadow-xl max-w-xs">
             <div class="relative">
                 <div class="w-10 h-10 rounded-full bg-gradient-to-br from-accent-cyan to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-md border border-white/20" id="purchaseAvatar">
@@ -731,6 +749,57 @@
                     </div>
                 </div>
                 <button type="submit" class="w-full py-2.5 bg-accent-yellow text-black rounded-lg font-bold hover:bg-yellow-500 transition-all text-sm shadow-lg hover:-translate-y-0.5 transform">Simpan Pengaturan</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- NEW CAMPAIGN SETTINGS MODAL (UPDATED WITH IMAGE UPLOAD) -->
+    <div id="campaignSettingsModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-entry">
+        <div class="glass dark:bg-midnight bg-white p-6 rounded-2xl w-full max-w-sm mx-auto relative shadow-2xl border border-white/10 max-h-[90vh] overflow-y-auto">
+            <button onclick="window.closeModal('campaignSettingsModal')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500"><i class="ri-close-line text-xl"></i></button>
+            <h3 class="text-lg font-bold mb-4 text-center dark:text-white text-slate-900 border-b border-gray-200 dark:border-white/10 pb-2">Atur Campaign Banner</h3>
+            <form id="campaignForm" class="space-y-4">
+                
+                <!-- PREVIEW AREA -->
+                <div class="w-full h-32 bg-gray-200 dark:bg-black/30 rounded-lg overflow-hidden flex items-center justify-center border border-gray-500/30 relative group">
+                    <div id="campaignPreviewContainer" class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-700 to-gray-900">
+                        <!-- Preview injected via JS -->
+                    </div>
+                    <div id="campaignPreviewPlaceholder" class="absolute flex flex-col items-center text-gray-400 pointer-events-none">
+                        <i class="ri-image-line text-3xl mb-1"></i>
+                        <span class="text-[10px]">Preview Banner</span>
+                    </div>
+                </div>
+
+                <!-- DRAG & DROP ZONE -->
+                <div class="space-y-2">
+                    <label class="text-xs text-gray-500 block font-bold">Gambar (Upload/Paste/URL)</label>
+                    <div id="campaignDropZone" class="border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg p-3 text-center transition-colors cursor-pointer relative hover:border-accent-orange hover:bg-accent-orange/5 group">
+                        <input type="file" id="campaignImageFile" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onchange="window.handleCampaignImageUpload(this.files[0])">
+                        <div class="pointer-events-none group-hover:text-accent-orange transition-colors">
+                            <i class="ri-upload-cloud-2-line text-xl text-gray-400 group-hover:text-accent-orange"></i>
+                            <p class="text-[10px] text-gray-500 mt-1">Klik upload, Drag, atau <b>CTRL+V</b></p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <span class="text-[10px] text-gray-400 font-bold">URL</span>
+                        <input type="text" id="campaignImgInput" placeholder="https://..." class="flex-1 px-3 py-1.5 rounded text-xs dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white focus:border-accent-cyan focus:outline-none" onchange="window.updateCampaignPreviewFromUrl(this.value)">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-xs text-gray-500 mb-1 block font-bold">Link Tujuan</label>
+                    <input type="text" id="campaignLinkInput" class="w-full px-3 py-2 rounded-lg dark:bg-black/30 bg-gray-100 border border-gray-300 dark:border-gray-600 dark:text-white text-slate-900 text-sm focus:outline-none focus:border-accent-cyan" placeholder="https://...">
+                </div>
+                 <div class="flex items-center justify-between bg-gray-100 dark:bg-white/5 p-2 rounded-lg">
+                    <label class="text-xs text-gray-500 block font-bold">Status Popup</label>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs">Off</span>
+                        <input type="checkbox" id="campaignActiveInput" class="w-5 h-5 accent-accent-orange rounded cursor-pointer">
+                        <span class="text-xs font-bold text-accent-orange">On</span>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-2.5 bg-accent-orange text-white rounded-lg font-bold hover:bg-orange-600 transition-all text-sm shadow-lg hover:-translate-y-0.5 transform">Simpan Campaign</button>
             </form>
         </div>
     </div>
@@ -930,6 +999,13 @@
             desc: "Potongan 20% All Item", 
             endTime: today.toISOString()
         };
+        
+        // NEW CAMPAIGN DATA STATE
+        let campaignData = {
+            img: "https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?q=80&w=1000&auto=format&fit=crop",
+            link: "#products",
+            active: false
+        };
 
         let sortableInstance = null;
         
@@ -991,21 +1067,23 @@
         async function fetchPromo() {
             if(!supabase) return;
             try {
-                // Assuming we store promo settings in a 'settings' table with id='promo' and value=json
                 const { data, error } = await supabase.from('settings').select('value').eq('id', 'promo').single();
-                
-                // Ignore "Row not found" (PGRST116) as it just means no data yet
                 if(error && error.code !== 'PGRST116') throw error; 
-                
-                if(data && data.value) {
-                    promoData = data.value;
-                }
+                if(data && data.value) promoData = data.value;
                 renderPromoContent();
                 updateTimer();
                 if(promoData.active) setTimeout(window.showPromoBig, 1000);
-            } catch(e) {
-                console.warn("Fetch Promo Error:", e.message);
-            }
+            } catch(e) { console.warn("Fetch Promo Error:", e.message); }
+        }
+
+        // NEW FETCH CAMPAIGN
+        async function fetchCampaign() {
+            if(!supabase) return;
+            try {
+                const { data, error } = await supabase.from('settings').select('value').eq('id', 'campaign').single();
+                if(error && error.code !== 'PGRST116') throw error; 
+                if(data && data.value) campaignData = data.value;
+            } catch(e) { console.warn("Fetch Campaign Error:", e.message); }
         }
 
         // --- HELPER TO SAVE PRODUCTS ---
@@ -1240,13 +1318,19 @@
         }
 
         const handlePasteImage = (e) => {
-            if(document.getElementById('editModal').classList.contains('hidden')) return;
+            // Check if ANY image-accepting modal is open
+            const editModalOpen = !document.getElementById('editModal').classList.contains('hidden');
+            const campaignModalOpen = !document.getElementById('campaignSettingsModal').classList.contains('hidden');
+
+            if (!editModalOpen && !campaignModalOpen) return;
+
             const items = (e.clipboardData || e.originalEvent.clipboardData).items;
             for (let index in items) {
                 const item = items[index];
                 if (item.kind === 'file' && item.type.startsWith('image/')) {
                     const blob = item.getAsFile();
-                    handleImageUpload(blob);
+                    if (editModalOpen) handleImageUpload(blob);
+                    if (campaignModalOpen) window.handleCampaignImageUpload(blob);
                 }
             }
         };
@@ -1444,6 +1528,10 @@
             await checkDatabaseHealth();
             await fetchProducts();
             await fetchPromo();
+            await fetchCampaign(); // NEW FETCH
+
+            // CAMPAIGN POPUP TRIGGER
+            setTimeout(window.showCampaignPopup, 2000);
 
             setTimeout(() => { if(window.AOS) window.AOS.init({ once: true, duration: 800 }); }, 500);
             window.addEventListener('paste', handlePasteImage);
@@ -1649,6 +1737,140 @@
             document.getElementById('promoSettingsModal').classList.remove('hidden');
             document.getElementById('promoSettingsModal').classList.add('flex');
         };
+        
+        // NEW CAMPAIGN FUNCTIONS
+        window.openCampaignSettings = () => {
+            // Clear temp image state
+            window.tempCampaignImage = null;
+            document.getElementById('campaignImgInput').value = campaignData.img || "";
+            document.getElementById('campaignLinkInput').value = campaignData.link;
+            document.getElementById('campaignActiveInput').checked = campaignData.active;
+            
+            // Initial Preview from current data
+            const prevContainer = document.getElementById('campaignPreviewContainer');
+            const prevPlaceholder = document.getElementById('campaignPreviewPlaceholder');
+            
+            if(campaignData.img) {
+                prevContainer.innerHTML = `<img src="${campaignData.img}" class="w-full h-full object-cover">`;
+                prevPlaceholder.style.display = "none";
+            } else {
+                prevContainer.innerHTML = "";
+                prevPlaceholder.style.display = "flex";
+            }
+
+            document.getElementById('campaignSettingsModal').classList.remove('hidden');
+            document.getElementById('campaignSettingsModal').classList.add('flex');
+        }
+
+        // Handle Image Upload for Campaign
+        window.handleCampaignImageUpload = (file) => {
+            if (file && file.size < 5*1024*1024) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width, height = img.height;
+                        const MAX_W = 800; // Resize to max 800px width
+                        if(width > MAX_W) { height *= MAX_W/width; width = MAX_W; }
+                        canvas.width = width; canvas.height = height;
+                        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                        const data = canvas.toDataURL('image/jpeg', 0.8);
+                        
+                        // Update preview container
+                        const previewContainer = document.getElementById('campaignPreviewContainer');
+                        previewContainer.innerHTML = `<img src="${data}" class="w-full h-full object-cover">`;
+                        document.getElementById('campaignPreviewPlaceholder').style.display = "none";
+                        
+                        // Store temp
+                        window.tempCampaignImage = data;
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        window.updateCampaignPreviewFromUrl = (val) => {
+            if(val && !window.tempCampaignImage) {
+                const previewContainer = document.getElementById('campaignPreviewContainer');
+                previewContainer.innerHTML = `<img src="${val}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x200?text=Invalid+URL'">`;
+                document.getElementById('campaignPreviewPlaceholder').style.display = "none";
+            }
+        }
+
+        document.getElementById('campaignForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Determine image source: Uploaded Base64 > Input URL > Existing
+            let finalImg = campaignData.img;
+            if (window.tempCampaignImage) {
+                finalImg = window.tempCampaignImage;
+            } else {
+                const urlInput = document.getElementById('campaignImgInput').value;
+                if(urlInput) finalImg = urlInput;
+            }
+
+            const newData = {
+                img: finalImg,
+                link: document.getElementById('campaignLinkInput').value,
+                active: document.getElementById('campaignActiveInput').checked
+            };
+            campaignData = newData;
+            
+            if(supabase) {
+                try {
+                    const { error } = await supabase.from('settings').upsert({ id: 'campaign', value: newData });
+                    if(error) throw error;
+                    window.showToast("Campaign Tersimpan");
+                } catch(e) { window.showToast("Gagal Simpan DB", true); }
+            } else {
+                window.showToast("Campaign Tersimpan (Lokal)");
+            }
+            window.closeModal('campaignSettingsModal');
+            window.tempCampaignImage = null; // Reset
+            
+            sessionStorage.removeItem('campaignSeen'); 
+        });
+
+        window.showCampaignPopup = () => {
+            if(!campaignData.active) return;
+            if(sessionStorage.getItem('campaignSeen')) return;
+            
+            const modal = document.getElementById('campaignModal');
+            const content = document.getElementById('campaignContent');
+            const img = document.getElementById('campaignImageDisplay');
+            
+            if(campaignData.img) img.src = campaignData.img;
+            
+            modal.classList.remove('hidden', 'pointer-events-none', 'opacity-0');
+            modal.classList.add('flex', 'opacity-100', 'pointer-events-auto');
+            
+            setTimeout(() => {
+                content.classList.remove('scale-90');
+                content.classList.add('scale-100');
+            }, 100);
+            
+            sessionStorage.setItem('campaignSeen', 'true');
+        }
+
+        window.closeCampaign = () => {
+            const modal = document.getElementById('campaignModal');
+            const content = document.getElementById('campaignContent');
+            content.classList.remove('scale-100');
+            content.classList.add('scale-90');
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden', 'pointer-events-none');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        window.visitCampaign = () => {
+            if(campaignData.link && campaignData.link.trim() !== "#") window.open(campaignData.link, '_blank');
+            window.closeCampaign();
+        }
 
         document.getElementById('promoForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -2238,6 +2460,7 @@
             const data = {
                 products: products,
                 promoSettings: promoData,
+                campaignSettings: campaignData,
                 exportedAt: new Date().toISOString(),
                 note: "Import this JSON to restore data"
             };
@@ -2293,15 +2516,22 @@
                         if (data.promoSettings) {
                              batchPromises.push(savePromoToDB(data.promoSettings));
                         }
+                        
+                        // Also sync campaign
+                         if (data.campaignSettings) {
+                             batchPromises.push(supabase.from('settings').upsert({ id: 'campaign', value: data.campaignSettings }));
+                        }
 
                         await Promise.all(batchPromises);
                         await fetchProducts();
                         await fetchPromo();
+                        await fetchCampaign();
                         window.showToast(`Import Berhasil! Database Diperbarui.`);
                     } else {
                         // Local Fallback
                         if(data.products) products = data.products;
                         if(data.promoSettings) promoData = data.promoSettings;
+                        if(data.campaignSettings) campaignData = data.campaignSettings;
                         renderProducts();
                         renderPromoContent();
                         window.showToast("Import Berhasil (Lokal)");
